@@ -22,7 +22,7 @@ const db = mysql.createConnection({
     host: "localhost",
     database: "choremates",   
     user: "root",
-    password: "Katkat560",     // change this to your own password that
+    password: "mypassword",     // change this to your own password that
                                 // you created when installing mysql -KK
 });
 
