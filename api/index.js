@@ -6,6 +6,10 @@
 
 var express = require("express");
 const cors = require("cors");
+const mysql = require('mysql2');
+const bcrypt = require('bcrypts');
+const jwt = require('jsonwebtoken');
+
 const PORT = 3000;
 
 const app = express();
@@ -19,7 +23,6 @@ app.use(express.urlencoded({ extended: true }));
 /********************************************************** */
 require('dotenv').config();  // load env variables
 
-const mysql = require('mysql2');
 const db = mysql.createConnection({
     host: "localhost",
     database: "choremates",   
@@ -58,6 +61,19 @@ app.get('/get_users', (req, res) => {
             return res.status(500).send("Error querying database.");
         }
         res.json(results);
+    });
+});
+
+// ------------------------------------------Account------------------------------------------------
+// user registration 
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
+        (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.status(201).json({ message: 'User registered successfully!' });
     });
 });
 
