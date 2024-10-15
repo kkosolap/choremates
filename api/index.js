@@ -17,12 +17,14 @@ app.use(express.urlencoded({ extended: true }));
 /********************************************************** */
 /*              DATABASE CONNECTION BELOW:                  */
 /********************************************************** */
-const mysql = require('mysql');
+require('dotenv').config();  // load env variables
+
+const mysql = require('mysql2');
 const db = mysql.createConnection({
     host: "localhost",
     database: "choremates",   
     user: "root",
-    password: "mypassword",     // change this to your own password that
+    password: process.env.DB_PASSWORD,     // change this to your own password that
                                 // you created when installing mysql -KK
 });
 
