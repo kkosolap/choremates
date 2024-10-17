@@ -1,7 +1,9 @@
 // Home.js
+
 import React from 'react';
 import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert   } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
@@ -9,6 +11,7 @@ import styles from '../style/styles';
 
 const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
+  const navigation = useNavigation(); // get the navigation object
 
   const handlePressIn = () => {
     Animated.timing(scale, {
@@ -26,28 +29,18 @@ const HomeDisplay = () => {
     }).start();
   };
 
-  const showAlert = () => {
-    Alert.alert(
-      'How would you like to add a chore?',
-      '',
-      [
-        {
-          text: 'Create custom chore',
-          onPress: () => console.log('custom'),
-        },
-        {
-          text: 'Edit from preset list',
-          onPress: () => console.log('preset'),
-        },
-      ],
-      { cancelable: true } // allow dismissing by tapping outside
-    );
+  const openAddChore = () => {
+    navigation.navigate('NewChore');
   };
 
   return (
     <View style={styles.screen}>
       {/* Add Chore Button */}
-      <TouchableWithoutFeedback onPress={showAlert} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <TouchableWithoutFeedback
+        onPress={openAddChore}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
         <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
           <Icon name="add" size={40} color="#fff" />
         </Animated.View>

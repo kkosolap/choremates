@@ -5,18 +5,18 @@ import colors from './colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
+    backgroundColor: colors.lighterBlue,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.textPrimary,
   },
   subtitle: {
     fontSize: 18,
-    color: '#ccc',
+    color: colors.textSecondary,
   },
   text: {
     color: '#fff',
@@ -60,7 +60,15 @@ const styles = StyleSheet.create({
   buttonDescription: {
     fontSize: 16,
     marginTop: 8
-  }
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16, // Space below the header
+  },
+  backButton: {
+    padding: 8, // Add padding for the touchable area
+  },
 });
 
 export default styles;
