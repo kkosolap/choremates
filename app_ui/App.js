@@ -1,11 +1,18 @@
 // App.js
+
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import colors from './colors';
+
+import colors from './style/colors';
+import styles from './style/styles';
+import HomeDisplay from './tabs/Home';
+import ChoresDisplay from './tabs/Chores';
+import MembersDisplay from './tabs/Members';
+import SettingsDisplay from './tabs/Settings';
 
 /************************************************************ */
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
@@ -21,29 +28,42 @@ const API_URL = "http://10.0.0.172:3000/";
 /************************************************************ */
 const Tab = createBottomTabNavigator();
 
+const CustomHeader = ({ title }) => {
+  return (
+    <View style={styles.tabHeader}>
+      <Text style={styles.tabTitle}>{title}</Text>
+    </View>
+  );
+};
+
 const HomeScreen = () => (
   <View style={styles.screen}>
-    <Text>Home Screen</Text>
+    <CustomHeader title="My Home" />
+    <HomeDisplay />
   </View>
 );
 
 const ChoresScreen = () => (
   <View style={styles.screen}>
-    <Text>Chores Screen</Text>
+    <CustomHeader title="Weekly Chores" />
+    <ChoresDisplay />
   </View>
 );
 
 const MembersScreen = () => (
   <View style={styles.screen}>
-    <Text>Members Screen</Text>
+    <CustomHeader title="Members" />
+    <MembersDisplay />
   </View>
 );
 
 const SettingsScreen = () => (
   <View style={styles.screen}>
-    <Text>Settings Screen</Text>
+    <CustomHeader title="Settings" />
+    <SettingsDisplay />
   </View>
 );
+
 
 /************************************************************ */
 /*                     MAIN APP FUNCTION                      */
@@ -100,7 +120,8 @@ export default function App() {
           },
           tabBarIconStyle: {
             marginBottom: 0
-          }
+          },
+          headerShown: false
         })}>
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Chores" component={ChoresScreen} />
@@ -110,44 +131,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-/********************************************************** */
-/*                      CSS AESTHETICS                      */
-/********************************************************** */
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#ccc',
-  },
-  text: {
-    color: '#fff',
-    marginTop: 20,
-  },
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  focusedBox: {
-    borderWidth: 2,
-    borderColor: colors.blue,
-    backgroundColor: colors.blue,
-    borderRadius: 10,
-    padding: 5,
-  },
-});
