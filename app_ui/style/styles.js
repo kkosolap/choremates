@@ -49,6 +49,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.textPrimary,
   },
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderRadius: 30, // circular button
+    backgroundColor: colors.blue,
+  },
+  buttonDescription: {
+    fontSize: 16,
+    marginTop: 8
+  }
 });
 
 export default styles;
