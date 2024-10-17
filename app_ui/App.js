@@ -83,7 +83,7 @@ export default function App() {
 
             return (
               <View style={[styles.iconContainer, boxStyle]}>
-                <Icon name={iconName} size={size} color={color} />
+                <Icon name={iconName} size={focused? 32 : 28} color={color} />
               </View>
             );
           },
