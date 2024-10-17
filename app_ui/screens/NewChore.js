@@ -11,8 +11,12 @@ const NewChoreScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text><Icon name="arrow-back" size={35} color="#000" /></Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          activeOpacity={0.7}
+          onPress={() => navigation.goBack()}
+        >
+          <Text><Icon name="arrow-back" size={35} color={colors.darkestBlue} /></Text>
         </TouchableOpacity>
         
         <Text style={styles.title}>Add a New Chore</Text>
