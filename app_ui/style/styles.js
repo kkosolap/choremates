@@ -2,6 +2,20 @@
 import { StyleSheet } from 'react-native';
 import colors from './colors';
 
+// main choreBlock style
+// (written separately so the completed version can inherit the same style)
+const baseChoreBlock = {
+  justifyContent: 'center',
+  alignItems: 'center',
+  margin: 10,
+  paddingVertical: 10,
+  width: 350,
+  minHeight: 55,
+  borderRadius: 15,
+  backgroundColor: colors.blue,
+};
+
+// all styles
 const styles = StyleSheet.create({
   // text
   title: {
@@ -82,6 +96,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 8
   },
+
+  // chore block
+  choreBlock: baseChoreBlock,
+  choreBlockCompleted: {
+    ...baseChoreBlock,
+    backgroundColor: colors.lighterBlue,
+  },
+  choreTitle: {
+    fontSize: 22,
+    color: colors.white,
+    width: '55%',
+    flexShrink: 1,
+    flexGrow: 1,
+    textAlignVertical: 'center',
+  }
 });
 
 export default styles;

@@ -6,6 +6,8 @@ import { Text, View, StyleSheet } from 'react-native';
 import colors from '../style/colors';
 import styles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
+import { ChoreBlock } from '../components/blocks.js';
+import showHelloPopup from '../components/hello.js';
 
 
 // header and page content
@@ -22,7 +24,10 @@ const ChoresDisplay = () => (
     
 
     {/* ***replace this text with a checklist of chores*** */}
-    <Text style={styles.subtitle}>Chores Screen</Text>
+    {/* <Text style={styles.subtitle}>Chores Screen</Text> */}
+
+    <ChoreBlock name="chore 1 blah blah blah blah blah blah blah blah blah blah blah blah" completed={true} onPress={showHelloPopup} />
+    <ChoreBlock name="chore 2" completed={false} onPress={showHelloPopup} />
 
 
   </View>
