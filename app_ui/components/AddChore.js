@@ -54,12 +54,13 @@ const styles = StyleSheet.create({
   // },
   container: {
     // flex: 2,
-    marginTop: 500,               // Move the button down a bit from the input
+    marginTop: 250,               // Move the button down a bit from the input
     justifyContent: 'space-between',  // Space between input and button
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
     backgroundColor: 'lightblue',         // Added a background color to see the container area
+    marginBottom: 10,      // Space below the input
 
   },
   buttonContainer: {
