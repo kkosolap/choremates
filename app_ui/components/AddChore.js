@@ -24,14 +24,6 @@ const AddChoreScreen = () => {
         Alert.alert('Error adding chore');
       }
     };
-    // const response = await fetch('http://your-server-ip:3000/addChore', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({ choreName: chore }),
-    // });
-    
   
     return (
       <View style={styles.container}>
@@ -61,12 +53,14 @@ const styles = StyleSheet.create({
   //   padding: 20,                 // Add some padding around the container
   // },
   container: {
-    flex: 1,
+    // flex: 2,
+    marginTop: 500,               // Move the button down a bit from the input
     justifyContent: 'space-between',  // Space between input and button
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'lightblue',  // Add a background color to see the container area
+    backgroundColor: 'lightblue',         // Added a background color to see the container area
+
   },
   buttonContainer: {
     width: '60%',
@@ -83,20 +77,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '60%',                // Button container width is 60% of the screen width
-    marginTop: 200,               // Move the button down a bit from the input
+    marginTop: 20,               // Move the button down a bit from the input
   },
 });
 
 
   export default AddChoreScreen;
-//   container: {
-//   flex: 1,
-//   justifyContent: 'center',
-//   alignItems: 'center',
-//   padding: 20,
-//   backgroundColor: 'lightblue',  // Add a background color to see the container area
-// },
-// buttonContainer: {
-//   width: '60%',
-//   backgroundColor: 'lightgreen',  // Add a background color to see the button container
-// },

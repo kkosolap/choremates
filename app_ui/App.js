@@ -41,7 +41,7 @@ export default function App() {
   }, []);
 
 
-  const [isChecked, setChecked] = useState(false);
+  // const [isChecked, setChecked] = useState(false);
 
 
   // below is all the code for what gets displayed on the screen -KK
@@ -55,6 +55,8 @@ export default function App() {
 
     </View>
 
+
+    //Just show checkbox
     // <View style={styles.container}>
     //   <View style={styles.row}>
     //     <Checkbox style={styles.checkbox} color="#00FF00" value={isChecked} onValueChange={setChecked} />
@@ -62,6 +64,10 @@ export default function App() {
     //   </View>
     //   <StatusBar style="auto" />
     // </View>
+
+
+
+
   );
 }
 
