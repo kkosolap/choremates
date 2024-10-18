@@ -6,16 +6,29 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+// Added -VA
+import { Text, View, StyleSheet, TextInput, Button, Alert  } from 'react-native';
+
+// Added                          TextInput, Button, Alert          -VA
+import Checkbox from 'expo-checkbox';
+import { StatusBar } from 'expo-status-bar';
+
+// Importing .js files to add to UI
+import Slider from './components/Slider';
+import Task from './components/Tasks';
+import AddChore from './components/AddChore';
+import DisplayChoresList from './components/DisplayChores';
 
 
 // API_URL = "http://localhost:3000/" 
-/************************************************************ */
-/* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
-/* --> you can do this by typing ipconfig in windows terminal */
-/* --> or by typing ifconfig for mac/linux laptops -KK        */
-/************************************************************ */
-API_URL = "http://192.168.X.X:3000/"
+/************************************************************     */
+/* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!      */
+/* --> you can do this by typing ipconfig in windows terminal -KK */
+/* --> ipconfig getifaddr en0 for mac                             */
+/* If errors, check IP address,                                   */
+/*                may change per location             -VA         */
+/************************************************************     */
+API_URL = "http://10.0.0.4:3000/"
 
 
 export default function App() {
@@ -28,11 +41,27 @@ export default function App() {
   }, []);
 
 
+  const [isChecked, setChecked] = useState(false);
+
+
   // below is all the code for what gets displayed on the screen -KK
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{data}</Text>
+      {/* <Slider />       */}
+      {/* <Task text = {"task 1"}/> */}
+      {/* <Text style={'styles.text'}>{data}</Text> */}
+      <AddChore />
+      <DisplayChoresList />
+
     </View>
+
+    // <View style={styles.container}>
+    //   <View style={styles.row}>
+    //     <Checkbox style={styles.checkbox} color="#00FF00" value={isChecked} onValueChange={setChecked} />
+    //     <Text>My Option</Text>
+    //   </View>
+    //   <StatusBar style="auto" />
+    // </View>
   );
 }
 
@@ -41,9 +70,10 @@ export default function App() {
 /*                CSS AESTHETICS BELOW:                     */
 /********************************************************** */
 const styles = StyleSheet.create({
+  // Used for "Welcome to Home" sample -VA
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
+    backgroundColor: '#d0d0d0',
     alignItems: 'center',
     justifyContent: 'center',
   },

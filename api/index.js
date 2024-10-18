@@ -8,24 +8,31 @@ var express = require("express");
 const cors = require("cors");
 const PORT = 3000;
 
+
+// const express = require('express');         // Added for Adding Chores -VA
 const app = express();
+const bodyParser = require('body-parser'); // Added for database connection to adding chores -VA
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(bodyParser.json());                 // For parsing application/json         -VA
 
 
 /********************************************************** */
 /*              DATABASE CONNECTION BELOW:                  */
 /********************************************************** */
+// <<<<<<< Updated upstream
 require('dotenv').config();  // load env variables
 
+// =======
 const mysql = require('mysql2');
 const db = mysql.createConnection({
     host: "localhost",
     database: "choremates",   
     user: "root",
     password: process.env.DB_PASSWORD,     // change this to your own password that
-                                // you created when installing mysql -KK
 });
 
 // connect to the database
@@ -61,7 +68,32 @@ app.get('/get_users', (req, res) => {
     });
 });
 
+// Added to test using forms to add chores -VA
+app.post('/addChore', (req, res) => {
+    const { choreName } = req.body;
+    const sql = `INSERT INTO chores (name) VALUES (?)`;
+    db.query(sql, [choreName], (err, result) => {
+      if (err) {
+        return res.status(500).send('Failed to add chore');
+      }
+      res.status(200).send('Chore added successfully');
+    });
+  });
 
+app.get('/chores', (req, res) => {
+    const sql = `SELECT * FROM chores`;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+        console.error('Error fetching chores:', err);
+        return res.status(500).send('Failed to retrieve chores');
+        }
+        res.status(200).json(results); // Return the list of chores
+    });
+});
+
+
+// End of 'Added to test using forms to add chores' -VA
 
 // keep this at the very bottom of the file -KK
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}.`));
