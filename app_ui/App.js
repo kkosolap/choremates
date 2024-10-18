@@ -20,7 +20,7 @@ import NewChoreScreen from './screens/NewChore';
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
 /************************************************************ */
 // UCSC-Guest -MH
-const API_URL = "http://169.233.124.217:3000/";
+// const API_URL = "http://169.233.124.217:3000/";
 
 
 /************************************************************ */
@@ -73,63 +73,6 @@ const SettingsStack = () => {
 /*                     MAIN APP FUNCTION                      */
 /************************************************************ */
 export default function App() {
-  const [data, setData] = useState([]);
-  const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
-  const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
-  const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
-
-  // group the tasks by chore -KK
-  const groupedTasks = data.reduce((acc, task) => {
-    if (!acc[task.chore]) {
-      acc[task.chore] = [];
-    }
-    acc[task.chore].push({ id: task.id, task: task.task });
-    return acc;
-  }, {});
-
-  // toggle the visibility for the chore -KK
-  const toggleVisibility = (chore) => {
-    setVisible((prevState) => ({
-      ...prevState,
-      [chore]: !prevState[chore],
-    }));
-  };
-
-  // add task button -KK
-  const addTask = (chore) => {
-    axios.post(`${API_URL}add_task?chore_name=${chore}`, {
-      task_name: newTask,
-      user_id: 1,           // adjust later to the logged-in user -KK
-    })
-    .then((response) => {
-      console.log(response.data);
-      setNewTask('');       // reset the input -KK
-      refreshTasks();       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  // delete task button -KK
-  const deleteTask = (chore, task) => {
-    axios.delete(`${API_URL}delete_task?chore_name=${chore}&task_name=${task}`)
-      .then((response) => {
-        console.log(response.data);
-        refreshTasks();     // refresh ltask list after updating -KK
-      })
-      .catch((error) => console.error(error));
-  };
-
-  // fetch the task list for display -KK
-  const refreshTasks = () => {
-    axios.get(API_URL + "get_tasks?user_id=1")
-      .then((response) => setData(response.data))
-      .catch((error) => console.error(error));
-  };
-  
-  // gets called when the component loads
-  useEffect(() => {
-    refreshTasks();
-  }, []);
 
   return (
     <NavigationContainer>

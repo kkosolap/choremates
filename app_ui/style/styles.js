@@ -10,7 +10,12 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.textSecondary,
+  },
+  taskText: {
+    fontSize: 16,
     color: colors.textSecondary,
   },
 
@@ -81,6 +86,57 @@ const styles = StyleSheet.create({
   buttonDescription: {
     fontSize: 16,
     marginTop: 8
+  },
+
+  // chores and tasks
+  choreContainer: {
+    width: '100%', 
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'flex-start', 
+    borderWidth: 2,
+    borderColor: colors.lighterBlue,
+    backgroundColor: colors.lighterBlue,
+    borderRadius: 10,
+    padding: 15,  
+  },
+  taskContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginLeft: 20,
+  },
+  addTaskContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 10,
+  },
+  choreHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  editButton: {
+    fontSize: 16,
+    color: 'blue',
+    marginRight: 20,
+  },
+  deleteButton: {
+    fontSize: 16,
+    color: 'red',
+    marginLeft: 10,
+    marginRight: 20,
+  },
+  addTaskInput: {
+    borderColor: colors.gray, 
+    borderWidth: 1,
+    padding: 5,
+    flex: 1,
+    marginRight: 10,
   },
 });
 
