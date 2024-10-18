@@ -5,7 +5,7 @@ import { Text, View, StyleSheet } from 'react-native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
-import { TabHeader } from '../App.js';
+import { TabHeader } from '../components/headers.js';
 
 
 // header and page content

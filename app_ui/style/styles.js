@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: 400,
     alignItems: 'center',   // Horizontally center content
     justifyContent: 'flex-start',  // Start content at the top
-    paddingTop: 20,  // Optional: Add some space at the top
+    paddingTop: 30,  // Optional: Add some space at the top
   },
 
   // tab icons
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 60,
   },
   tabTitle: {
     fontSize: 30,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     width: 400,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 60,
   },
   backButton: {
     padding: 8,

@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
-import { TabHeader } from '../App.js';
+import { TabHeader } from '../components/headers.js';
 
 
 // header and page content
@@ -47,7 +47,7 @@ const HomeDisplay = () => {
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={styles.content}>
       {/* AddChore button */}
       <TouchableWithoutFeedback
         onPress={openAddChore}

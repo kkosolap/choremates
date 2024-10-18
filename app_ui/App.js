@@ -31,39 +31,11 @@ const API_URL = "http://10.0.0.172:3000/";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Custom header for main TABS (Home, Chores, etc)
-export const TabHeader = ({ title }) => {
-  return (
-    <View style={styles.tabHeader}>
-      <Text style={styles.tabTitle}>{title}</Text>
-    </View>
-  );
-};
-
-// Custom header for screens (Add Chore, etc)
-export const ScreenHeader = ({ title, navigation }) => {
-  return (
-    <View style={styles.screenHeader}>
-      {/* GoBack button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        activeOpacity={0.7}
-        onPress={() => navigation.goBack()}
-      >
-        <Text><Icon name="arrow-back" size={35} color={colors.darkestBlue} /></Text>
-      </TouchableOpacity>
-      
-      {/* Title */}
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-};
-
 // ---------- HOME ----------
 const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
     </Stack.Navigator>
   );
@@ -73,7 +45,7 @@ const HomeStack = () => {
 const ChoresStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Chores" component={ChoresScreen} />
+      <Stack.Screen name="ChoresMain" component={ChoresScreen} />
     </Stack.Navigator>
   );
 };
@@ -82,7 +54,7 @@ const ChoresStack = () => {
 const MembersStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Members" component={MembersScreen} />
+      <Stack.Screen name="MembersMain" component={MembersScreen} />
     </Stack.Navigator>
   );
 };
@@ -91,7 +63,7 @@ const MembersStack = () => {
 const SettingsStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="SettingsMain" component={SettingsScreen} />
     </Stack.Navigator>
   );
 };
@@ -101,19 +73,6 @@ const SettingsStack = () => {
 /*                     MAIN APP FUNCTION                      */
 /************************************************************ */
 export default function App() {
-  const [data, setData] = useState('');
-
-  // example function setup by Kat - not currently used in this project
-  useEffect(() => {
-    axios.get(API_URL + "home") // fetches the data at the address
-      .then((response) => {
-        console.log("Fetched data:", response.data);
-        setData(response.data);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
-  // ------- code for what gets displayed on the screen -------
   return (
     <NavigationContainer>
       <Tab.Navigator
