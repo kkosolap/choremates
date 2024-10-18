@@ -10,12 +10,7 @@ import { Text, View, StyleSheet } from 'react-native';
 
 
 // API_URL = "http://localhost:3000/" 
-/************************************************************ */
-/* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
-/* --> you can do this by typing ipconfig in windows terminal */
-/* --> or by typing ifconfig for mac/linux laptops -KK        */
-/************************************************************ */
-API_URL = "http://192.168.X.X:3000/"
+API_URL = "http://192.168.56.1:3000/"
 
 
 export default function App() {
