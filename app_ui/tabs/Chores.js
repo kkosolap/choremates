@@ -5,11 +5,22 @@ import { Text, View, StyleSheet } from 'react-native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
+import { TabHeader } from '../App.js';
 
-const ChoresDisplay = () => (
+
+// header and page content
+const ChoresScreen = () => (
   <View style={styles.screen}>
-    <Text>Chores Screen</Text>
+    <TabHeader title="Weekly Chores" />
+    <ChoresDisplay />
   </View>
 );
 
-export default ChoresDisplay;
+// page content
+const ChoresDisplay = () => (
+  <View style={styles.content}>
+    <Text style={styles.subtitle}>Chores Screen</Text>
+  </View>
+);
+
+export default ChoresScreen;

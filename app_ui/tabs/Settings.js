@@ -5,11 +5,22 @@ import { Text, View, StyleSheet } from 'react-native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
+import { TabHeader } from '../App.js';
 
-const SettingsDisplay = () => (
+
+// header and page content
+const SettingsScreen = () => (
   <View style={styles.screen}>
-    <Text>Settings Screen</Text>
+    <TabHeader title="Settings" />
+    <SettingsDisplay />
   </View>
 );
 
-export default SettingsDisplay;
+// page content
+const SettingsDisplay = () => (
+  <View style={styles.content}>
+    <Text style={styles.subtitle}>Settings Screen</Text>
+  </View>
+);
+
+export default SettingsScreen;

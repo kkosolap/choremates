@@ -7,12 +7,23 @@ import { useNavigation } from '@react-navigation/native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
+import { TabHeader } from '../App.js';
 
 
+// header and page content
+const HomeScreen = () => (
+  <View style={styles.screen}>
+    <TabHeader title="My Home" />
+    <HomeDisplay />
+  </View>
+);
+
+// page content
 const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation(); // get the navigation object
 
+  // add chore button press
   const handlePressIn = () => {
     Animated.timing(scale, {
       toValue: 0.8, // scale down to 80%
@@ -21,6 +32,7 @@ const HomeDisplay = () => {
     }).start();
   };
 
+  // add chore button release
   const handlePressOut = () => {
     Animated.timing(scale, {
       toValue: 1, // scale back to original size
@@ -29,13 +41,14 @@ const HomeDisplay = () => {
     }).start();
   };
 
+  // open NewChore page above current page
   const openAddChore = () => {
     navigation.navigate('NewChore');
   };
 
   return (
     <View style={styles.screen}>
-      {/* Add Chore Button */}
+      {/* AddChore button */}
       <TouchableWithoutFeedback
         onPress={openAddChore}
         onPressIn={handlePressIn}
@@ -45,6 +58,8 @@ const HomeDisplay = () => {
           <Icon name="add" size={40} color="#fff" />
         </Animated.View>
       </TouchableWithoutFeedback>
+
+      {/* button label */}
       <Text style={styles.buttonDescription}>
         add chore
       </Text>
@@ -52,4 +67,4 @@ const HomeDisplay = () => {
   );
 };
 
-export default HomeDisplay;
+export default HomeScreen;

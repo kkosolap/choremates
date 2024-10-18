@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,10 +10,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import colors from './style/colors';
 import styles from './style/styles';
-import HomeDisplay from './tabs/Home';
-import ChoresDisplay from './tabs/Chores';
-import MembersDisplay from './tabs/Members';
-import SettingsDisplay from './tabs/Settings';
+import HomeScreen from './tabs/Home';
+import ChoresScreen from './tabs/Chores';
+import MembersScreen from './tabs/Members';
+import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 
 /************************************************************ */
@@ -31,7 +31,8 @@ const API_URL = "http://10.0.0.172:3000/";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const CustomHeader = ({ title }) => {
+// Custom header for main TABS (Home, Chores, etc)
+export const TabHeader = ({ title }) => {
   return (
     <View style={styles.tabHeader}>
       <Text style={styles.tabTitle}>{title}</Text>
@@ -39,6 +40,26 @@ const CustomHeader = ({ title }) => {
   );
 };
 
+// Custom header for screens (Add Chore, etc)
+export const ScreenHeader = ({ title, navigation }) => {
+  return (
+    <View style={styles.screenHeader}>
+      {/* GoBack button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        activeOpacity={0.7}
+        onPress={() => navigation.goBack()}
+      >
+        <Text><Icon name="arrow-back" size={35} color={colors.darkestBlue} /></Text>
+      </TouchableOpacity>
+      
+      {/* Title */}
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+};
+
+// ---------- HOME ----------
 const HomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -48,33 +69,32 @@ const HomeStack = () => {
   );
 };
 
-const HomeScreen = () => (
-  <View style={styles.screen}>
-    <CustomHeader title="My Home" />
-    <HomeDisplay />
-  </View>
-);
+// ---------- CHORES ----------
+const ChoresStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Chores" component={ChoresScreen} />
+    </Stack.Navigator>
+  );
+};
 
-const ChoresScreen = () => (
-  <View style={styles.screen}>
-    <CustomHeader title="Weekly Chores" />
-    <ChoresDisplay />
-  </View>
-);
+// ---------- MEMBERS ----------
+const MembersStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Members" component={MembersScreen} />
+    </Stack.Navigator>
+  );
+};
 
-const MembersScreen = () => (
-  <View style={styles.screen}>
-    <CustomHeader title="Members" />
-    <MembersDisplay />
-  </View>
-);
-
-const SettingsScreen = () => (
-  <View style={styles.screen}>
-    <CustomHeader title="Settings" />
-    <SettingsDisplay />
-  </View>
-);
+// ---------- SETTINGS ----------
+const SettingsStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+    </Stack.Navigator>
+  );
+};
 
 
 /************************************************************ */
@@ -83,6 +103,7 @@ const SettingsScreen = () => (
 export default function App() {
   const [data, setData] = useState('');
 
+  // example function setup by Kat - not currently used in this project
   useEffect(() => {
     axios.get(API_URL + "home") // fetches the data at the address
       .then((response) => {
@@ -136,7 +157,7 @@ export default function App() {
           headerShown: false,
         })}>
         <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Chores" component={ChoresScreen} />
+        <Tab.Screen name="Chores" component={ChoresStack} />
         <Tab.Screen name="Members" component={MembersScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>

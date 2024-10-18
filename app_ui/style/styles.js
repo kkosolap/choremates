@@ -3,12 +3,7 @@ import { StyleSheet } from 'react-native';
 import colors from './colors';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.lighterBlue,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  // text
   title: {
     fontSize: 30,
     fontWeight: 'bold',
@@ -18,15 +13,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.textSecondary,
   },
-  text: {
-    color: '#fff',
-    marginTop: 20,
-  },
+
+  // whole screen
   screen: {
     flex: 1,
+    backgroundColor: colors.lightestBlue,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  // main content of a page
+  content: {
+    flex: 1,
+    width: 400,
+    alignItems: 'center',   // Horizontally center content
+    justifyContent: 'flex-start',  // Start content at the top
+    paddingTop: 20,  // Optional: Add some space at the top
+  },
+
+  // tab icons
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -38,17 +43,33 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 5,
   },
+
+  // page headers
   tabHeader: {
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50
+    marginTop: 50,
   },
   tabTitle: {
     fontSize: 30,
     fontWeight: 'bold',
     color: colors.textPrimary,
   },
+  screenHeader: {
+    height: 60,
+    width: 400,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  backButton: {
+    padding: 8,
+    position: 'absolute',
+    left: 10, // 10 units from the left
+  },
+
+  // circle button
   button: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -60,14 +81,6 @@ const styles = StyleSheet.create({
   buttonDescription: {
     fontSize: 16,
     marginTop: 8
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16, // Space below the header
-  },
-  backButton: {
-    padding: 8, // Add padding for the touchable area
   },
 });
 

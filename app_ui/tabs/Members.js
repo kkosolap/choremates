@@ -5,11 +5,22 @@ import { Text, View, StyleSheet } from 'react-native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
+import { TabHeader } from '../App.js';
 
-const MembersDisplay = () => (
+
+// header and page content
+const MembersScreen = () => (
   <View style={styles.screen}>
-    <Text>Members Screen</Text>
+    <TabHeader title="Members" />
+    <MembersDisplay />
   </View>
 );
 
-export default MembersDisplay;
+// page content
+const MembersDisplay = () => (
+  <View style={styles.content}>
+    <Text style={styles.subtitle}>Members Screen</Text>
+  </View>
+);
+
+export default MembersScreen;
