@@ -28,7 +28,7 @@ import DisplayChoresList from './components/DisplayChores';
 /* If errors, check IP address,                                   */
 /*                may change per location             -VA         */
 /************************************************************     */
-API_URL = "http://10.0.0.4:3000/"
+API_URL = "http://169.233.132.64:3000/"
 
 
 export default function App() {

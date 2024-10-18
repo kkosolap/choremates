@@ -1,17 +1,13 @@
-// a component that will display the chores on the screen!
-// -VA
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Alert, Button, StyleSheet} from 'react-native';
+import { View, Text, FlatList, Alert, StyleSheet } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { StatusBar } from 'expo-status-bar';
 
-API_URL = "http://10.0.0.4:3000/"
-
+API_URL = "http://169.233.132.64:3000/";
 
 const DisplayChoresList = () => {
   const [chores, setChores] = useState([]);
-  const [isChecked, setChecked] = useState(false);          // state holds for all buttons
-
+  const [checkedState, setCheckedState] = useState({}); // Object to track checked state for each chore
 
   // Fetch chores from the backend
   useEffect(() => {
@@ -19,14 +15,29 @@ const DisplayChoresList = () => {
       try {
         const response = await fetch(API_URL + 'chores');
         const data = await response.json();
-        setChores(data); // Store chores in state
+        setChores(data);
+
+        // Initialize checkedState object with all chores set to false
+        const initialCheckedState = data.reduce((acc, chore) => {
+          acc[chore.id] = false; // set initial state for each chore as unchecked
+          return acc;
+        }, {});
+        setCheckedState(initialCheckedState);
       } catch (error) {
         Alert.alert('Error fetching chores');
       }
     };
 
-    fetchChores();                              // Call the function to fetch chores
-  }, []);                                       // Empty dependency array ensures this runs once when the component mounts
+    fetchChores();
+  }, []);
+
+  const handleCheckboxChange = (id) => {
+    // Toggle the checkbox state for the specific chore
+    setCheckedState((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  };
 
   return (
     <View>
@@ -34,41 +45,52 @@ const DisplayChoresList = () => {
 
       <FlatList
         data={chores}
-        keyExtractor={(item) => item.id.toString()}                     // Ensure each item has a unique key
-        renderItem={({ item }) => (                                     // onPress, delete
-
-
-        <View style={styles.container}>
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.container}>
             <View style={styles.row}>
-            <Checkbox style={styles.checkbox} value={isChecked} onValueChange={setChecked} />
-            <Text>{item.name}</Text>
+              <Checkbox
+                style={styles.checkbox}
+                value={checkedState[item.id]} // Use the checked state for the specific chore
+                onValueChange={() => 
+                  handleCheckboxChange(item.id)
+                 } // Toggle the checkbox when clicked
+              />
+              <Text style={{
+              textDecorationLine: checkedState[item.id] ? 'line-through' : 'none',        // Apply strikethrough based on state
+              fontSize: 16,
+              color: checkedState[item.id] ? 'grey' : 'black',
+            }}
+          >
+            {item.name}
+          </Text>
+
+
             </View>
             <StatusBar style="auto" />
-        </View>
+          </View>
         )}
       />
     </View>
   );
 };
 
-
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    row: {
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    checkbox: {
-      margin: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    margin: 8,
     fontSize: 16,
-    borderColor: '#000',        //change checkbox color, should change when toggled -VA
-    }
-  });
-
+    borderColor: '#000',
+  },
+});
 
 export default DisplayChoresList;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
 
-API_URL = "http://10.0.0.4:3000/"
+API_URL = "http://169.233.132.64:3000/"
 
 const AddChoreScreen = () => {
     const [chore, setChore] = useState('');
