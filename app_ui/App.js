@@ -117,8 +117,8 @@ export default function App() {
         })}>
         <Tab.Screen name="Home" component={HomeStack} />
         <Tab.Screen name="Chores" component={ChoresStack} />
-        <Tab.Screen name="Members" component={MembersScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Members" component={MembersStack} />
+        <Tab.Screen name="Settings" component={SettingsStack} />
       </Tab.Navigator>
     </NavigationContainer>
   );
