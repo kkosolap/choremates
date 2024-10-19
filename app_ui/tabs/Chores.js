@@ -81,6 +81,7 @@ const ChoresDisplay = () => {
       .catch((error) => console.error(error));
   };
 
+
   // page content -MH
   return (
     <View style={styles.content}>
@@ -123,7 +124,7 @@ const ChoresDisplay = () => {
           )}
         </View>
       ))}
-      
+
     </View>
   );
 };
