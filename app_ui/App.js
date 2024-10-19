@@ -1,13 +1,12 @@
 // App.js
 
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import { API_URL } from '@env';
 import colors from './style/colors';
 import styles from './style/styles';
 import HomeScreen from './tabs/Home';
@@ -16,13 +15,13 @@ import MembersScreen from './tabs/Members';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 
+
 /************************************************************ */
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
 /************************************************************ */
-// UCSC-Guest
-//const API_URL = "http://169.233.124.217:3000/";
-// Home
-const API_URL = "http://10.0.0.172:3000/";
+//const API_URL = "http://169.233.124.217:3000/";  // UCSC-Guest  -MH
+//const API_URL = "http://10.0.0.172:3000/";  // Home  -MH
+// API_URL moved to .env  -MH
 
 
 /************************************************************ */
@@ -69,10 +68,13 @@ const SettingsStack = () => {
 };
 
 
+
+
 /************************************************************ */
 /*                     MAIN APP FUNCTION                      */
 /************************************************************ */
 export default function App() {
+
   return (
     <NavigationContainer>
       <Tab.Navigator
