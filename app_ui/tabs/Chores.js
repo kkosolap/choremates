@@ -84,6 +84,7 @@ const ChoresDisplay = () => {
   // page content -MH
   return (
     <View style={styles.content}>
+
       {Object.keys(groupedTasks).map((chore_name) => (
         <View key={chore_name} style={styles.choreContainer}>
           {/* chore heading and edit button -KK */}
@@ -122,6 +123,7 @@ const ChoresDisplay = () => {
           )}
         </View>
       ))}
+      
     </View>
   );
 };

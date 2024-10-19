@@ -19,8 +19,6 @@ import NewChoreScreen from './screens/NewChore';
 /************************************************************ */
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
 /************************************************************ */
-//const API_URL = "http://169.233.124.217:3000/";  // UCSC-Guest  -MH
-//const API_URL = "http://10.0.0.172:3000/";  // Home  -MH
 // API_URL moved to .env  -MH
 
 

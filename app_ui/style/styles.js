@@ -2,7 +2,7 @@
 import { StyleSheet } from 'react-native';
 import colors from './colors';
 
-// main choreBlock style
+// main choreBlock style  -MH
 // (written separately so the completed version can inherit the same style)
 const baseChoreBlock = {
   justifyContent: 'center',
@@ -15,7 +15,7 @@ const baseChoreBlock = {
   backgroundColor: colors.blue,
 };
 
-// all styles
+// all styles  -MH
 const styles = StyleSheet.create({
   // text
   title: {
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  // whole screen
+  // whole screen  -MH
   screen: {
     flex: 1,
     backgroundColor: colors.lightestBlue,
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // main content of a page
+  // main content of a page  -MH
   content: {
     flex: 1,
     width: 400,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,  // Optional: Add some space at the top
   },
 
-  // tab icons
+  // tab icons  -MH
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  // page headers
+  // page headers  -MH
   tabHeader: {
     height: 60,
     justifyContent: 'center',
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     left: 10, // 10 units from the left
   },
 
-  // circle button
+  // circle button  -MH
   button: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginTop: 8
   },
 
-  // chore block
+  // chore block  -MH
   choreBlock: baseChoreBlock,
   choreBlockCompleted: {
     ...baseChoreBlock,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 
-  // chores and tasks
+  // chores and tasks  -KK
   choreContainer: {
     width: '100%', 
     marginBottom: 20,
