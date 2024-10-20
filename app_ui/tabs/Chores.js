@@ -1,23 +1,24 @@
 // Chores.js
 
 import { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
 import axios from 'axios';
 
 import { API_URL } from '@env';
 import colors from '../style/colors';
 import styles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
-import { ChoreBlock } from '../components/blocks.js';
+import { ChoreBlock, KatChoreBlock } from '../components/blocks.js';
 import showHelloPopup from '../components/hello.js';
-
 
 
 // header and page content  -MH
 const ChoresScreen = () => (
   <View style={styles.screen}>
     <TabHeader title="Weekly Chores" />
-    <ChoresDisplay />
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ChoresDisplay />
+    </ScrollView>
   </View>
 );
 
@@ -82,47 +83,56 @@ const ChoresDisplay = () => {
   };
 
 
+
+  // ----- vals for testing -----
+  const sampleChoreName = "this is a test chore lalala la lala la la la";
+  const sampleTaskList = [
+    { id: 1, task: 'step 1' },
+    { id: 2, task: 'step 2' },
+    { id: 3, task: 'step 3' },
+  ];
+
+
+
   // page content -MH
   return (
     <View style={styles.content}>
 
       {Object.keys(groupedTasks).map((chore_name) => (
-        <View key={chore_name} style={styles.choreContainer}>
-          {/* chore heading and edit button -KK */}
-          <View style={styles.choreHeader}>
-            <TouchableOpacity onPress={() => toggleVisibility(chore_name)}>
-              <Text style={styles.subtitle}>{chore_name}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setEdit(edit === chore_name ? null : chore_name)}>
-              <Text style={styles.editButton}>Edit</Text>
-            </TouchableOpacity>
-          </View>
 
-          {/* list tasks for each chore -KK */}
-          {visible[chore_name] && groupedTasks[chore_name].map(({ id, task }) => (
-            <View key={id} style={styles.taskContainer}>
-              <Text style={styles.taskText}>- {task}</Text>
-              {edit === chore_name && (
-                <TouchableOpacity onPress={() => deleteTask(chore_name, task)}>
-                  <Text style={styles.deleteButton}>Delete</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          ))}
+        <>
 
-          {/* text input for adding a task -KK */}
-          {edit === chore_name && (
-            <View style={styles.addTaskContainer}>
-              <TextInput
-                style={styles.addTaskInput}
-                placeholder="add a new task"
-                value={newTask}
-                onChangeText={setNewTask}
-              />
-              <Button title="Add Task" onPress={() => addTask(chore_name)} />
-            </View>
-          )}
-        </View>
+        <ChoreBlock
+          key={chore_name}
+          choreName={chore_name}
+          tasks={groupedTasks[chore_name]}
+          completed={false}                        // get actual value here
+          visible={visible[chore_name]}
+          onToggleVisibility={toggleVisibility}
+          onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
+          onDelete={deleteTask}
+          isEditing={edit === chore_name}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          onAddTask={addTask}
+        />
+
+        <KatChoreBlock
+          key={chore_name}
+          choreName={chore_name}
+          tasks={groupedTasks[chore_name]}
+          visible={visible[chore_name]}
+          onToggleVisibility={toggleVisibility}
+          onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
+          onDelete={deleteTask}
+          isEditing={edit === chore_name}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          onAddTask={addTask}
+        />
+
+        </>
+
       ))}
 
     </View>
