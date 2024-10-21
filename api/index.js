@@ -27,8 +27,8 @@ const db = mysql.createConnection({
     host: "localhost",
     database: "choremates",   
     user: "root",
-    password: process.env.DB_PASSWORD,     // change this to your own password that
-                                            // you created when installing mysql -KK
+    // put "DB_PASSWORD=yourpassword" in your local .env file, replace yourpassword with your mysql root password --Ethan
+    password: process.env.DB_PASSWORD, 
 });
 
 // connect to the database
