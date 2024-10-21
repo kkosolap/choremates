@@ -28,14 +28,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text2,
   },
-  taskText: {
-    fontSize: 18,
-    color: colors.text2,
-  },
-  katTaskText: {
-    fontSize: 16,
-    color: colors.text2,
-  },
 
   // whole screen  -MH
   screen: {
@@ -52,6 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',   // Horizontally center content
     justifyContent: 'flex-start',  // Start content at the top
     paddingTop: 30,  // Optional: Add some space at the top
+    paddingBottom: 100,
   },
   scrollContainer: {
     paddingVertical: 0,
@@ -115,15 +108,23 @@ const styles = StyleSheet.create({
     ...baseChoreBlock,
     backgroundColor: colors.gray,
   },
+  choreCheck: {
+    position: 'absolute', // position it absolutely within the header
+    left: 15, // distance from the right edge
+    top: 20, // distance from the top edge
+    zIndex: 1, // ensure it's above other elements
+  },
   choreTitle: {
+    marginTop: 10,
+    marginBottom: 10,
     fontSize: 22,
     fontWeight: 'bold',
     color: colors.text1,
-    width: '55%',
+    width: '75%',
     height: 'auto',
     flexShrink: 1,
     flexGrow: 1,
-    textAlignVertical: 'center',
+    //textAlignVertical: 'center',
     lineHeight: 28,
     paddingVertical: 0,
     marginVertical: 0,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   editChoreButton: {
     position: 'absolute', // position it absolutely within the header
     right: 15, // distance from the right edge
-    top: 15, // distance from the top edge
+    top: 20, // distance from the top edge
     zIndex: 1, // ensure it's above other elements
   },
 
@@ -139,14 +140,38 @@ const styles = StyleSheet.create({
   taskContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '90%',
+    alignItems: 'flex-start',
+    width: '82%',
+    marginBottom: 4,
   },
   addTaskContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '90%',
+    width: '82%',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  addTaskInput: {
+    borderColor: colors.gray, 
+    borderWidth: 1,
+    padding: 5,
+    flex: 1,
+    marginRight: 10,
+    borderRadius: 10,
+  },
+  taskText: {
+    fontSize: 18,
+    color: colors.text1,
+    marginLeft: 5,
+  },
+  taskCheck: {
+    marginTop: 3,
+  },
+  taskAndCheck: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
 
   // chores and tasks  -KK
@@ -167,6 +192,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginLeft: 20,
+  },
+  katTaskText: {
+    fontSize: 16,
+    color: colors.text2,
   },
   katAddTaskContainer: {
     flexDirection: 'row',
@@ -192,7 +221,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 20,
   },
-  addTaskInput: {
+  katAddTaskInput: {
     borderColor: colors.gray, 
     borderWidth: 1,
     padding: 5,

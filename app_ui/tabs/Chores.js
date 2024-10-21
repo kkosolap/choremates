@@ -43,7 +43,7 @@ const ChoresDisplay = () => {
     return acc;
   }, {});
 
-  // toggle the visibility for the chore -KK
+  // toggle the visibility of tasks for a chore -KK
   const toggleVisibility = (chore_name) => {
     setVisible((prevState) => ({
       ...prevState,
@@ -117,6 +117,7 @@ const ChoresDisplay = () => {
           onAddTask={addTask}
         />
 
+        {/*
         <KatChoreBlock
           key={chore_name}
           choreName={chore_name}
@@ -130,7 +131,7 @@ const ChoresDisplay = () => {
           setNewTask={setNewTask}
           onAddTask={addTask}
         />
-
+        */}
         </>
 
       ))}
