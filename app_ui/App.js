@@ -1,53 +1,125 @@
-// ChoreMates Project
-// CSE 115A with Professor Richard Jullig @ UCSC
+// App.js
+
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import { API_URL } from '@env';
+import colors from './style/colors';
+import styles from './style/styles';
+import HomeScreen from './tabs/Home';
+import ChoresScreen from './tabs/Chores';
+import MembersScreen from './tabs/Members';
+import SettingsScreen from './tabs/Settings';
+import NewChoreScreen from './screens/NewChore';
 
 
-// ALL FRONTEND CODE HAPPENS HERE -KK
-
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-
-
-// API_URL = "http://localhost:3000/" 
 /************************************************************ */
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
-/* --> you can do this by typing ipconfig in windows terminal */
-/* --> or by typing ifconfig for mac/linux laptops -KK        */
 /************************************************************ */
-API_URL = "http://192.168.X.X:3000/"
+// API_URL moved to .env  -MH
 
 
-export default function App() {
-  const [data, setData] = useState('');
+/************************************************************ */
+/*                            TABS                            */
+/************************************************************ */
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-  useEffect(() => {
-    axios.get(API_URL+"home") // fetches the data at the address -KK
-      .then((response) => setData(response.data))
-      .catch((error) => console.error(error));
-  }, []);
-
-
-  // below is all the code for what gets displayed on the screen -KK
+// ---------- HOME ----------
+const HomeStack = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{data}</Text>
-    </View>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeMain" component={HomeScreen} />
+      <Stack.Screen name="NewChore" component={NewChoreScreen} />
+    </Stack.Navigator>
+  );
+};
+
+// ---------- CHORES ----------
+const ChoresStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ChoresMain" component={ChoresScreen} />
+    </Stack.Navigator>
+  );
+};
+
+// ---------- MEMBERS ----------
+const MembersStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MembersMain" component={MembersScreen} />
+    </Stack.Navigator>
+  );
+};
+
+// ---------- SETTINGS ----------
+const SettingsStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="SettingsMain" component={SettingsScreen} />
+    </Stack.Navigator>
+  );
+};
+
+
+
+
+/************************************************************ */
+/*                     MAIN APP FUNCTION                      */
+/************************************************************ */
+export default function App() {
+
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Chores') {
+              iconName = focused ? 'calendar' : 'calendar-outline';
+            } else if (route.name === 'Members') {
+              iconName = focused ? 'people' : 'people-outline';
+            } else if (route.name === 'Settings') {
+              iconName = focused ? 'settings' : 'settings-outline';
+            }
+
+            // apply box styling if the tab is focused (selected)
+            const boxStyle = focused ? styles.focusedBox : null;
+
+            return (
+              <View style={[styles.iconContainer, boxStyle]}>
+                <Icon name={iconName} size={focused ? 32 : 28} color={color} />
+              </View>
+            );
+          },
+          tabBarLabel: () => null, // hide labels
+          tabBarActiveTintColor: colors.white,
+          tabBarInactiveTintColor: colors.gray,
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 15,
+            left: 10,
+            right: 10,
+            borderRadius: 15,
+            height: 65,
+          },
+          tabBarIconStyle: {
+            marginBottom: 0,
+          },
+          headerShown: false,
+        })}>
+        <Tab.Screen name="Home" component={HomeStack} />
+        <Tab.Screen name="Chores" component={ChoresStack} />
+        <Tab.Screen name="Members" component={MembersStack} />
+        <Tab.Screen name="Settings" component={SettingsStack} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-
-/********************************************************** */
-/*                CSS AESTHETICS BELOW:                     */
-/********************************************************** */
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-});
