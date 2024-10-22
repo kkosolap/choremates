@@ -20,6 +20,7 @@ const Signin = ({ onSignin }) => {
       await SecureStore.setItemAsync('token', token); // Store the token securely
       onSignin(username, password); // Update the logged-in state
     } catch (error) {
+      console.error('Login Error:', error);
       Alert.alert('Error', error.response?.data?.message || 'Login failed');
     }
   };

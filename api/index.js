@@ -78,20 +78,34 @@ app.post('/register', async (req, res) => {
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        console.log("Password hashed successfully");
-
-        db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
-        (err, result) => {
+        // Check if the username already exists
+        db.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
             if (err) {
-                console.error("Error inserting into database: ", err.message);
-                return res.status(500).json({ error: err.message });
+                console.error("Error checking for existing user: ", err.message);
+                return res.status(500).json({ error: "Error checking for existing user" });
             }
-            console.log("User registered successfully!");
-            res.status(201).json({ message: 'User registered successfully!' });
+
+            if (results.length > 0) {
+                return res.status(409).json({ error: "Username already exists" }); // 409
+            }
+
+            // if the username does not exist, proceed with hashing the password and inserting the user
+            const hashedPassword = await bcrypt.hash(password, 10);
+            console.log("Password hashed successfully");
+
+            db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
+            (err, result) => {
+                if (err) {
+                    console.error("Error inserting into database: ", err.message);
+                    return res.status(500).json({ error: "Registration failed (database error)" });
+                }
+                console.log("User registered successfully!");
+                res.status(201).json({ message: 'User registered successfully!' });
+            });
         });
+
     } catch (err) {
-        console.error("Failed to hash password:", err);
+        console.error("Registration process failed:", err);
         return res.status(500).json({ error: "Registration failed" });
     }
 });
