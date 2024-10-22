@@ -64,17 +64,36 @@ app.get('/get_users', (req, res) => {
     });
 });
 
-// ------------------------------------------Account------------------------------------------------
+/********************************************************** */
+/*             USER AUTHENTICATION BELOW:                   */
+/********************************************************** */
 // user registration 
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Registration request received");
+    console.log(req.body);
 
-    db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: "Missing username or password" });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("Password hashed successfully");
+
+        db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
         (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
+            if (err) {
+                console.error("Error inserting into database: ", err.message);
+                return res.status(500).json({ error: err.message });
+            }
+            console.log("User registered successfully!");
             res.status(201).json({ message: 'User registered successfully!' });
-    });
+        });
+    } catch (err) {
+        console.error("Failed to hash password:", err);
+        return res.status(500).json({ error: "Registration failed" });
+    }
 });
 
 // user login
