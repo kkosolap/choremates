@@ -1,16 +1,22 @@
 // Register.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios'; // Make sure axios is installed
 import styles from '../style/styles';
+import { API_URL } from '@env'; // Import your API URL
 
 const Register = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
-    // registration logic
-    console.log('Registering user:', username, password);
-    navigation.navigate('Sign in');
+  const handleRegister = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/register`, { username, password });
+      Alert.alert('Success', response.data.message);
+      navigation.navigate('Sign in');
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Registration failed');
+    }
   };
 
   return (

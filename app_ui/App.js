@@ -1,11 +1,12 @@
 // App.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
+import * as SecureStore from 'expo-secure-store';
 
 import Signin from './screens/Signin';
 import Register from './screens/Register';
@@ -74,16 +75,27 @@ const SettingsStack = () => {
 /************************************************************ */
 /*                     MAIN APP FUNCTION                      */
 /************************************************************ */
-export default function App() {
+const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await SecureStore.getItemAsync('token');
+      setIsLoggedIn(!!token); // Check if token exists
+    };
+    checkToken();
+  }, []);
+
   const handleSignin = (username, password) => {
-    // signin logic
     console.log('Logging in with:', username, password);
     setIsLoggedIn(true);
   };
-  const handleLogout = () => {
-    setIsLoggedIn(false); // Set logged-in state to false
+
+  const handleLogout = async () => {
+    await SecureStore.deleteItemAsync('token'); // Remove token securely
+    setIsLoggedIn(false); // Update logged-in state
   };
+
   return (
     <NavigationContainer>
       {isLoggedIn ? (
@@ -145,3 +157,5 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+export default App;
