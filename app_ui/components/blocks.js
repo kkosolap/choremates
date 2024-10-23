@@ -8,7 +8,6 @@ import colors from '../style/colors';
 import styles from '../style/styles';
 import showHelloPopup from '../components/hello.js';
 
-// THIS CODE IS A WIP  -MH
 
 // block for displaying a chore in weekly list
 export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
@@ -24,7 +23,7 @@ export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, vi
         onPress={showHelloPopup}
       >
         <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={colors.text1} />
-      </TouchableOpacity> 
+      </TouchableOpacity>
 
       {/* Chore title */}
       <Text style={styles.choreTitle}>{choreName}</Text>
@@ -87,47 +86,5 @@ export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, vi
         </View>
       )}
     </TouchableOpacity>
-  );
-};
-
-// Kat's Chore Block code
-export const KatChoreBlock = ({ choreName, tasks, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
-  return (
-    <View style={styles.katChoreContainer}>
-      {/* Chore heading and edit button */}
-      <View style={styles.choreHeader}>
-        <TouchableOpacity onPress={() => onToggleVisibility(choreName)}>
-          <Text style={styles.subtitle}>{choreName}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => onEdit(choreName)}>
-          <Text style={styles.editButton}>Edit</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* List tasks for each chore */}
-      {visible && tasks.map(({ id, task }) => (
-        <View key={id} style={styles.katTaskContainer}>
-          <Text style={styles.katTaskText}>- {task}</Text>
-          {isEditing && (
-            <TouchableOpacity onPress={() => onDelete(choreName, task)}>
-              <Text style={styles.deleteButton}>Delete</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      ))}
-
-      {/* Text input for adding a task */}
-      {isEditing && (
-        <View style={styles.katAddTaskContainer}>
-          <TextInput
-            style={styles.katAddTaskInput}
-            placeholder="add a new task"
-            value={newTask}
-            onChangeText={setNewTask}
-          />
-          <Button title="Add Task" onPress={() => onAddTask(choreName)} />
-        </View>
-      )}
-    </View>
   );
 };

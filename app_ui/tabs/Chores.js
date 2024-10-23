@@ -1,7 +1,7 @@
 // Chores.js
 
 import { useEffect, useState } from 'react';
-import { Text, View, ScrollView, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { Text, View, ScrollView, } from 'react-native';
 import axios from 'axios';
 
 import { API_URL } from '@env';
@@ -9,7 +9,6 @@ import colors from '../style/colors';
 import styles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock, KatChoreBlock } from '../components/blocks.js';
-import showHelloPopup from '../components/hello.js';
 
 
 // header and page content  -MH
@@ -83,30 +82,16 @@ const ChoresDisplay = () => {
   };
 
 
-
-  // ----- vals for testing -----
-  const sampleChoreName = "this is a test chore lalala la lala la la la";
-  const sampleTaskList = [
-    { id: 1, task: 'step 1' },
-    { id: 2, task: 'step 2' },
-    { id: 3, task: 'step 3' },
-  ];
-
-
-
   // page content -MH
   return (
     <View style={styles.content}>
 
       {Object.keys(groupedTasks).map((chore_name) => (
-
-        <>
-
         <ChoreBlock
           key={chore_name}
           choreName={chore_name}
           tasks={groupedTasks[chore_name]}
-          completed={false}                        // get actual value here
+          completed={false}                    // change to get actual value here
           visible={visible[chore_name]}
           onToggleVisibility={toggleVisibility}
           onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
@@ -116,24 +101,6 @@ const ChoresDisplay = () => {
           setNewTask={setNewTask}
           onAddTask={addTask}
         />
-
-        {/*
-        <KatChoreBlock
-          key={chore_name}
-          choreName={chore_name}
-          tasks={groupedTasks[chore_name]}
-          visible={visible[chore_name]}
-          onToggleVisibility={toggleVisibility}
-          onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
-          onDelete={deleteTask}
-          isEditing={edit === chore_name}
-          newTask={newTask}
-          setNewTask={setNewTask}
-          onAddTask={addTask}
-        />
-        */}
-        </>
-
       ))}
 
     </View>

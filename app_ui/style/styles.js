@@ -1,6 +1,8 @@
 // styles.js
+
 import { StyleSheet } from 'react-native';
 import colors from './colors';
+
 
 // main choreBlock style  -MH
 // (written separately so the completed version can inherit the same style)
@@ -172,61 +174,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-  },
-
-  // chores and tasks  -KK
-  katChoreContainer: {
-    width: '100%', 
-    marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'flex-start', 
-    borderWidth: 2,
-    borderColor: colors.lighterBlue,
-    backgroundColor: colors.lighterBlue,
-    borderRadius: 10,
-    padding: 15,  
-  },
-  katTaskContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginLeft: 20,
-  },
-  katTaskText: {
-    fontSize: 16,
-    color: colors.text2,
-  },
-  katAddTaskContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: 10,
-  },
-  choreHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  editButton: {
-    fontSize: 16,
-    color: 'blue',
-    marginRight: 20,
-  },
-  deleteButton: {
-    fontSize: 16,
-    color: 'red',
-    marginLeft: 10,
-    marginRight: 20,
-  },
-  katAddTaskInput: {
-    borderColor: colors.gray, 
-    borderWidth: 1,
-    padding: 5,
-    flex: 1,
-    marginRight: 10,
   },
 });
 
