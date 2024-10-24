@@ -175,6 +175,79 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
+  //sign in -NN
+  signinContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.lightestBlue,
+  },
+  
+  signinTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: 30,
+  },
+  signinInput: {
+    width: '80%',
+    height: 50,
+    borderColor: colors.gray,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  signinButton: {
+    width: '80%',
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: colors.blue,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signinButtonText: {
+    color: colors.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  //logout -NN
+  logoutButton: {
+    width: '80%',
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: colors.red,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 500,
+  },
+  
+  logoutButtonText: {
+    color: colors.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  //register -NN
+  registerButton: {
+    marginTop: 20,
+  },
+  registerButtonText: {
+    color: colors.blue,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+
+  password: {
+    color: 'gray',
+    fontSize: 13,
+    marginBottom: 20,
+    width: '90%',
+    alignSelf: 'center',
+    textAlign: 'center',
+  },
 });
 
 export default styles;
