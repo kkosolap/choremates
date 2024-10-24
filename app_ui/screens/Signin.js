@@ -15,7 +15,7 @@ const Signin = ({ onSignin }) => {
 
   const handleSignin = async () => {
     try {
-      const response = await axios.post(`${API_URL}/login`, { username, password });
+      const response = await axios.post(`${API_URL}login`, { username, password });
       const token = response.data.token;
       await SecureStore.setItemAsync('token', token); // Store the token securely
       onSignin(username, password); // Update the logged-in state

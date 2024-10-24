@@ -11,7 +11,7 @@ const Register = ({ navigation }) => {
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post(`${API_URL}/register`, { username, password });
+      const response = await axios.post(`${API_URL}register`, { username, password });
       Alert.alert('Success', response.data.message);
       navigation.navigate('Sign in');
     } catch (error) {
@@ -38,10 +38,6 @@ const Register = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
         />
-
-        <Text style={styles.password}>
-        Must contain at least 8 characters and include at least 1 uppercase letter, 1 number
-        </Text>
 
         <TouchableOpacity style={styles.signinButton} onPress={handleRegister}>
             <Text style={styles.signinButtonText}>Register</Text>

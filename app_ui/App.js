@@ -24,6 +24,8 @@ import NewChoreScreen from './screens/NewChore';
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
 /************************************************************ */
 // API_URL moved to .env  -MH
+// Put this in .env, replace youripv4 with your ip address -EL
+// API_URL=http://youripv4:3000/
 
 
 /************************************************************ */
