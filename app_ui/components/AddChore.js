@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   // },
   container: {
     // flex: 2,
-    marginTop: 250,               // Move the button down a bit from the input
+    marginTop: 20,               // Move the button down a bit from the input
     justifyContent: 'space-between',  // Space between input and button
     justifyContent: 'center',
     alignItems: 'center',

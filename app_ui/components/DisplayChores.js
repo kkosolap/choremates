@@ -14,10 +14,8 @@ const DisplayChoresList = () => {
             try {
                 const response = await fetch(API_URL + 'chores');
                 const data = await response.json();
-                console.log('Fetched chores:', data); // Log the fetched data
                 setChores(data);
 
-                // Initialize checkedState object with all chores set to false
                 const initialCheckedState = data.reduce((acc, chore) => {
                     acc[chore.id] = false; // set initial state for each chore as unchecked
                     return acc;
@@ -32,30 +30,32 @@ const DisplayChoresList = () => {
     }, []);
 
     const handleCheckboxChange = (id) => {
-        // Toggle the checkbox state for the specific chore
         setCheckedState((prevState) => ({
             ...prevState,
             [id]: !prevState[id],
         }));
     };
 
+
+    // Allows for checkbox to be toggled
+    // Checks state to decide if strikethrough
     return (
         <View>
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Chores To Do</Text>
             
             <FlatList
                 data={chores}
-                keyExtractor={(item) => item.id.toString()} // This should work now
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.container}>
                         <View style={styles.row}>
                             <Checkbox
                                 style={styles.checkbox}
-                                value={checkedState[item.id]} // Use the checked state for the specific chore
-                                onValueChange={() => handleCheckboxChange(item.id)} // Toggle the checkbox when clicked
+                                value={checkedState[item.id]}
+                                onValueChange={() => handleCheckboxChange(item.id)}
                             />
                             <Text style={{
-                                textDecorationLine: checkedState[item.id] ? 'line-through' : 'none', // Apply strikethrough based on state
+                                textDecorationLine: checkedState[item.id] ? 'line-through' : 'none',
                                 fontSize: 16,
                                 color: checkedState[item.id] ? 'grey' : 'black',
                             }}>

@@ -58,8 +58,6 @@ app.get('/chores', (req, res) => {
 // Added to test using forms to add chores -VA
 app.post('/addChore', (req, res) => {
     const { user_id, chore_name } = req.body;
-    console.log("User ID = " + user_id);
-    console.log("Chorename = " + chore_name);
     const sql = `INSERT INTO chores (user_id, chore_name, is_completed) VALUES (?, ?, ?)`;
     
     db.query(sql, [user_id, chore_name, 0], (err, results) => {
@@ -70,40 +68,6 @@ app.post('/addChore', (req, res) => {
         res.status(200).send('Chore added successfully');
     });
 });
-
-
-// app.get('/chores', (req, res) => {
-//     const user_id = req.query.user_id; 
-//     if (!user_id) { // no user is specified, display all items -KK
-//         console.log("API: No user specified. Returning all items."); 
-//         db.query('SELECT * FROM chores', (err, results) => {
-//             if (err) {
-//                 console.error("API: Error querying database: ", err.message);
-//                 return res.status(500).send("Error querying database.");
-//             }
-//             res.json(results);
-//         });
-//         // return res.status(400).send("Missing user_id.");
-//         // change this section to the above line later for more security -KK
-//     }
-//     else{
-//         console.log("query"); 
-//         const query = `
-//             SELECT chores.chore_name
-//             FROM chores
-//             JOIN chores ON chores.chore_id = chores.id
-//             WHERE chores.user_id = ?
-//         `;
-
-//         db.query(query, [user_id], (err, results) => {
-//             if (err) {
-//                 console.error("API: Error querying database: ", err.message);
-//                 return res.status(500).send("Error querying database.");
-//             }
-//             res.json(results);
-//         });
-//     }
-// });
 
 app.get('/', (req, res) => {    
     // this is what will display when visiting http://localhost:3000/ -KK

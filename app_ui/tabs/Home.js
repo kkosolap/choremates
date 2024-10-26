@@ -50,7 +50,7 @@ const HomeDisplay = () => {
 
   return (
     <View style={styles.content}>
-      {/* <TouchableWithoutFeedback
+      <TouchableWithoutFeedback
         onPress={openAddChore}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -62,8 +62,10 @@ const HomeDisplay = () => {
 
       <Text style={styles.buttonDescription}>
         add chore
-      </Text> */}
-      <AddChoreScreen></AddChoreScreen>
+      </Text>
+
+      {/* To remove the checklists displayed on the homescreen, comment out line below 
+          Just left it in case it could be useful!                               -VA */}
       <DisplayChoresList></DisplayChoresList>
     </View>
   );
