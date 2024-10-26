@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import colors from '../style/colors';
 import styles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
+import AddChoreScreen from '../components/AddChore.js';
+import DisplayChoresList from '../components/DisplayChores.js';
 
 
 // header and page content
@@ -48,8 +50,7 @@ const HomeDisplay = () => {
 
   return (
     <View style={styles.content}>
-      {/* AddChore button */}
-      <TouchableWithoutFeedback
+      {/* <TouchableWithoutFeedback
         onPress={openAddChore}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -59,10 +60,11 @@ const HomeDisplay = () => {
         </Animated.View>
       </TouchableWithoutFeedback>
 
-      {/* button label */}
       <Text style={styles.buttonDescription}>
         add chore
-      </Text>
+      </Text> */}
+      <AddChoreScreen></AddChoreScreen>
+      <DisplayChoresList></DisplayChoresList>
     </View>
   );
 };
