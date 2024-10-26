@@ -1,21 +1,25 @@
 // Home.js
 
 import React from 'react';
-import { View, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert   } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert   } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
 import colors from '../style/colors';
 import styles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
+import { ChoreBlock } from '../components/blocks.js';
 
 
 // header and page content
 const HomeScreen = () => (
   <View style={styles.screen}>
     <TabHeader title="My Home" />
-    <HomeDisplay />
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <HomeDisplay />
+    </ScrollView>
   </View>
+  
 );
 
 // page content
@@ -63,6 +67,24 @@ const HomeDisplay = () => {
       <Text style={styles.buttonDescription}>
         add chore
       </Text>
+
+      {/* All House Chores Heading */}
+      <View style={styles.contentSection}>
+        <Text style={styles.sectionHeading}>
+          All House Chores
+        </Text>
+
+        {/* Horizontal Line */}
+        <View style={styles.horizontalLine} />
+
+        {/* Display all Chores */}
+        <Text style={styles.subtitle}>
+          (all chores list will go here)
+        </Text>
+      </View>
+
+      
+
     </View>
   );
 };

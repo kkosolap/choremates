@@ -52,6 +52,27 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
 
+  // page sections -MH
+  contentSection: {
+    marginTop: 40,
+    width: '90%',
+  },
+  sectionHeading: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text1,
+    marginBottom: 20,
+    textAlign: 'left',
+    alignSelf: 'flex-start',
+  },
+  horizontalLine: {
+    borderBottomColor: colors.lighterBlue,
+    borderBottomWidth: 1,    // Thickness of the line
+    marginTop: -15,
+    marginBottom: 15,
+    width: '100%',      // Full width
+  },
+
   // tab icons  -MH
   iconContainer: {
     justifyContent: 'center',

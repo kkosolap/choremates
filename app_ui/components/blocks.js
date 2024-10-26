@@ -39,7 +39,7 @@ export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, vi
       )}
 
       {/* Render tasks if visible */}
-      {visible && tasks.map(({ id, task }) => (
+      {visible && tasks.length > 0 && tasks.map(({ id, task }) => (
         <View key={id} style={styles.taskContainer}>
           <View style={styles.taskAndCheck}>
             {/* checkbox */}
