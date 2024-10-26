@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
+
   //sign in -NN
   signinContainer: {
     flex: 1,
@@ -203,11 +204,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.lightestBlue,
   },
-  
   signinTitle: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: colors.textPrimary,
+    color: colors.text1,
     marginBottom: 30,
   },
   signinInput: {
@@ -260,9 +260,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textDecorationLine: 'underline',
   },
-
   password: {
-    color: 'gray',
+    color: colors.gray,
     fontSize: 13,
     marginBottom: 20,
     width: '90%',
