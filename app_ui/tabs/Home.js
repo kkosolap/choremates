@@ -50,6 +50,7 @@ const HomeDisplay = () => {
 
   return (
     <View style={styles.content}>
+      {/* AddChore button */}
       <TouchableWithoutFeedback
         onPress={openAddChore}
         onPressIn={handlePressIn}

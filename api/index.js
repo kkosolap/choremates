@@ -162,7 +162,6 @@ app.post('/logout', (req, res) => {
 /********************************************************** */
 /*             TASK IMPLEMENTATION BELOW:                   */
 /********************************************************** */
-
 app.get('/get_tasks', (req, res) => {
     const user_id = req.query.user_id; 
     if (!user_id) { // no user is specified, display all items -KK
