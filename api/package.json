@@ -10,15 +10,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "body-parser": "^1.20.3",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "expo": "^51.0.38",
+    "expo-checkbox": "^3.0.0",
     "express": "^4.21.1",
-    "metro": "^0.81.0",
-    "metro-config": "^0.81.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
-    "mysql2": "^3.11.3",
-    "react-native": "^0.75.4"
+    "mysql2": "^3.11.3"
   }
 }

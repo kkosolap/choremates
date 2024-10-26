@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
-
-API_URL = "http://169.233.132.64:3000/"
+import { API_URL } from '@env';
 
 const AddChoreScreen = () => {
     const [chore, setChore] = useState('');
-  
     const handleAddChore = async () => {
       try {
-        const response = await fetch(API_URL+'addChore', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ choreName: chore }),
-        });
-        if (response.ok) {
-          Alert.alert('Chore added successfully');
-        } else {
-          Alert.alert('Failed to add chore');
-        }
+          const response = await fetch(API_URL + 'addChore', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  user_id: 1  , // Replace with the actual user_id
+                  chore_name: chore, // Match the key name to your database schema
+                  is_completed: 0,
+              }),
+          });
+          
+          if (response.ok) {
+              Alert.alert(chore + ' added successfully');
+          } else {
+              Alert.alert('Failed to add chore: ' + '"' + chore + '"');
+          }
       } catch (error) {
-        Alert.alert('Error adding chore');
+          Alert.alert('Error adding chore');
       }
-    };
+  };
+  
   
     return (
       <View style={styles.container}>
