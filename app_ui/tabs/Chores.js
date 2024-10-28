@@ -5,24 +5,31 @@ import { Text, View, ScrollView, } from 'react-native';
 import axios from 'axios';
 
 import { API_URL } from '@env';
-import colors from '../style/colors';
-import styles from '../style/styles';
+import { useTheme } from '../style/ThemeProvider';
+import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
 
 
 // header and page content  -MH
-const ChoresScreen = () => (
-  <View style={styles.screen}>
-    <TabHeader title="Weekly Chores" />
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <ChoresDisplay />
-    </ScrollView>
-  </View>
-);
+const ChoresScreen = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.screen}>
+      <TabHeader title="Weekly Chores" />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ChoresDisplay />
+      </ScrollView>
+    </View>
+  );
+};
 
 // page content  -MH
 const ChoresDisplay = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
   const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK

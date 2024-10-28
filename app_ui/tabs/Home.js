@@ -5,25 +5,31 @@ import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Ani
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
-import colors from '../style/colors';
-import styles from '../style/styles';
+import { useTheme } from '../style/ThemeProvider';
+import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
 
 
 // header and page content
-const HomeScreen = () => (
-  <View style={styles.screen}>
-    <TabHeader title="My Home" />
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <HomeDisplay />
-    </ScrollView>
-  </View>
-  
-);
+const HomeScreen = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.screen}>
+      <TabHeader title="My Home" />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <HomeDisplay />
+      </ScrollView>
+    </View>
+  );
+};
 
 // page content
 const HomeDisplay = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation(); // get the navigation object
 

@@ -1,52 +1,59 @@
 // colors.js
 
-/*
-export default {
-  blue: '#728de5',
-  darkerBlue: '#566aac',
-  darkestBlue: '#2b3556',
-  lighterBlue: '#9CAFED',   // kinda purple tbh
-  lightestBlue: '#f2f4fc',  // its not even blue anymore
-  desaturatedBlue: '#CCD2E5',
-  yellow: '#e5ca72',
-  lighterYellow: '#f2e5b9',
-  darkerYellow: '#d9ac3d',
-  text1: '#282C39',
-  text2: '#4E566E',
-  text3: '#63697E',
-  text4: '#878B97',
+// constant colors
+const baseTheme = {
+  background: '#f2f4fc',
+  text1: '#1F222B',   // titles + main text
+  text2: '#444956',   // subtitles
+  text3: '#656975',   // completed chores (same color as gray below)
   white: '#ffffff',
-  gray: '#808080',
+  gray: '#656975',
   black: '#000000',
-  red: '#ff3b3b',
-}; */
-
-export default {
-  blue: '#728de5',
-  darkerBlue: '#566aac',
-  darkestBlue: '#2b3556',
-  lighterBlue: '#9CAFED',   // kinda purple tbh
-  lightestBlue: '#f2f4fc',  // its not even blue anymore
-  desaturatedBlue: '#CCD2E5',
-  yellow: '#e5ca72',
-  lighterYellow: '#f2e5b9',
-  darkerYellow: '#d9ac3d',
-  text1: '#282C39',
-  text2: '#4E566E',
-  text3: '#63697E',
-  text4: '#878B97',
-  white: '#ffffff',
-  gray: '#808080',
-  black: '#000000',
-  red: '#ff3b3b',
+  red: '#D56765',
 };
 
+const yellowTheme = {
+  ...baseTheme,
+  main: '#DFBD60',
+  lighter: '#E3D190',
+  desaturated: '#EDE9DA',
+};
 
-// main - icon focused box, add chore button, register button
-// lighter - chore block, section lines
-// lightest - background, signin container
-// ?? - logout
-// gray - completed, signin box
-// white - button text
-// text1 - tabTitles, headings, choreTitles, taskTitles
-// 
+const greenTheme = {
+  ...baseTheme,
+  main: '#58AE66',
+  lighter: '#84CD86',
+  desaturated: '#C7DFD2',
+};
+
+const blueTheme = {
+  ...baseTheme,
+  main: '#5AA6DC',
+  lighter: '#89C9E9',
+  desaturated: '#D2E0E8',
+};
+
+const purpleTheme = {
+  ...baseTheme,
+  main: '#6B86DF',
+  lighter: '#98AAED',
+  desaturated: '#DADFED',
+};
+
+const pinkTheme = {
+  ...baseTheme,
+  main: '#DE6AAA',
+  lighter: '#ED98C7',
+  desaturated: '#EDDAE5',
+};
+
+// all themes
+const themes = {
+  yellow: yellowTheme,
+  green: greenTheme,
+  blue: blueTheme,
+  purple: purpleTheme,
+  pink: pinkTheme,
+};
+
+export default themes;

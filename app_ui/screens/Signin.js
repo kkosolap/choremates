@@ -5,10 +5,14 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios'; // Make sure axios is installed
 import * as SecureStore from 'expo-secure-store'; // Import SecureStore
-import styles from '../style/styles';
+
+import { useTheme } from '../style/ThemeProvider';
+import createStyles from '../style/styles';
 import { API_URL } from '@env'; // Import your API URL
 
 const Signin = ({ onSignin }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
