@@ -1,7 +1,7 @@
 // App.js
 
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -82,7 +82,7 @@ const App = () => {
   useEffect(() => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('token');
-      setIsLoggedIn(!!token);
+      setIsLoggedIn(!!token); // Check if token exists
     };
     checkToken();
   }, []);
@@ -100,7 +100,7 @@ const App = () => {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        {/* Call useTheme here to ensure it's within the provider */}
+        {/* Call useTheme here to ensure it's within the provider -MH */}
         <AppContent isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleSignin={handleSignin} />
       </NavigationContainer>
     </ThemeProvider>
