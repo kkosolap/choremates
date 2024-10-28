@@ -42,6 +42,33 @@ db.connect((err) =>{
 /********************************************************** */
 /*             ALL GET AND POST PATHS BELOW:                */
 /********************************************************** */
+
+app.get('/chores', (req, res) => {
+    const sql = `SELECT id, chore_name FROM chores;`; // Add id to the query
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching chores:', err);
+            return res.status(500).send('Failed to retrieve chores');
+        }
+        res.status(200).json(results);
+    });
+});
+
+
+// Added to test using forms to add chores -VA
+app.post('/addChore', (req, res) => {
+    const { user_id, chore_name } = req.body;
+    const sql = `INSERT INTO chores (user_id, chore_name, is_completed) VALUES (?, ?, ?)`;
+    
+    db.query(sql, [user_id, chore_name, 0], (err, results) => {
+        if (err) {
+            console.error('Error adding chore:', err);
+            return res.status(500).send('Failed to add chore');
+        }
+        res.status(200).send('Chore added successfully');
+    });
+});
+
 app.get('/', (req, res) => {    
     // this is what will display when visiting http://localhost:3000/ -KK
     res.send("Hello World!")

@@ -6,7 +6,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
-
+import AddChoreScreen from '../components/AddChore.js';
 
 
 // header and page content
@@ -30,9 +30,12 @@ const NewChoreDisplay = () => {
   return (
     <View style={styles.content}>
 
-
       {/* ***replace this text with forms to get chore info*** */}
-      <Text style={styles.subtitle}>blah blah blah</Text>
+      {/* <Text style={styles.subtitle}>blah blah blah</Text> */}
+
+
+      {/* AddChores.js located in components, marginTop may be useful to move it around     -VA */}
+      <AddChoreScreen></AddChoreScreen>
 
       {/* chore name (text entry) */}
       {/* room tag (drop down) */}
@@ -40,8 +43,6 @@ const NewChoreDisplay = () => {
       {/* recurrence (drop down) */}
       {/* assign to (drop down) */}
       {/* steps (text entry) */}
-
-
 
     </View>
   );

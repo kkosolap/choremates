@@ -9,6 +9,7 @@ import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
+import AddChoreScreen from '../components/AddChore.js';
 
 
 // header and page content
@@ -69,7 +70,6 @@ const HomeDisplay = () => {
         </Animated.View>
       </TouchableWithoutFeedback>
 
-      {/* button label */}
       <Text style={styles.buttonDescription}>
         add chore
       </Text>
