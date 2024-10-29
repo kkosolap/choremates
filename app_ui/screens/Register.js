@@ -1,4 +1,4 @@
-// Register.js
+// Register.js - NN
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
@@ -15,6 +15,7 @@ const Register = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleRegister = async () => {
+    // post request to server for registration integrated by EL
     try {
       const response = await axios.post(`${API_URL}register`, { username, password });
       Alert.alert('Success', response.data.message);
@@ -25,6 +26,7 @@ const Register = ({ navigation }) => {
     }
   };
 
+  // UI
   return (
     <View style={styles.signinContainer}>
         <Text style={styles.signinTitle}>Register</Text>

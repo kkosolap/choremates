@@ -113,6 +113,7 @@ const AppContent = ({ isLoggedIn, handleLogout, handleSignin }) => {
   const styles = createStyles(theme);
 
   return (
+    // Will only display if user is logged in
     <>
       {isLoggedIn ? (
         <Tab.Navigator

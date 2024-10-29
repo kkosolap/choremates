@@ -1,4 +1,4 @@
-// Signin.js
+// Signin.js - NN
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
@@ -34,6 +34,7 @@ const Signin = ({ onSignin }) => {
     navigation.navigate('Register');
   };
 
+  // UI
   return (
     <View style={styles.signinContainer}>
       <Text style={styles.signinTitle}>Sign in</Text>
