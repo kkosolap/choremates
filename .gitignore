@@ -18,6 +18,7 @@ node_modules/
 
 # Miscellaneous
 .env
+.config
 
 # Gradle files
 .gradle/

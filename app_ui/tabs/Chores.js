@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { Text, View, ScrollView, } from 'react-native';
 import axios from 'axios';
 
-import { API_URL } from '@env';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
+
+import { API_URL } from '../config';
 
 
 // header and page content  -MH

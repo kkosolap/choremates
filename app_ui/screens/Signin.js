@@ -8,7 +8,8 @@ import * as SecureStore from 'expo-secure-store'; // Import SecureStore
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import { API_URL } from '@env'; // Import your API URL
+
+import { API_URL } from '../config';
 
 const Signin = ({ onSignin }) => {
   const { theme } = useTheme();

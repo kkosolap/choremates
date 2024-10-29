@@ -22,10 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 require('dotenv').config();  // load env variables
 
 const db = mysql.createConnection({
-    host: "localhost",
+    host: process.env.DB_HOST,
     database: "choremates",   
-    user: "root",
-    // put "DB_PASSWORD=yourpassword" in your local .env file, replace yourpassword with your mysql root password --Ethan
+    user: process.env.DB_USER,
+    // put "DB_PASSWORD=yourpassword" in your local .env file, 
+    // replace yourpassword with your mysql root password --Ethan
     password: process.env.DB_PASSWORD, 
 });
 
@@ -70,12 +71,12 @@ app.post('/addChore', (req, res) => {
 });
 
 app.get('/', (req, res) => {    
-    // this is what will display when visiting http://localhost:3000/ -KK
+    // this is what will display when visiting http://ipv4:3000/ -KK
     res.send("Hello World!")
 });
 
 app.get('/home', (req, res) => {
-    // this is what will display when visiting http://localhost:3000/home -KK
+    // this is what will display when visiting http://ipv4:3000/home -KK
     res.send("Welcome to the Home Page!")
 });
 
@@ -326,5 +327,8 @@ app.delete('/delete_task', (req, res) => {
 
 
 // keep this at the very bottom of the file -KK
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}.`));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server listening on port ${PORT}.`)
+    console.log(`Access server at ${process.env.API_URL}`)
+});
 

@@ -6,7 +6,8 @@ import axios from 'axios'; // Make sure axios is installed
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import { API_URL } from '@env'; // Import your API URL
+
+import { API_URL } from '../config';
 
 const Register = ({ navigation }) => {
   const { theme } = useTheme();
@@ -16,6 +17,7 @@ const Register = ({ navigation }) => {
 
   const handleRegister = async () => {
     try {
+      console.log('API_URL:', API_URL);
       const response = await axios.post(`${API_URL}register`, { username, password });
       Alert.alert('Success', response.data.message);
       navigation.navigate('Sign in');
