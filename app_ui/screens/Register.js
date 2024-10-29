@@ -3,10 +3,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios'; // Make sure axios is installed
-import styles from '../style/styles';
+
+import { useTheme } from '../style/ThemeProvider';
+import createStyles from '../style/styles';
 import { API_URL } from '@env'; // Import your API URL
 
 const Register = ({ navigation }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 

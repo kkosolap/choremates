@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Alert, StyleSheet } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { StatusBar } from 'expo-status-bar';
+
 import { API_URL } from '@env';
 
 const DisplayChoresList = () => {
@@ -35,7 +36,6 @@ const DisplayChoresList = () => {
             [id]: !prevState[id],
         }));
     };
-
 
     // Allows for checkbox to be toggled
     // Checks state to decide if strikethrough

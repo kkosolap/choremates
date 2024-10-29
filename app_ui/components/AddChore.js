@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+
 import { API_URL } from '@env';
 
 const AddChoreScreen = () => {
     const [chore, setChore] = useState('');
+    
     const handleAddChore = async () => {
       try {
           const response = await fetch(API_URL + 'addChore', {
@@ -28,7 +30,6 @@ const AddChoreScreen = () => {
       }
   };
   
-  
     return (
       <View style={styles.container}>
         <TextInput
@@ -44,10 +45,6 @@ const AddChoreScreen = () => {
       </View>
     );
   };
-
-
-
-  
 
 const styles = StyleSheet.create({
   // container: {
@@ -85,6 +82,5 @@ const styles = StyleSheet.create({
     marginTop: 20,               // Move the button down a bit from the input
   },
 });
-
 
   export default AddChoreScreen;

@@ -1,18 +1,18 @@
 // App.js
 
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
+import { API_URL } from '@env';
+import { ThemeProvider, useTheme } from './style/ThemeProvider';
+import createStyles from './style/styles';
 import Signin from './screens/Signin';
 import Register from './screens/Register';
-import { API_URL } from '@env';
-import colors from './style/colors';
-import styles from './style/styles';
 import HomeScreen from './tabs/Home';
 import ChoresScreen from './tabs/Chores';
 import MembersScreen from './tabs/Members';
@@ -23,7 +23,6 @@ import NewChoreScreen from './screens/NewChore';
 /************************************************************ */
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
 /************************************************************ */
-// API_URL moved to .env  -MH
 // Put this in .env, replace youripv4 with your ip address -EL
 // API_URL=http://youripv4:3000/
 
@@ -99,7 +98,22 @@ const App = () => {
   };
 
   return (
-    <NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        {/* Call useTheme here to ensure it's within the provider -MH */}
+        <AppContent isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleSignin={handleSignin} />
+      </NavigationContainer>
+    </ThemeProvider>
+  );
+};
+
+// AppContent component to handle logged-in and logged-out states
+const AppContent = ({ isLoggedIn, handleLogout, handleSignin }) => {
+  const { theme } = useTheme(); // Get the theme inside the provider
+  const styles = createStyles(theme);
+
+  return (
+    <>
       {isLoggedIn ? (
         <Tab.Navigator
           screenOptions={({ route }) => ({
@@ -126,8 +140,8 @@ const App = () => {
               );
             },
             tabBarLabel: () => null, // Hide labels
-            tabBarActiveTintColor: colors.white,
-            tabBarInactiveTintColor: colors.gray,
+            tabBarActiveTintColor: theme.white,
+            tabBarInactiveTintColor: theme.gray,
             tabBarStyle: {
               position: 'absolute',
               bottom: 15,
@@ -145,7 +159,7 @@ const App = () => {
           <Tab.Screen name="Chores" component={ChoresStack} />
           <Tab.Screen name="Members" component={MembersStack} />
           <Tab.Screen name="Settings">
-            {(props) => <SettingsScreen {...props} onLogout={handleLogout} />} 
+            {(props) => <SettingsScreen {...props} onLogout={handleLogout} />}
           </Tab.Screen>
         </Tab.Navigator>
       ) : (
@@ -156,8 +170,8 @@ const App = () => {
           <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         </Stack.Navigator>
       )}
-    </NavigationContainer>
+    </>
   );
-}
+};
 
 export default App;

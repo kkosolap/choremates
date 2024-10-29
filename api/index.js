@@ -90,7 +90,7 @@ app.get('/get_users', (req, res) => {
 });
 
 /********************************************************** */
-/*             USER AUTHENTICATION BELOW:                   */
+/*                USER AUTHENTICATION BELOW:                */
 /********************************************************** */
 // user registration 
 app.post('/register', async (req, res) => {
@@ -160,7 +160,49 @@ app.post('/logout', (req, res) => {
 
 
 /********************************************************** */
-/*             TASK IMPLEMENTATION BELOW:                   */
+/*              CHORE IMPLEMENTATION BELOW:                 */
+/********************************************************** */
+app.get('/get_chores', (req, res) => {
+    const user_id = req.query.user_id;
+
+    const baseQuery = `
+        SELECT 
+            chores.chore_name, 
+            chores.is_completed AS chore_is_completed, 
+            tasks.task_name, 
+            tasks.is_completed AS task_is_completed
+        FROM chores
+        LEFT JOIN tasks ON chores.id = tasks.chore_id
+    `;
+
+    if (!user_id) { 
+        console.log("API: No user specified. Returning all items.");
+
+        db.query(baseQuery, (err, results) => {
+            if (err) {
+                console.error("API: Error querying database: ", err.message);
+                return res.status(500).send("Error querying database.");
+            }
+            res.json(results);
+        });
+        // return res.status(400).send("Missing user_id.");
+        // change this section to the above line later for more security -KK
+    } else {
+        //console.log(`API: Returning items for user_id ${user_id}`);
+
+        db.query(`${baseQuery} WHERE chores.user_id = ?`, [user_id], (err, results) => {
+            if (err) {
+                console.error("API: Error querying database: ", err.message);
+                return res.status(500).send("Error querying database.");
+            }
+            res.json(results);
+        });
+    }
+});
+
+
+/********************************************************** */
+/*               TASK IMPLEMENTATION BELOW:                 */
 /********************************************************** */
 app.get('/get_tasks', (req, res) => {
     const user_id = req.query.user_id; 

@@ -3,27 +3,32 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-import colors from '../style/colors';
-import styles from '../style/styles';
+import { useTheme } from '../style/ThemeProvider';
+import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import AddChoreScreen from '../components/AddChore.js';
 
 
-
 // header and page content
-const NewChoreScreen = ({navigation}) => (
-  <View style={styles.screen}>
-    <ScreenHeader title="Add a New Chore" navigation={navigation} />
-    <NewChoreDisplay navigation={navigation} />
-  </View>
-);
+const NewChoreScreen = ({ navigation }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.screen}>
+      <ScreenHeader title="Add a New Chore" navigation={navigation} />
+      <NewChoreDisplay navigation={navigation} />
+    </View>
+  );
+};
 
 // page content
 const NewChoreDisplay = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
   return (
     <View style={styles.content}>
-
-
 
       {/* ***replace this text with forms to get chore info*** */}
       {/* <Text style={styles.subtitle}>blah blah blah</Text> */}
@@ -38,8 +43,6 @@ const NewChoreDisplay = () => {
       {/* recurrence (drop down) */}
       {/* assign to (drop down) */}
       {/* steps (text entry) */}
-
-
 
     </View>
   );
