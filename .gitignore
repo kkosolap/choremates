@@ -18,7 +18,7 @@ node_modules/
 
 # Miscellaneous
 .env
-config.js
+app_ui/config.js
 
 # Gradle files
 .gradle/
