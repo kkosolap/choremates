@@ -57,7 +57,7 @@ const createStyles = (theme) => {
     // main content of a page  -MH
     content: {
       flex: 1,
-      width: 400,
+      width: 390,
       alignItems: 'center',   // Horizontally center content
       justifyContent: 'flex-start',  // Start content at the top
       paddingTop: 30,  // Optional: Add some space at the top
@@ -71,6 +71,7 @@ const createStyles = (theme) => {
     contentSection: {
       marginTop: 40,
       width: '90%',
+      alignItems: 'center',
     },
     sectionHeading: {
       fontSize: 24,
@@ -163,6 +164,12 @@ const createStyles = (theme) => {
       right: 15, // distance from the right edge
       top: 20, // distance from the top edge
       zIndex: 1, // ensure it's above other elements
+    },
+    choresList: {
+      flex: 1,
+      width: 390,
+      alignItems: 'center',   // Horizontally center content
+      justifyContent: 'flex-start',  // Start content at the top
     },
 
     // tasks  -MH

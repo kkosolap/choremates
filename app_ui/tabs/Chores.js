@@ -8,7 +8,7 @@ import { API_URL } from '@env';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
-import { ChoreBlock } from '../components/blocks.js';
+import { ActiveChoreBlock } from '../components/blocks.js';
 
 
 // header and page content  -MH
@@ -99,7 +99,7 @@ const ChoresDisplay = () => {
     <View style={styles.content}>
 
       {Object.keys(groupedTasks).map((chore_name) => (
-        <ChoreBlock
+        <ActiveChoreBlock
           key={chore_name}
           choreName={chore_name}
           tasks={groupedTasks[chore_name].tasks}
