@@ -92,7 +92,7 @@ app.get('/get_users', (req, res) => {
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
 /********************************************************** */
-// user registration 
+// user registration -ET
 app.post('/register', async (req, res) => {
     console.log("Registration request received");
     console.log(req.body);
@@ -135,7 +135,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// user login
+// user login -ET
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -152,7 +152,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-// user logout
+// user logout -ET
 app.post('/logout', (req, res) => {
     // Nathan pls handle token invalidation on the client side. -- Ethan
     res.status(200).json({ message: 'Logged out successfully!' });
@@ -323,6 +323,39 @@ app.delete('/delete_task', (req, res) => {
 })
 
 
+/********************************************************** */
+/*              GROUP IMPLEMENTATION BELOW:                 */
+/********************************************************** */
+// create a new group -ET
+app.post('/createGroup', (req, res) => {
+    const { group_name, user_id } = req.body;
+
+    // check if group name and user ID are provided
+    if (!group_name || !user_id) {
+        return res.status(400).json({ error: "Missing group name or user ID" });
+    }
+
+    // insert the new group into group_names
+    db.query('INSERT INTO group_names (group_name) VALUES (?)', [group_name], (err, result) => {
+        if (err) {
+            console.error("Error creating group: ", err.message);
+            return res.status(500).json({ error: "Failed to create group" });
+        }
+
+        // id of the newly created group
+        const groupId = result.insertId;
+
+        // add the creator as a member of the group with the role of admin
+        db.query('INSERT INTO group_members (user_id, group_id, role) VALUES (?, ?, ?)', [user_id, groupId, 'admin'], (err) => {
+            if (err) {
+                console.error("Error adding group member: ", err.message);
+                return res.status(500).json({ error: "Failed to add user to group" });
+            }
+
+            res.status(201).json({ message: 'Group created successfully', group_id: groupId });
+        });
+    });
+});
 
 
 // keep this at the very bottom of the file -KK
