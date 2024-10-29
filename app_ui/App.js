@@ -79,6 +79,8 @@ const SettingsStack = () => {
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  console.log(API_URL);
+
   useEffect(() => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('token');
