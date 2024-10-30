@@ -10,7 +10,7 @@ import { completeChore, completeTask } from '../components/functions.js';
 
 
 // block for displaying a chore in weekly list
-export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
+export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   

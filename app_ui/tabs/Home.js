@@ -22,7 +22,9 @@ const HomeScreen = () => {
   return (
     <View style={styles.screen}>
       <TabHeader title="My Home" />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <HomeDisplay />
+      </ScrollView>
     </View>
   );
 };
@@ -44,6 +46,7 @@ const HomeDisplay = () => {
       refresh(); 
     }, [])
   );
+
   // add chore button press
   const handlePressIn = () => {
     Animated.timing(scale, {
@@ -65,14 +68,6 @@ const HomeDisplay = () => {
   // open NewChore page above current page
   const openAddChore = () => {
     navigation.navigate('NewChore');
-    refresh();
-  };
-
-  // fetch the task list for display -KK
-  const refresh = () => {
-    axios.get(API_URL + "chores")
-      .then((response) => setData(response.data))
-      .catch((error) => console.error(error));
   };
 
   // open ChoreDetails page above current page
@@ -82,11 +77,6 @@ const HomeDisplay = () => {
       tasks: grouped_tasks,
     });
   };
-
-  // gets called when the component loads
-  useEffect(() => {
-    refreshTasks();
-  }, []);
 
   // group the tasks by chore -KK
   const groupedTasks = data.reduce((acc, task) => {
@@ -102,34 +92,9 @@ const HomeDisplay = () => {
     return acc;
   }, {});
 
-  // add task button -KK
-  const addTask = (chore_name) => {
-    axios.post(`${API_URL}add_task?chore_name=${chore_name}`, {
-      task_name: newTask,
-      user_id: 1,           // adjust later to the logged-in user -KK
-    })
-    .then((response) => {
-      console.log(response.data);
-      setNewTask('');       // reset the input -KK
-      refreshTasks();       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  // delete task button -KK
-  const deleteTask = (chore_name, task) => {
-    axios.delete(`${API_URL}delete_task?chore_name=${chore_name}&task_name=${task}`)
-      .then((response) => {
-        console.log(response.data);
-        refreshTasks();     // refresh ltask list after updating -KK
-      })
-      .catch((error) => console.error(error));
-  };
-
   // fetch the task list for display -KK
-  const refreshTasks = () => {
-    axios.get(API_URL + "get_chores?user_id=1")
-      .then((response) => setData(response.data))
+  const refresh = async () => {
+    await axios.post(`${API_URL}get_chores`, { username: "kat" }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -160,17 +125,7 @@ const HomeDisplay = () => {
         <View style={styles.horizontalLine} />
 
         {/* Display all Chores */}
-        <Text style={styles.subtitle}>
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item.id.toString()}  // Ensure each item has a unique id
-          renderItem={({ item }) => (
-          <Text style={styles.subtitle}>- {item.chore_name}</Text>
-        )}
-        />
-        </Text>
         <View style={styles.choresList}>
-          
           {Object.keys(groupedTasks).map((chore_name) => (
             <ChoreBlock
               key={chore_name}
@@ -183,12 +138,8 @@ const HomeDisplay = () => {
               recurrence={"Every Week"}
             />
           ))}
-
         </View>
       </View>
-
-      
-
     </View>
   );
 };
