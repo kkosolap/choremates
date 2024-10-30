@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
+
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
-// const USER = "kat"; // change depending on who is logged in
 
 const NewChoreScreen = ({ navigation }) => {
   const { theme } = useTheme();
@@ -23,8 +23,8 @@ const NewChoreScreen = ({ navigation }) => {
   );
 };
 
-const NewChoreDisplay = ({ refresh, navigation }) => {
-  const [chore, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
+const NewChoreDisplay = ({ navigation }) => {
+  const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
   const [recurrence, setRecurrence] = useState('Never');
   const [tasks, setTasks] = useState([]);         // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');     // block for the new task to add to the list -KK
@@ -34,25 +34,17 @@ const NewChoreDisplay = ({ refresh, navigation }) => {
   const addChore = async () => {
     try {
       // add the chore to the database -KK
-      await axios.post(`${API_URL}add_chore`, {
-        chore_name: chore,
-        username: "kat",    
-        // recurrence,  // will be implemented later -KK
-      });
+      await axios.post(`${API_URL}add_chore`, { chore_name, username: "kat" });
 
       // loop through tasks and add each one to the db -KK
-      await Promise.all(tasks.map(task =>
-        axios.post(`${API_URL}add_task`, {
-          chore_name: chore,
-          task_name: task,
-          username: "kat", 
-        })
+      await Promise.all(tasks.map(task_name =>
+        axios.post(`${API_URL}add_task`, { chore_name, task_name, username: "kat" })
       ));
 
       // reset everything -KK
       setChoreName('');
       setNewTask('');
-      setRecurrence('Never');
+      setRecurrence('Just Once');
       setTasks([]);
       navigation.goBack();    // exit and go back to home -KK
 
@@ -78,7 +70,7 @@ const NewChoreDisplay = ({ refresh, navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Enter chore name"
-        value={chore}
+        value={chore_name}
         onChangeText={setChoreName}
       />
 
@@ -101,7 +93,7 @@ const NewChoreDisplay = ({ refresh, navigation }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <TouchableOpacity onPress={() => { setRecurrence('Never'); setIsModalVisible(false); }}>
+            <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
               <Text style={styles.modalItem}>Never</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsModalVisible(false); }}>

@@ -8,9 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import axios from 'axios'; 
-import { API_URL } from './config';
-
+import { API_URL } from '@env';
 import { ThemeProvider, useTheme } from './style/ThemeProvider';
 import createStyles from './style/styles';
 import Signin from './screens/Signin';
@@ -89,8 +87,8 @@ const App = () => {
     checkToken();
   }, []);
 
-  const handleSignin = (username, password) => {
-    console.log('Logging in with:', username, password);
+  const handleSignin = (username) => {
+    console.log('Logging in as:', username);
     setIsLoggedIn(true);
   };
 

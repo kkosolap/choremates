@@ -194,6 +194,10 @@ const createStyles = (theme) => {
       color: theme.text1,
       marginLeft: 5,
     },
+    taskTextCompleted: {
+      textDecorationLine: 'line-through',
+      color: theme.gray, 
+    },
     taskCheck: {
       marginTop: 3,
     },

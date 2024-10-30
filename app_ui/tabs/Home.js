@@ -67,9 +67,8 @@ const HomeDisplay = () => {
   };
 
   // fetch the task list for display -KK
-  const refresh = () => {
-    axios.get(API_URL + "chores")
-      .then((response) => setData(response.data))
+  const refresh = async () => {
+    await axios.post(`${API_URL}get_chores`, { username: "kat" }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
