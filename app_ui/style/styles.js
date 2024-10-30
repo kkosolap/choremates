@@ -115,7 +115,7 @@ const createStyles = (theme) => {
     },
     tabTitle: {
       fontSize: 30,
-      fontWeight: 'bold',
+      fontWeight: '800',  // extra bold
       color: theme.text1,
     },
     screenHeader: {
@@ -151,6 +151,12 @@ const createStyles = (theme) => {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
     },
+    homeChoreBlock: {
+      ...baseChoreBlock,
+      backgroundColor: theme.lightest,
+      borderColor: theme.lighter,
+      borderWidth: 3,
+    },
     choreCheck: {
       position: 'absolute', // position it absolutely within the header
       left: 15, // distance from the right edge
@@ -162,6 +168,22 @@ const createStyles = (theme) => {
       ...baseChoreTitle,
       color: theme.text3,
       textDecorationLine: 'line-through',  // Adds a strikeout effect
+    },
+    homeChoreTitle: {
+      ...baseChoreTitle,
+      marginTop: 5,
+      marginBottom: 5,
+      fontSize: 20,
+      width: '85%',
+      height: 'auto',
+    },
+    recurrenceLabel: {
+      marginBottom: 5,
+      fontSize: 17,
+      fontWeight: '300',
+      color: theme.text2,
+      width: '85%',
+      height: 'auto',
     },
     editChoreButton: {
       position: 'absolute', // position it absolutely within the header

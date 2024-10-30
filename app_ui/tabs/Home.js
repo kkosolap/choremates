@@ -155,17 +155,11 @@ const HomeDisplay = () => {
               key={chore_name}
               choreName={chore_name}
               tasks={groupedTasks[chore_name].tasks}
-              visible={visible[chore_name]}
               onOpenChoreDetails={() => openChoreDetails(
                 chore_name,
                 groupedTasks[chore_name].tasks
               )}
-              onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
-              onDelete={deleteTask}
-              isEditing={edit === chore_name}
-              newTask={newTask}
-              setNewTask={setNewTask}
-              onAddTask={addTask}
+              recurrence={"Every Week"}
             />
           ))}
 
