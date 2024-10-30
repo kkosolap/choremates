@@ -7,7 +7,7 @@ import { Text, View, ScrollView, } from 'react-native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
-import { ChoreBlock } from '../components/blocks.js';
+import { ActiveChoreBlock } from '../components/blocks.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -97,7 +97,7 @@ const ChoresDisplay = () => {
     <View style={styles.content}>
 
       {Object.keys(groupedTasks).map((chore_name) => (
-        <ChoreBlock
+        <ActiveChoreBlock
           key={chore_name}
           choreName={chore_name}
           tasks={groupedTasks[chore_name].tasks}

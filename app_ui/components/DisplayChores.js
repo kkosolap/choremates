@@ -6,6 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import axios from 'axios';
 import { API_URL } from '../config';
 
+// Victoria
+
 const DisplayChoresList = () => {
     const [chores, setChores] = useState([]);
     const [checkedState, setCheckedState] = useState({}); // Object to track checked state for each chore

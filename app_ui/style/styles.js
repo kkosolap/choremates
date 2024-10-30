@@ -57,7 +57,7 @@ const createStyles = (theme) => {
     // main content of a page  -MH
     content: {
       flex: 1,
-      width: 400,
+      width: 390,
       alignItems: 'center',   // Horizontally center content
       justifyContent: 'flex-start',  // Start content at the top
       paddingTop: 30,  // Optional: Add some space at the top
@@ -71,6 +71,7 @@ const createStyles = (theme) => {
     contentSection: {
       marginTop: 40,
       width: '90%',
+      alignItems: 'center',
     },
     sectionHeading: {
       fontSize: 24,
@@ -87,6 +88,10 @@ const createStyles = (theme) => {
       marginBottom: 15,
       width: '100%',
     },
+    spacer: {
+      height: 20,
+      width: '100%',
+  },
 
     // tab icons  -MH
     iconContainer: {
@@ -110,7 +115,7 @@ const createStyles = (theme) => {
     },
     tabTitle: {
       fontSize: 30,
-      fontWeight: 'bold',
+      fontWeight: '800',  // extra bold
       color: theme.text1,
     },
     screenHeader: {
@@ -146,6 +151,12 @@ const createStyles = (theme) => {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
     },
+    homeChoreBlock: {
+      ...baseChoreBlock,
+      backgroundColor: theme.lightest,
+      borderColor: theme.lighter,
+      borderWidth: 3,
+    },
     choreCheck: {
       position: 'absolute', // position it absolutely within the header
       left: 15, // distance from the right edge
@@ -158,11 +169,33 @@ const createStyles = (theme) => {
       color: theme.text3,
       textDecorationLine: 'line-through',  // Adds a strikeout effect
     },
+    homeChoreTitle: {
+      ...baseChoreTitle,
+      marginTop: 5,
+      marginBottom: 5,
+      fontSize: 20,
+      width: '85%',
+      height: 'auto',
+    },
+    recurrenceLabel: {
+      marginBottom: 5,
+      fontSize: 17,
+      fontWeight: '300',
+      color: theme.text2,
+      width: '85%',
+      height: 'auto',
+    },
     editChoreButton: {
       position: 'absolute', // position it absolutely within the header
       right: 15, // distance from the right edge
       top: 20, // distance from the top edge
       zIndex: 1, // ensure it's above other elements
+    },
+    choresList: {
+      flex: 1,
+      width: 390,
+      alignItems: 'center',   // Horizontally center content
+      justifyContent: 'flex-start',  // Start content at the top
     },
 
     // tasks  -MH

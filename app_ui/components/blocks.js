@@ -10,7 +10,7 @@ import { completeChore, completeTask } from '../components/functions.js';
 
 
 // block for displaying a chore in weekly list
-export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
+export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   
@@ -40,7 +40,7 @@ export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, vi
         <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.gray : theme.text1} />
       </TouchableOpacity>
 
-      {/* Chore title */}
+      {/* Chore Title */}
       <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
 
       {/* Conditionally render Edit pencil if tasks visible */}
@@ -101,6 +101,32 @@ export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, vi
           
         </View>
       )}
+    </TouchableOpacity>
+  );
+};
+
+
+// block for displaying a chore on home page
+export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return (
+    <TouchableOpacity
+      style={styles.homeChoreBlock}
+      onPress={() => onOpenChoreDetails(
+        choreName,
+        tasks
+      )}
+      activeOpacity={0.8}
+    >
+
+      {/* Chore Title */}
+      <Text style={styles.homeChoreTitle}>{choreName}</Text>
+
+      {/* Reccurence */}
+      <Text style={styles.recurrenceLabel}>{recurrence}</Text>
+
     </TouchableOpacity>
   );
 };

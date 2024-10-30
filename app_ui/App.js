@@ -18,6 +18,7 @@ import ChoresScreen from './tabs/Chores';
 import MembersScreen from './tabs/Members';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
+import ChoreDetailsScreen from './screens/ChoreDetails';
 
 
 /************************************************************ */
@@ -39,6 +40,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
+      <Stack.Screen name="ChoreDetails" component={ChoreDetailsScreen} />
     </Stack.Navigator>
   );
 };

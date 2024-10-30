@@ -34,6 +34,9 @@ const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation(); // get the navigation object
   const [data, setData] = useState([]);
+  const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
+  const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
+  const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -41,7 +44,6 @@ const HomeDisplay = () => {
       refresh(); 
     }, [])
   );
-
   // add chore button press
   const handlePressIn = () => {
     Animated.timing(scale, {
@@ -67,8 +69,67 @@ const HomeDisplay = () => {
   };
 
   // fetch the task list for display -KK
-  const refresh = async () => {
-    await axios.post(`${API_URL}get_chores`, { username: "kat" }).then((response) => setData(response.data))
+  const refresh = () => {
+    axios.get(API_URL + "chores")
+      .then((response) => setData(response.data))
+      .catch((error) => console.error(error));
+  };
+
+  // open ChoreDetails page above current page
+  const openChoreDetails = (chore_name, grouped_tasks) => {
+    navigation.navigate('ChoreDetails', {
+      choreName: chore_name,
+      tasks: grouped_tasks,
+    });
+  };
+
+  // gets called when the component loads
+  useEffect(() => {
+    refreshTasks();
+  }, []);
+
+  // group the tasks by chore -KK
+  const groupedTasks = data.reduce((acc, task) => {
+    if (!acc[task.chore_name]) {
+      acc[task.chore_name] = {
+          is_completed: task.chore_is_completed,
+          tasks: []
+      };
+    }
+    if (task.task_name) { // only push if task_name is non-null -MH
+      acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name });
+    }
+    return acc;
+  }, {});
+
+  // add task button -KK
+  const addTask = (chore_name) => {
+    axios.post(`${API_URL}add_task?chore_name=${chore_name}`, {
+      task_name: newTask,
+      user_id: 1,           // adjust later to the logged-in user -KK
+    })
+    .then((response) => {
+      console.log(response.data);
+      setNewTask('');       // reset the input -KK
+      refreshTasks();       // refresh ltask list after updating -KK
+    })
+    .catch((error) => console.error(error));
+  };
+
+  // delete task button -KK
+  const deleteTask = (chore_name, task) => {
+    axios.delete(`${API_URL}delete_task?chore_name=${chore_name}&task_name=${task}`)
+      .then((response) => {
+        console.log(response.data);
+        refreshTasks();     // refresh ltask list after updating -KK
+      })
+      .catch((error) => console.error(error));
+  };
+
+  // fetch the task list for display -KK
+  const refreshTasks = () => {
+    axios.get(API_URL + "get_chores?user_id=1")
+      .then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -108,6 +169,22 @@ const HomeDisplay = () => {
         )}
         />
         </Text>
+        <View style={styles.choresList}>
+          
+          {Object.keys(groupedTasks).map((chore_name) => (
+            <ChoreBlock
+              key={chore_name}
+              choreName={chore_name}
+              tasks={groupedTasks[chore_name].tasks}
+              onOpenChoreDetails={() => openChoreDetails(
+                chore_name,
+                groupedTasks[chore_name].tasks
+              )}
+              recurrence={"Every Week"}
+            />
+          ))}
+
+        </View>
       </View>
 
       
