@@ -4,12 +4,11 @@ import { useEffect, useState } from 'react';
 import { Text, View, ScrollView, } from 'react-native';
 import axios from 'axios';
 
+import { API_URL } from '@env';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
-
-import { API_URL } from '../config';
 
 
 // header and page content  -MH
@@ -38,7 +37,7 @@ const ChoresDisplay = () => {
 
   // gets called when the component loads
   useEffect(() => {
-    refreshTasks();
+    refresh();
   }, []);
 
   // group the tasks by chore -KK
@@ -65,14 +64,15 @@ const ChoresDisplay = () => {
 
   // add task button -KK
   const addTask = (chore_name) => {
-    axios.post(`${API_URL}add_task?chore_name=${chore_name}`, {
+    axios.post(`${API_URL}add_task`, {
+      chore_name: chore_name,
       task_name: newTask,
-      user_id: 1,           // adjust later to the logged-in user -KK
+      username: "kat",           // adjust later to the logged-in user -KK
     })
     .then((response) => {
       console.log(response.data);
       setNewTask('');       // reset the input -KK
-      refreshTasks();       // refresh ltask list after updating -KK
+      refresh();       // refresh ltask list after updating -KK
     })
     .catch((error) => console.error(error));
   };
@@ -82,14 +82,14 @@ const ChoresDisplay = () => {
     axios.delete(`${API_URL}delete_task?chore_name=${chore_name}&task_name=${task}`)
       .then((response) => {
         console.log(response.data);
-        refreshTasks();     // refresh ltask list after updating -KK
+        refresh();     // refresh ltask list after updating -KK
       })
       .catch((error) => console.error(error));
   };
 
   // fetch the task list for display -KK
-  const refreshTasks = () => {
-    axios.get(API_URL + "get_chores?user_id=1")
+  const refresh = () => {
+    axios.get(API_URL + "get_chores?user_id=2")
       .then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };

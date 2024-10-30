@@ -1,15 +1,17 @@
 // Home.js
 
-import React from 'react';
-import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert   } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
-import AddChoreScreen from '../components/AddChore.js';
+
+import axios from 'axios';
+import { API_URL } from '../config';
 
 
 // header and page content
@@ -20,9 +22,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.screen}>
       <TabHeader title="My Home" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <HomeDisplay />
-      </ScrollView>
     </View>
   );
 };
@@ -33,6 +33,14 @@ const HomeDisplay = () => {
   const styles = createStyles(theme);
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation(); // get the navigation object
+  const [data, setData] = useState([]);
+
+  // calls refresh whenever the screen is in focus -KK
+  useFocusEffect(
+    useCallback(() => {
+      refresh(); 
+    }, [])
+  );
 
   // add chore button press
   const handlePressIn = () => {
@@ -55,6 +63,14 @@ const HomeDisplay = () => {
   // open NewChore page above current page
   const openAddChore = () => {
     navigation.navigate('NewChore');
+    refresh();
+  };
+
+  // fetch the task list for display -KK
+  const refresh = () => {
+    axios.get(API_URL + "chores")
+      .then((response) => setData(response.data))
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -85,7 +101,13 @@ const HomeDisplay = () => {
 
         {/* Display all Chores */}
         <Text style={styles.subtitle}>
-          (all chores list will go here)
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id.toString()}  // Ensure each item has a unique id
+          renderItem={({ item }) => (
+          <Text style={styles.subtitle}>- {item.chore_name}</Text>
+        )}
+        />
         </Text>
       </View>
 

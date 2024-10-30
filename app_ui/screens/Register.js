@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import axios from 'axios'; // Make sure axios is installed
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 
+import axios from 'axios';
 import { API_URL } from '../config';
 
 const Register = ({ navigation }) => {
