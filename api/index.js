@@ -22,9 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 require('dotenv').config();  // load env variables
 
 const db = mysql.createConnection({
-    host: "localhost",
+    host: process.env.DB_HOST,
     database: "choremates",   
-    user: "root",
+    user: process.env.DB_USER,
     // put "DB_PASSWORD=yourpassword" in your local .env file, replace yourpassword with your mysql root password --Ethan
     password: process.env.DB_PASSWORD, 
 });
