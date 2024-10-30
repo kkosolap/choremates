@@ -33,9 +33,6 @@ const ChoreDetailsDisplay = () => {
   return (
     <View style={styles.content}>
 
-      {/* ***replace this text with forms to get chore info*** */}
-      <Text style={styles.subtitle}>{choreName}</Text>
-
       {/* chore name (text entry) */}
       {/* room tag (drop down) */}
       {/* starting week (drop down) */}
@@ -43,6 +40,11 @@ const ChoreDetailsDisplay = () => {
       {/* assign to (drop down) */}
       {/* steps (text entry) */}
 
+      {/* ***change so this is default text in an editable form*** */}
+      <Text style={styles.subtitle}>{choreName}</Text>
+
+      <View style={styles.spacer}></View>
+      <View style={styles.horizontalLine}></View>
       <View style={styles.spacer}></View>
 
       {tasks.map(({ id, task }) => (
