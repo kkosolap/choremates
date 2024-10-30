@@ -63,6 +63,14 @@ const HomeDisplay = () => {
     navigation.navigate('NewChore');
   };
 
+  // open ChoreDetails page above current page
+  const openChoreDetails = (chore_name, grouped_tasks) => {
+    navigation.navigate('ChoreDetails', {
+      choreName: chore_name,
+      tasks: grouped_tasks,
+    });
+  };
+
   // gets called when the component loads
   useEffect(() => {
     refreshTasks();
@@ -81,14 +89,6 @@ const HomeDisplay = () => {
     }
     return acc;
   }, {});
-
-  // toggle the visibility of tasks for a chore -KK
-  const toggleVisibility = (chore_name) => {
-    setVisible((prevState) => ({
-      ...prevState,
-      [chore_name]: !prevState[chore_name],
-    }));
-  };
 
   // add task button -KK
   const addTask = (chore_name) => {
@@ -155,9 +155,11 @@ const HomeDisplay = () => {
               key={chore_name}
               choreName={chore_name}
               tasks={groupedTasks[chore_name].tasks}
-              completed={groupedTasks[chore_name].is_completed}
               visible={visible[chore_name]}
-              onToggleVisibility={toggleVisibility}
+              onOpenChoreDetails={() => openChoreDetails(
+                chore_name,
+                groupedTasks[chore_name].tasks
+              )}
               onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
               onDelete={deleteTask}
               isEditing={edit === chore_name}

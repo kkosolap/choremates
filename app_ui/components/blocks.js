@@ -93,27 +93,23 @@ export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibili
 };
 
 
-// block for displaying a chore in weekly list
-export const ChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
+// block for displaying a chore on home page
+export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   
   return (
     <TouchableOpacity
-      style={completed ? styles.choreBlockCompleted : styles.choreBlock}
-      onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
+      style={styles.choreBlock}
+      onPress={() => onOpenChoreDetails(
+        choreName,
+        tasks
+      )}
       activeOpacity={0.8}
     >
-     {/* Checkbox */}
-     <TouchableOpacity
-        style={styles.choreCheck}
-        onPress={showHelloPopup}
-      >
-        <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.gray : theme.text1} />
-      </TouchableOpacity>
 
       {/* Chore title */}
-      <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
+      <Text style={styles.choreTitle}>{choreName}</Text>
 
       {/* Conditionally render Edit pencil if tasks visible */}
       {visible && (

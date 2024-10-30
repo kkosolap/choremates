@@ -88,6 +88,10 @@ const createStyles = (theme) => {
       marginBottom: 15,
       width: '100%',
     },
+    spacer: {
+      height: 20,
+      width: '100%',
+  },
 
     // tab icons  -MH
     iconContainer: {
