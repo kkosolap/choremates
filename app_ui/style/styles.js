@@ -232,6 +232,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      marginTop: 15
     },
     signinButtonText: {
       color: theme.white,
@@ -274,6 +275,57 @@ const createStyles = (theme) => {
       alignSelf: 'center',
       textAlign: 'center',
     },
+
+    //members page -NN
+    members: {
+      width: '80%',
+      padding: 15,
+      marginBottom: 20,
+      borderWidth: 1,
+      borderColor: theme.gray,
+      borderRadius: 10,
+      backgroundColor: theme.lighter,
+      alignItems: 'center',
+    },
+
+    memberText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.text1,
+    },
+
+    membersbuttonContainer: {
+      position: 'absolute',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '80%',
+      paddingBottom: 20,
+      bottom: 130,
+    },
+
+    membersButtons: {
+      position: 'absolute',
+      width: '80%',
+      bottom: 120,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.gray,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+
+    membersButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+
+    backPageButton: {
+      padding: 10,
+      position: 'absolute',
+      top: 60,
+      left: 20,
+    }
   });
 };
 
