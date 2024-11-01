@@ -96,6 +96,7 @@ const App = () => {
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync('token'); // Remove token securely
+    await SecureStore.deleteItemAsync('username'); 
     setIsLoggedIn(false); // Update logged-in state
   };
 

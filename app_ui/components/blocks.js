@@ -10,19 +10,19 @@ import { completeChore, completeTask } from '../components/functions.js';
 
 
 // block for displaying a chore in weekly list
-export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
+export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   
-  const handleToggleChoreCompletion = (chore_name) => {
-    completeChore(chore_name, tasks)
-      .then(() => refresh())  
+  const handleToggleChoreCompletion = (user, chore_name) => {
+    completeChore(user, chore_name, tasks)
+      .then(() => refresh(user))  
       .catch((error) => console.error("Error toggling task:", error));
   };
 
-  const handleToggleTaskCompletion = (chore_name, task) => {
-    completeTask(chore_name, task)
-      .then(() => refresh())  
+  const handleToggleTaskCompletion = (user, chore_name, task) => {
+    completeTask(user, chore_name, task)
+      .then(() => refresh(user))  
       .catch((error) => console.error("Error toggling task:", error));
   };
 
@@ -35,7 +35,7 @@ export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibili
      {/* Checkbox */}
      <TouchableOpacity
         style={styles.choreCheck}
-        onPress={() => handleToggleChoreCompletion(choreName)}
+        onPress={() => handleToggleChoreCompletion(user, choreName)}
       >
         <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.gray : theme.text1} />
       </TouchableOpacity>
@@ -60,7 +60,7 @@ export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibili
             {/* checkbox */}
             <TouchableOpacity
               style={styles.taskCheck}
-              onPress={() => handleToggleTaskCompletion(choreName, task)}
+              onPress={() => handleToggleTaskCompletion(user, choreName, task)}
             >
               <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.gray : theme.text1} />
             </TouchableOpacity> 

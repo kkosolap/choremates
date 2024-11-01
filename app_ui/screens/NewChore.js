@@ -1,7 +1,8 @@
 // NewChore.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
@@ -25,20 +26,33 @@ const NewChoreScreen = ({ navigation }) => {
 
 const NewChoreDisplay = ({ navigation }) => {
   const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
-  const [recurrence, setRecurrence] = useState('Never');
-  const [tasks, setTasks] = useState([]);         // the new task list to be added to the array -KK
-  const [newTask, setNewTask] = useState('');     // block for the new task to add to the list -KK
+  const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
+  const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
+  const [newTask, setNewTask] = useState('');          // block for the new task to add to the list -KK
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const getUsername = async () => {   // get the username from securestore -KK
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+      } else {
+        console.error("UI NewChore.js: Username not found in SecureStore.");
+      }
+    };
+    getUsername();
+  }, []);
 
   // add the chore to the database, gets called when the "add chore" button is pressed -KK
   const addChore = async () => {
     try {
       // add the chore to the database -KK
-      await axios.post(`${API_URL}add_chore`, { chore_name, username: "kat" });
+      await axios.post(`${API_URL}add_chore`, { chore_name, username, recurrence });
 
       // loop through tasks and add each one to the db -KK
       await Promise.all(tasks.map(task_name =>
-        axios.post(`${API_URL}add_task`, { chore_name, task_name, username: "kat" })
+        axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
       ));
 
       // reset everything -KK
@@ -94,7 +108,7 @@ const NewChoreDisplay = ({ navigation }) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
-              <Text style={styles.modalItem}>Never</Text>
+              <Text style={styles.modalItem}>Just Once</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsModalVisible(false); }}>
               <Text style={styles.modalItem}>Weekly</Text>

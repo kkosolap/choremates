@@ -8,7 +8,7 @@ import * as SecureStore from 'expo-secure-store'; // Import SecureStore
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import { API_URL } from '@env'; // Import your API URL
+import { API_URL } from '../config';
 
 const Signin = ({ onSignin }) => {
   const { theme } = useTheme();
@@ -23,6 +23,7 @@ const Signin = ({ onSignin }) => {
       const response = await axios.post(`${API_URL}login`, { username, password });
       const token = response.data.token;
       await SecureStore.setItemAsync('token', token); // Store the token securely
+      await SecureStore.setItemAsync('username', username); // Store username securely
       onSignin(username); // Update the logged-in state
     } catch (error) {
       console.error('Login Error:', error);

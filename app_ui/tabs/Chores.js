@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, View, ScrollView, } from 'react-native';
+import * as SecureStore from 'expo-secure-store'; 
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
@@ -36,12 +37,23 @@ const ChoresDisplay = () => {
   const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
   const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
   const [task_name, setNewTask] = useState('');   // contains the text for the new task -KK
+  const [username, setUsername] = useState(null);
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
-    useCallback(() => {
-      refresh(); 
-    }, [])
+    useCallback(() => { 
+      const getUsername = async () => {   // get the username from securestore -KK
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) {
+          setUsername(storedUsername); 
+          refresh(storedUsername);
+        } else {
+          console.error("UI Chores.js: Username not found in SecureStore.");
+        }
+      };
+      getUsername();
+    }, 
+    [])
   );
 
   // group the tasks by chore -KK
@@ -68,26 +80,24 @@ const ChoresDisplay = () => {
 
   // add task button -KK
   const addTask = (chore_name) => {
-    axios.post(`${API_URL}add_task`, { chore_name, task_name, username: "kat" }).then((response) => {
-      console.log(response.data);
-      setNewTask('');       // reset the input -KK
-      refresh();       // refresh ltask list after updating -KK
+    axios.post(`${API_URL}add_task`, { chore_name, task_name, username}).then((response) => {
+      setNewTask('');          // reset the input -KK
+      refresh(username);       // refresh ltask list after updating -KK
     })
     .catch((error) => console.error(error));
   };
 
   // delete task button -KK
   const deleteTask = async (chore_name, task_name) => {
-    await axios.post(`${API_URL}delete_task`, { chore_name, task_name, username: "kat" }).then((response) => {
-        console.log(response.data);
-        refresh();     // refresh task list after updating -KK
+    await axios.post(`${API_URL}delete_task`, { chore_name, task_name, username}).then((response) => {
+        refresh(username);     // refresh task list after updating -KK
       })
       .catch((error) => console.error(error));
   };
 
   // fetch the task list for display -KK
-  const refresh = async () => {
-    await axios.post(`${API_URL}get_chores_data`, { username: "kat" }).then((response) => setData(response.data))
+  const refresh = async (user) => {
+    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -98,6 +108,7 @@ const ChoresDisplay = () => {
 
       {Object.keys(groupedTasks).map((chore_name) => (
         <ActiveChoreBlock
+          user={username}
           key={chore_name}
           choreName={chore_name}
           tasks={groupedTasks[chore_name].tasks}

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store'; 
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
@@ -43,7 +44,15 @@ const HomeDisplay = () => {
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
     useCallback(() => {
-      refresh(); 
+      const getUsername = async () => {   // get the username from securestore -KK
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) { 
+          refresh(storedUsername); 
+        } else {
+          console.error("UI Home.js: Username not found in SecureStore.");
+        }
+      };
+      getUsername();
     }, [])
   );
 
@@ -83,6 +92,7 @@ const HomeDisplay = () => {
     if (!acc[task.chore_name]) {
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
+          recurrence: task.chore_recurrence,
           tasks: []
       };
     }
@@ -93,8 +103,8 @@ const HomeDisplay = () => {
   }, {});
 
   // fetch the task list for display -KK
-  const refresh = async () => {
-    await axios.post(`${API_URL}get_chores`, { username: "kat" }).then((response) => setData(response.data))
+  const refresh = async (user) => {
+    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -135,7 +145,7 @@ const HomeDisplay = () => {
                 chore_name,
                 groupedTasks[chore_name].tasks
               )}
-              recurrence={"Every Week"}
+              recurrence={groupedTasks[chore_name].recurrence}
             />
           ))}
         </View>

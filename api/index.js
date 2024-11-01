@@ -181,7 +181,7 @@ app.post('/get_chores', async (req, res) => {
 
         const user_id = await getUserId(username);
 
-        const [results] = await db.promise().query("SELECT id, chore_name FROM chores WHERE user_id = ?", [user_id]);
+        const [results] = await db.promise().query("SELECT id, chore_name, recurrence FROM chores WHERE user_id = ?", [user_id]);
         res.json(results);
     } catch (error) {
         console.error("API get_chores: Error:", error.message);
@@ -194,7 +194,7 @@ app.post('/get_chores_data', async (req, res) => {
     try {
         const { username } = req.body;
         if (!username) {
-            console.log("API get_chores: Missing username.");
+            console.log("API get_chores_data: Missing username.");
             return res.status(400).send("Missing username.");
         }
 
@@ -204,6 +204,7 @@ app.post('/get_chores_data', async (req, res) => {
             SELECT 
                 chores.chore_name, 
                 chores.is_completed AS chore_is_completed, 
+                chores.recurrence AS chore_recurrence,
                 tasks.task_name, 
                 tasks.is_completed AS task_is_completed
             FROM chores
@@ -214,7 +215,7 @@ app.post('/get_chores_data', async (req, res) => {
         const [results] = await db.promise().query(query, [user_id]);
         res.json(results);
     } catch (error) {
-        console.error("API get_chores: Error:", error.message);
+        console.error("API get_chores_data: Error:", error.message);
         res.status(500).send("Error retrieving chores.");
     }
 });
@@ -222,10 +223,10 @@ app.post('/get_chores_data', async (req, res) => {
 // add a new chore for the user -KK
 app.post('/add_chore', async (req, res) => {
     try {
-        const { chore_name, username } = req.body;
-        if (!chore_name || !username) {
-            console.log("API add_chore: Missing chore or username.");
-            return res.status(400).send("Missing chore or username.");
+        const { chore_name, username, recurrence } = req.body;
+        if (!chore_name || !username || !recurrence) {
+            console.log("API add_chore: Missing chore, username, or recurrence.");
+            return res.status(400).send("Missing chore, username, or recurrence.");
         }
 
         const user_id = await getUserId(username);
@@ -235,7 +236,8 @@ app.post('/add_chore', async (req, res) => {
             return res.status(400).send("This chore already exists!");
         }
 
-        await db.promise().query("INSERT INTO chores (user_id, chore_name, is_completed) VALUES (?, ?, false)", [user_id, chore_name]);
+        const query = "INSERT INTO chores (user_id, chore_name, is_completed, recurrence) VALUES (?, ?, false, ?)";
+        await db.promise().query(query, [user_id, chore_name, recurrence]);
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add_chore: Error:", error.message);
@@ -318,7 +320,7 @@ app.post('/add_task', async (req, res) => {
         }
 
         const user_id = await getUserId(username);
-        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
         const [duplicate] = await db.promise().query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id]);
         if (duplicate.length > 0) {
             console.log("API add_task: Duplicate task name.");
@@ -327,6 +329,11 @@ app.post('/add_task', async (req, res) => {
 
         // add the task to the database -KK
         await db.promise().query("INSERT INTO tasks (chore_id, task_name, is_completed) VALUES (?, ?, false)", [chore_id, task_name]);  
+        
+        // mark chore as incomplete -KK
+        if(is_completed){
+            await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
+        }
         res.status(200).json({ message: "Changed completion successfully." });
     } catch (error) {
         console.error("API add_task: Error:", error.message);
