@@ -327,6 +327,7 @@ app.delete('/delete_task', (req, res) => {
 /*              GROUP IMPLEMENTATION BELOW:                 */
 /********************************************************** */
 // create a new group -ET
+// input: group_name, user_id (the person who wants to create the group)
 app.post('/createGroup', (req, res) => {
     const { group_name, user_id } = req.body;
 
@@ -357,7 +358,31 @@ app.post('/createGroup', (req, res) => {
     });
 });
 
+// get all members and their roles of a specific group 
+// input: group_id
+// output: member name, role
+app.get('/groupMembers', (req, res) => {
+    const { group_id } = req.query;
+
+    // Query to retrieve member names for the specified group
+    const getGroupMembersQuery = `
+        SELECT users.username, group_members.role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE group_members.group_id = ?
+    `;
+
+    db.query(getGroupMembersQuery, [group_id], (err, results) => {
+        if (err) {
+            console.error("Error retrieving group members: ", err.message);
+            return res.status(500).json({ error: "Failed to retrieve group members" });
+        }
+        res.status(200).json(results);
+    });
+});
+
 // send an invitation, only 'admin' can invite --ET
+// input: inviter_id, invitee_id, group_id
 app.post('/sendInvitation', (req, res) => {
     const { inviter_id, invitee_id, group_id } = req.body;
 
@@ -391,7 +416,9 @@ app.post('/sendInvitation', (req, res) => {
     });
 });
 
-// get received pending invitations --ET
+// get received pending invitations for a specific user --ET
+// input: user_id (want to retrieve this person's pending invitations)
+// output: pending invitations for that user
 app.get('/receivedInvitations', (req, res) => {
     const { user_id } = req.query;
 
@@ -406,9 +433,8 @@ app.get('/receivedInvitations', (req, res) => {
 });
 
 // respond to invitation based on user's response (accepted / rejected) --ET
+// input: invitation_id, response (either "accepted" or "rejected")
 app.post('/respondToInvitation', (req, res) => {
-    // invitation_id is "id" in "group_invitations" table
-    // response is either "accepted" or "rejected". (status in group_invitations)
     const { invitation_id, response } = req.body;
 
     // Update the status in the group_invitations table
