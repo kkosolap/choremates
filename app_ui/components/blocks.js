@@ -6,14 +6,26 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import showHelloPopup from '../components/hello.js';
+import { completeChore, completeTask } from '../components/functions.js';
 
 
 // block for displaying a chore in weekly list
-export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask }) => {
+export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   
+  const handleToggleChoreCompletion = (user, chore_name) => {
+    completeChore(user, chore_name, tasks)
+      .then(() => refresh(user))  
+      .catch((error) => console.error("Error toggling task:", error));
+  };
+
+  const handleToggleTaskCompletion = (user, chore_name, task) => {
+    completeTask(user, chore_name, task)
+      .then(() => refresh(user))  
+      .catch((error) => console.error("Error toggling task:", error));
+  };
+
   return (
     <TouchableOpacity
       style={completed ? styles.choreBlockCompleted : styles.choreBlock}
@@ -23,7 +35,7 @@ export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibili
      {/* Checkbox */}
      <TouchableOpacity
         style={styles.choreCheck}
-        onPress={showHelloPopup}
+        onPress={() => handleToggleChoreCompletion(user, choreName)}
       >
         <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.gray : theme.text1} />
       </TouchableOpacity>
@@ -42,20 +54,21 @@ export const ActiveChoreBlock = ({ choreName, tasks, completed, onToggleVisibili
       )}
 
       {/* Render tasks if visible */}
-      {visible && tasks.length > 0 && tasks.map(({ id, task }) => (
+      {visible && tasks.length > 0 && tasks.map(({ id, task, completed }) => (
         <View key={id} style={styles.taskContainer}>
           <View style={styles.taskAndCheck}>
             {/* checkbox */}
             <TouchableOpacity
               style={styles.taskCheck}
-              onPress={showHelloPopup}
+              onPress={() => handleToggleTaskCompletion(user, choreName, task)}
             >
-              {/*<Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.gray : theme.text1} />*/}
-              <Icon name={"square-outline"} size={20} color={theme.text1} />
+              <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.gray : theme.text1} />
             </TouchableOpacity> 
 
             {/* task text */}
-            <Text style={styles.taskText}>{task}</Text>
+            <Text style={[styles.taskText, completed && styles.taskTextCompleted]}>
+              {task}
+            </Text>
           </View>
 
           {/* delete button */}

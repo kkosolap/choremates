@@ -22,17 +22,18 @@ app.use(express.urlencoded({ extended: true }));
 require('dotenv').config();  // load env variables
 
 const db = mysql.createConnection({
-    host: "localhost",
+    host: process.env.DB_HOST,
     database: "choremates",   
-    user: "root",
-    // put "DB_PASSWORD=yourpassword" in your local .env file, replace yourpassword with your mysql root password --Ethan
+    user: process.env.DB_USER,
+    // put "DB_PASSWORD=yourpassword" in your local .env file, 
+    // replace yourpassword with your mysql root password --Ethan
     password: process.env.DB_PASSWORD, 
 });
 
 // connect to the database
 db.connect((err) =>{
     if (err){
-        console.log("Error connecting to database: ", err.message);
+        console.log("API connect: Error connecting to database: ", err.message);
         return;
     }
     console.log("Connected to database.");
@@ -42,47 +43,20 @@ db.connect((err) =>{
 /********************************************************** */
 /*             ALL GET AND POST PATHS BELOW:                */
 /********************************************************** */
-
-app.get('/chores', (req, res) => {
-    const sql = `SELECT id, chore_name FROM chores;`; // Add id to the query
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error('Error fetching chores:', err);
-            return res.status(500).send('Failed to retrieve chores');
-        }
-        res.status(200).json(results);
-    });
-});
-
-
-// Added to test using forms to add chores -VA
-app.post('/addChore', (req, res) => {
-    const { user_id, chore_name } = req.body;
-    const sql = `INSERT INTO chores (user_id, chore_name, is_completed) VALUES (?, ?, ?)`;
-    
-    db.query(sql, [user_id, chore_name, 0], (err, results) => {
-        if (err) {
-            console.error('Error adding chore:', err);
-            return res.status(500).send('Failed to add chore');
-        }
-        res.status(200).send('Chore added successfully');
-    });
-});
-
 app.get('/', (req, res) => {    
-    // this is what will display when visiting http://localhost:3000/ -KK
+    // this is what will display when visiting http://ipv4:3000/ -KK
     res.send("Hello World!")
 });
 
 app.get('/home', (req, res) => {
-    // this is what will display when visiting http://localhost:3000/home -KK
+    // this is what will display when visiting http://ipv4:3000/home -KK
     res.send("Welcome to the Home Page!")
 });
 
 app.get('/get_users', (req, res) => {
-    db.query('SELECT * FROM users', (err, results) => {
+    db.query('SELECT username FROM users', (err, results) => {
         if (err) {
-            console.error("API: Error querying database: ", err.message);
+            console.error("API get_users: Error querying database: ", err.message);
             return res.status(500).send("Error querying database.");
         }
         res.json(results);
@@ -90,11 +64,43 @@ app.get('/get_users', (req, res) => {
 });
 
 /********************************************************** */
+/*                HELPER FUNCTIONS BELOW:                */
+/********************************************************** */
+// gets the user id given a username -KK
+async function getUserId(username) {
+    const [results] = await db.promise().query("SELECT id FROM users WHERE username = ?", [username]);
+    if (results.length === 0) {
+        console.log(`API getUserId: User ${username} not found`);
+        throw new Error(`User ${username} not found`);
+    }
+    return results[0].id;
+}
+
+// gets the chore id and completion status given a chore_name -KK
+async function getChoreIdAndCompletionStatus(chore_name, user_id) {
+    const [results] = await db.promise().query("SELECT id, is_completed FROM chores WHERE chore_name = ? AND user_id = ?", [chore_name, user_id]);    if (results.length === 0) {
+        console.log(`API getChoreId: Chore ${chore_name} not found`);
+        throw new Error(`Chore ${chore_name} not found`);
+    }
+    return { chore_id: results[0].id, is_completed: results[0].is_completed };
+}
+
+// gets the task id given a task_name -KK
+async function getTaskId(task_name, chore_id) {
+    const [results] = await db.promise().query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id]);
+    if (results.length === 0) {
+        console.log(`API getTaskId: Task ${task_name} not found`);
+        throw new Error(`Task ${task_name} not found`);
+    }
+    return results[0].id;
+}
+
+/********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
 /********************************************************** */
 // user registration 
 app.post('/register', async (req, res) => {
-    console.log("Registration request received");
+    console.log("API register: Registration request received");
     console.log(req.body);
 
     const { username, password } = req.body;
@@ -106,7 +112,7 @@ app.post('/register', async (req, res) => {
         // Check if the username already exists
         db.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
             if (err) {
-                console.error("Error checking for existing user: ", err.message);
+                console.error("API register: Error checking for existing user: ", err.message);
                 return res.status(500).json({ error: "Error checking for existing user" });
             }
 
@@ -116,26 +122,29 @@ app.post('/register', async (req, res) => {
 
             // if the username does not exist, proceed with hashing the password and inserting the user
             const hashedPassword = await bcrypt.hash(password, 10);
-            console.log("Password hashed successfully");
+            console.log("API register: Password hashed successfully");
 
             db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
             (err, result) => {
                 if (err) {
-                    console.error("Error inserting into database: ", err.message);
+                    console.error("API register: Error inserting into database: ", err.message);
                     return res.status(500).json({ error: "Registration failed (database error)" });
                 }
-                console.log("User registered successfully!");
+                console.log("API register: User registered successfully!");
                 res.status(201).json({ message: 'User registered successfully!' });
             });
         });
 
     } catch (err) {
-        console.error("Registration process failed:", err);
+        console.error("API register: Registration process failed:", err);
         return res.status(500).json({ error: "Registration failed" });
     }
 });
 
-// user login
+
+/********************************************************** */
+/*              LOGIN/LOGOUT BELOW:                         */
+/********************************************************** */
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -152,7 +161,6 @@ app.post('/login', (req, res) => {
     });
 });
 
-// user logout
 app.post('/logout', (req, res) => {
     // Nathan pls handle token invalidation on the client side. -- Ethan
     res.status(200).json({ message: 'Logged out successfully!' });
@@ -162,41 +170,118 @@ app.post('/logout', (req, res) => {
 /********************************************************** */
 /*              CHORE IMPLEMENTATION BELOW:                 */
 /********************************************************** */
-app.get('/get_chores', (req, res) => {
-    const user_id = req.query.user_id;
+// get all chores for a user -KK
+app.post('/get_chores', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get_chores: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
 
-    const baseQuery = `
-        SELECT 
-            chores.chore_name, 
-            chores.is_completed AS chore_is_completed, 
-            tasks.task_name, 
-            tasks.is_completed AS task_is_completed
-        FROM chores
-        LEFT JOIN tasks ON chores.id = tasks.chore_id
-    `;
+        const user_id = await getUserId(username);
 
-    if (!user_id) { 
-        console.log("API: No user specified. Returning all items.");
+        const [results] = await db.promise().query("SELECT id, chore_name, recurrence FROM chores WHERE user_id = ?", [user_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API get_chores: Error:", error.message);
+        res.status(500).send("Error retrieving chores.");
+    }
+});
 
-        db.query(baseQuery, (err, results) => {
-            if (err) {
-                console.error("API: Error querying database: ", err.message);
-                return res.status(500).send("Error querying database.");
-            }
-            res.json(results);
-        });
-        // return res.status(400).send("Missing user_id.");
-        // change this section to the above line later for more security -KK
-    } else {
-        //console.log(`API: Returning items for user_id ${user_id}`);
+// get all the chores and associated tasks for a specific user -KK
+app.post('/get_chores_data', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get_chores_data: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
 
-        db.query(`${baseQuery} WHERE chores.user_id = ?`, [user_id], (err, results) => {
-            if (err) {
-                console.error("API: Error querying database: ", err.message);
-                return res.status(500).send("Error querying database.");
-            }
-            res.json(results);
-        });
+        const user_id = await getUserId(username);
+
+        const query = `
+            SELECT 
+                chores.chore_name, 
+                chores.is_completed AS chore_is_completed, 
+                chores.recurrence AS chore_recurrence,
+                tasks.task_name, 
+                tasks.is_completed AS task_is_completed
+            FROM chores
+            LEFT JOIN tasks ON chores.id = tasks.chore_id
+            WHERE chores.user_id = ?
+        `;
+
+        const [results] = await db.promise().query(query, [user_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API get_chores_data: Error:", error.message);
+        res.status(500).send("Error retrieving chores.");
+    }
+});
+
+// add a new chore for the user -KK
+app.post('/add_chore', async (req, res) => {
+    try {
+        const { chore_name, username, recurrence } = req.body;
+        if (!chore_name || !username || !recurrence) {
+            console.log("API add_chore: Missing chore, username, or recurrence.");
+            return res.status(400).send("Missing chore, username, or recurrence.");
+        }
+
+        const user_id = await getUserId(username);
+        const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, chore_name]);
+        if (duplicate.length > 0) {
+            console.log("API add_chore: Duplicate chore name.");
+            return res.status(400).send("This chore already exists!");
+        }
+
+        const query = "INSERT INTO chores (user_id, chore_name, is_completed, recurrence) VALUES (?, ?, false, ?)";
+        await db.promise().query(query, [user_id, chore_name, recurrence]);
+        res.status(200).json({ message: "Chore added successfully." });
+    } catch (error) {
+        console.error("API add_chore: Error:", error.message);
+        res.status(500).send("An error occurred while adding the chore.");
+    }
+});
+
+// deletes a chore for the user from the database -KK
+app.post('/delete_chore', async (req, res) => {
+    try {
+        const { chore_name, username } = req.body;
+        if (!chore_name || !username) {
+            console.log("API delete_chore: Missing chore or username.");
+            return res.status(400).send("Missing chore or username.");
+        }
+
+        const user_id = await getUserId(username);
+        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+
+        await db.promise().query("DELETE FROM chores WHERE id = ?", [chore_id]);
+        res.status(200).json({ message: "Chore deleted successfully." });
+    } catch (error) {
+        console.error("API delete_chore: Error:", error.message);
+        res.status(500).send("An error occurred while deleting the chore.");
+    }
+});
+
+// toggle the completion status of a chore, false -> true and true -> false -KK
+app.post('/complete_chore', async (req, res) => {
+    try {
+        const { chore_name, username } = req.body;
+        if (!chore_name || !username) {
+            console.log("API complete_chore: Missing username or chore name.");
+            return res.status(400).send("Missing username or chore name.");
+        }
+
+        const user_id = await getUserId(username);
+        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+
+        await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
+        res.status(200).json({ message: "Chore completion status toggled successfully." });
+    } catch (error) {
+        console.error("API complete_chore: Error:", error.message);
+        res.status(500).send("An error occurred while toggling chore completion status.");
     }
 });
 
@@ -204,127 +289,129 @@ app.get('/get_chores', (req, res) => {
 /********************************************************** */
 /*               TASK IMPLEMENTATION BELOW:                 */
 /********************************************************** */
-app.get('/get_tasks', (req, res) => {
-    const user_id = req.query.user_id; 
-    if (!user_id) { // no user is specified, display all items -KK
-        console.log("API: No user specified. Returning all items."); 
-        db.query('SELECT * FROM tasks', (err, results) => {
-            if (err) {
-                console.error("API: Error querying database: ", err.message);
-                return res.status(500).send("Error querying database.");
-            }
-            res.json(results);
-        });
-        // return res.status(400).send("Missing user_id.");
-        // change this section to the above line later for more security -KK
-    }
-    else{
-        const query = `
-            SELECT chores.chore_name, tasks.task_name
-            FROM tasks
-            JOIN chores ON tasks.chore_id = chores.id
-            WHERE chores.user_id = ?
-        `;
+// gets a list of tasks given a chore -KK
+app.post('/get_tasks', async (req, res) => {
+    try {
+        const { chore_name, username } = req.body;
+        if(!chore_name || !username){
+            console.log("API get_tasks: Missing username or chore name.");
+            return res.status(400).send("Missing username or chore name.");
+        }
 
-        db.query(query, [user_id], (err, results) => {
-            if (err) {
-                console.error("API: Error querying database: ", err.message);
-                return res.status(500).send("Error querying database.");
-            }
-            res.json(results);
-        });
+        const user_id = await getUserId(username);
+        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+
+        // get the tasks from the database -KK
+        const [tasks] = await db.promise().query("SELECT task_name from tasks WHERE chore_id = ?", [chore_id]);
+        res.status(200).json(tasks);
+    } catch (error) {
+        console.error("API get_tasks: Error:", error.message);
+        res.status(500).send("An error occurred while adding the task.");
     }
 });
 
-// pre: chore_name and task_name -KK
-app.post('/add_task', (req, res) => {
-    const chore_name = req.query.chore_name;    // query is what gets passed in through the url -KK
-    const task_name = req.body.task_name;       // body is what gets passed in to "post" on the ui side -KK
-    const user_id = req.body.user_id;
-    if(!chore_name || !task_name){
-        console.log("API: Missing chore or task name.");
-        return res.status(400).send("Missing chore or task name.");
-    }
-
-    // get the chore id from the chore name passed into the request -KK
-    db.query("SELECT id FROM chores WHERE chore_name = ? AND user_id = ?", [chore_name, user_id], (err, results) => {
-        if (err) {
-            console.error("API: Error retrieving chore id: ", err.message);
-            return res.status(500).send("Error retrieving chore id.");
+// adds a task for a given chore to the database -KK
+app.post('/add_task', async (req, res) => {
+    try {
+        const { chore_name, task_name, username } = req.body;
+        if(!chore_name || !task_name || !username){
+            console.log("API add_task: Missing username, chore name, or task name.");
+            return res.status(400).send("Missing username, chore name, or task name.");
         }
+
+        const user_id = await getUserId(username);
+        const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const [duplicate] = await db.promise().query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id]);
+        if (duplicate.length > 0) {
+            console.log("API add_task: Duplicate task name.");
+            return res.status(400).send("This task already exists!");
+        }
+
+        // add the task to the database -KK
+        await db.promise().query("INSERT INTO tasks (chore_id, task_name, is_completed) VALUES (?, ?, false)", [chore_id, task_name]);  
         
-        if (results.length == 0) {
-            console.log("API: Chore not found.");
-            return res.status(404).send("Not found.");
+        // mark chore as incomplete -KK
+        if(is_completed){
+            await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
         }
-
-        const chore_id = results[0].id;
-
-        // check to see if the task already exists for the chore -KK
-        db.query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id], (err, results) => {
-            if (err) {
-                console.error("API: Error checking for duplicate item: ", err.message);
-                return res.status(500).send("Error checking for duplicate item.");
-            }
-
-            if (results.length > 0) {
-                console.log("API: Duplicate task name.");
-                return res.status(400).send("This task already exists for your chore!");
-            }
-
-
-            // insert the new task into the task table -KK
-            const query = `INSERT INTO tasks (chore_id, task_name) VALUES (?, ?)`;
-            db.query(query, [chore_id, task_name], (err, results) => {
-                if (err) {
-                    console.error("API: Error inserting into database: ", err.message);
-                    return res.status(500).send("Error inserting into database.");
-                }
-                res.json("Added item successfully.");
-            });
-        });
-    });
-})
-
-// pre: chore_name and task_name -KK
-app.delete('/delete_task', (req, res) => {
-    const chore_name = req.query.chore_name; 
-    const task_name = req.query.task_name;
-
-    if(!chore_name || !task_name){
-        console.log("API: Missing chore or task name.");
-        return res.status(400).send("Missing chore name or task description.");
+        res.status(200).json({ message: "Changed completion successfully." });
+    } catch (error) {
+        console.error("API add_task: Error:", error.message);
+        res.status(500).send("An error occurred while adding the task.");
     }
-
-    // get the chore id from the chore name passed into the request -KK
-    db.query("SELECT id from chores WHERE chore_name = ?", [chore_name], (err, results) => {
-        if (err) {
-            console.error("API: Error retrieving chore id: ", err.message);
-            return res.status(500).send("Error retrieving chore id.");
-        }
-        
-        if (results.length == 0) {
-            console.log("API: Chore not found.");
-            return res.status(404).send("Not found.");
+});
+   
+// deletes a task for a given chore from the database -KK
+app.post('/delete_task', async (req, res) => {
+    try {
+        const { chore_name, task_name, username } = req.body;
+        if (!chore_name || !task_name || !username) {
+            console.log("API delete_task: Missing username, chore name, or task name.");
+            return res.status(400).send("Missing username, chore name, or task name.");
         }
 
-        const chore_id = results[0].id;
+        const user_id = await getUserId(username);
+        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const task_id = await getTaskId(task_name, chore_id);
 
-        // delete the task -KK
-        const query = `DELETE FROM tasks WHERE chore_id = ? AND task_name = ?`;
-        db.query(query, [chore_id, task_name], (err, results) => {
-            if (err) {
-                console.error("API: Error deleting task from database: ", err.message);
-                return res.status(500).send("Error deleting task from database.");
-            }
-            res.json("Deleted task successfully.");
-        });
-    });
-})
+        await db.promise().query("DELETE FROM tasks WHERE id = ?", [task_id]);
+        res.status(200).json({ message: "Task deleted successfully." });
+    } catch (error) {
+        console.error("API delete_task: Error:", error.message);
+        res.status(500).send("An error occurred while deleting the task.");
+    }
+});
+
+// toggles the completion status of the task, false -> true and true -> false -KK
+app.post('/complete_task', async (req, res) => {
+    try {
+        const { chore_name, task_name, username } = req.body;
+        if (!chore_name || !task_name || !username) {
+            console.log("API complete_task: Missing username, chore name, or task name.");
+            return res.status(400).send("Missing username, chore name, or task name.");
+        }
+
+        const user_id = await getUserId(username);
+        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const task_id = await getTaskId(task_name, chore_id);
+
+        await db.promise().query("UPDATE tasks SET is_completed = NOT is_completed WHERE id = ?", [task_id]);
+        res.status(200).json({ message: "Task completion status toggled successfully." });
+    } catch (error) {
+        console.error("API complete_task: Error:", error.message);
+        res.status(500).send("An error occurred while toggling task completion status.");
+    }
+});
+
+// matches the completion status of the task to match the completion status of the chore
+app.post('/match_task', async (req, res) => {
+    try {
+        const { chore_name, task_name, username } = req.body;
+        if (!chore_name || !task_name || !username) {
+            console.log("API match_task: Missing username, chore name, or task name.");
+            return res.status(400).send("Missing username, chore name, or task name.");
+        }
+
+        const user_id = await getUserId(username);
+        const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const task_id = await getTaskId(task_name, chore_id);
+
+        await db.promise().query("UPDATE tasks SET is_completed = ? WHERE id = ?", [is_completed, task_id]);
+        res.status(200).json({ message: "Task completion status matched successfully." });
+    } catch (error) {
+        console.error("API match_task: Error:", error.message);
+        res.status(500).send("An error occurred while matching task completion status.");
+    }
+});
 
 
-
+/********************************************************** */
+/*               SERVER LOGS BELOW:                         */
+/********************************************************** */
 
 // keep this at the very bottom of the file -KK
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}.`));
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}.`)
+    console.log(`Access server at ${process.env.API_URL}`)
+});
 

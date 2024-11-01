@@ -1,14 +1,17 @@
 // Chores.js
 
-import { useEffect, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { Text, View, ScrollView, } from 'react-native';
-import axios from 'axios';
+import * as SecureStore from 'expo-secure-store'; 
 
-import { API_URL } from '@env';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ActiveChoreBlock } from '../components/blocks.js';
+
+import axios from 'axios';
+import { API_URL } from '../config';
 
 
 // header and page content  -MH
@@ -33,12 +36,25 @@ const ChoresDisplay = () => {
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
   const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
-  const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
+  const [task_name, setNewTask] = useState('');   // contains the text for the new task -KK
+  const [username, setUsername] = useState(null);
 
-  // gets called when the component loads
-  useEffect(() => {
-    refreshTasks();
-  }, []);
+  // calls refresh whenever the screen is in focus -KK
+  useFocusEffect(
+    useCallback(() => { 
+      const getUsername = async () => {   // get the username from securestore -KK
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) {
+          setUsername(storedUsername); 
+          refresh(storedUsername);
+        } else {
+          console.error("UI Chores.js: Username not found in SecureStore.");
+        }
+      };
+      getUsername();
+    }, 
+    [])
+  );
 
   // group the tasks by chore -KK
   const groupedTasks = data.reduce((acc, task) => {
@@ -49,7 +65,7 @@ const ChoresDisplay = () => {
       };
     }
     if (task.task_name) { // only push if task_name is non-null -MH
-      acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name });
+      acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name, completed: task.task_is_completed });
     }
     return acc;
   }, {});
@@ -64,32 +80,24 @@ const ChoresDisplay = () => {
 
   // add task button -KK
   const addTask = (chore_name) => {
-    axios.post(`${API_URL}add_task?chore_name=${chore_name}`, {
-      task_name: newTask,
-      user_id: 1,           // adjust later to the logged-in user -KK
-    })
-    .then((response) => {
-      console.log(response.data);
-      setNewTask('');       // reset the input -KK
-      refreshTasks();       // refresh ltask list after updating -KK
+    axios.post(`${API_URL}add_task`, { chore_name, task_name, username}).then((response) => {
+      setNewTask('');          // reset the input -KK
+      refresh(username);       // refresh ltask list after updating -KK
     })
     .catch((error) => console.error(error));
   };
 
   // delete task button -KK
-  const deleteTask = (chore_name, task) => {
-    axios.delete(`${API_URL}delete_task?chore_name=${chore_name}&task_name=${task}`)
-      .then((response) => {
-        console.log(response.data);
-        refreshTasks();     // refresh ltask list after updating -KK
+  const deleteTask = async (chore_name, task_name) => {
+    await axios.post(`${API_URL}delete_task`, { chore_name, task_name, username}).then((response) => {
+        refresh(username);     // refresh task list after updating -KK
       })
       .catch((error) => console.error(error));
   };
 
   // fetch the task list for display -KK
-  const refreshTasks = () => {
-    axios.get(API_URL + "get_chores?user_id=1")
-      .then((response) => setData(response.data))
+  const refresh = async (user) => {
+    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -100,6 +108,7 @@ const ChoresDisplay = () => {
 
       {Object.keys(groupedTasks).map((chore_name) => (
         <ActiveChoreBlock
+          user={username}
           key={chore_name}
           choreName={chore_name}
           tasks={groupedTasks[chore_name].tasks}
@@ -109,9 +118,10 @@ const ChoresDisplay = () => {
           onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
           onDelete={deleteTask}
           isEditing={edit === chore_name}
-          newTask={newTask}
+          newTask={task_name}
           setNewTask={setNewTask}
           onAddTask={addTask}
+          refresh={refresh}
         />
       ))}
 

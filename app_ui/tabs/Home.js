@@ -1,17 +1,18 @@
 // Home.js
 
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert   } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store'; 
 
-import { API_URL } from '@env';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
-import AddChoreScreen from '../components/AddChore.js';
+
+import axios from 'axios';
+import { API_URL } from '../config';
 
 
 // header and page content
@@ -39,6 +40,21 @@ const HomeDisplay = () => {
   const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
   const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
   const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
+
+  // calls refresh whenever the screen is in focus -KK
+  useFocusEffect(
+    useCallback(() => {
+      const getUsername = async () => {   // get the username from securestore -KK
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) { 
+          refresh(storedUsername); 
+        } else {
+          console.error("UI Home.js: Username not found in SecureStore.");
+        }
+      };
+      getUsername();
+    }, [])
+  );
 
   // add chore button press
   const handlePressIn = () => {
@@ -71,16 +87,12 @@ const HomeDisplay = () => {
     });
   };
 
-  // gets called when the component loads
-  useEffect(() => {
-    refreshTasks();
-  }, []);
-
   // group the tasks by chore -KK
   const groupedTasks = data.reduce((acc, task) => {
     if (!acc[task.chore_name]) {
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
+          recurrence: task.chore_recurrence,
           tasks: []
       };
     }
@@ -90,34 +102,9 @@ const HomeDisplay = () => {
     return acc;
   }, {});
 
-  // add task button -KK
-  const addTask = (chore_name) => {
-    axios.post(`${API_URL}add_task?chore_name=${chore_name}`, {
-      task_name: newTask,
-      user_id: 1,           // adjust later to the logged-in user -KK
-    })
-    .then((response) => {
-      console.log(response.data);
-      setNewTask('');       // reset the input -KK
-      refreshTasks();       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  // delete task button -KK
-  const deleteTask = (chore_name, task) => {
-    axios.delete(`${API_URL}delete_task?chore_name=${chore_name}&task_name=${task}`)
-      .then((response) => {
-        console.log(response.data);
-        refreshTasks();     // refresh ltask list after updating -KK
-      })
-      .catch((error) => console.error(error));
-  };
-
   // fetch the task list for display -KK
-  const refreshTasks = () => {
-    axios.get(API_URL + "get_chores?user_id=1")
-      .then((response) => setData(response.data))
+  const refresh = async (user) => {
+    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -149,7 +136,6 @@ const HomeDisplay = () => {
 
         {/* Display all Chores */}
         <View style={styles.choresList}>
-          
           {Object.keys(groupedTasks).map((chore_name) => (
             <ChoreBlock
               key={chore_name}
@@ -159,15 +145,11 @@ const HomeDisplay = () => {
                 chore_name,
                 groupedTasks[chore_name].tasks
               )}
-              recurrence={"Every Week"}
+              recurrence={groupedTasks[chore_name].recurrence}
             />
           ))}
-
         </View>
       </View>
-
-      
-
     </View>
   );
 };

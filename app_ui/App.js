@@ -89,13 +89,14 @@ const App = () => {
     checkToken();
   }, []);
 
-  const handleSignin = (username, password) => {
-    console.log('Logging in with:', username, password);
+  const handleSignin = (username) => {
+    console.log('Logging in as:', username);
     setIsLoggedIn(true);
   };
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync('token'); // Remove token securely
+    await SecureStore.deleteItemAsync('username'); 
     setIsLoggedIn(false); // Update logged-in state
   };
 
