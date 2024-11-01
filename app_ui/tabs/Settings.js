@@ -2,9 +2,12 @@
 
 import React from 'react';
 import { Text, View, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, Button, ScrollView} from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState }  from 'react';
 import colors from '../style/colors';
 import styles from '../style/styles';
+import axios from 'axios';
+
+import { API_URL } from '../config';
 import { TabHeader } from '../components/headers.js';
 import LogoutButton from '../components/logout'; 
 import { Ionicons } from '@expo/vector-icons'; // For an edit icon
@@ -14,34 +17,72 @@ import { Ionicons } from '@expo/vector-icons'; // For an edit icon
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 
-// const { theme } = useTheme();
-// const styles = createStyles(theme);
-
 const profilePicture = require('../icons/profile_duck.jpg');
-
 
 // Header and page content
 const SettingsScreen = ({ onLogout }) => {
-  const { theme } = useTheme();
+  const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [users, setUsers] = useState('');
 
-  const handleEditPhoto = () => {
-    setIsEditing(!isEditing);
-    // Add logic here for changing the profile photo -VA
-    // console.log('profile pic edit')
-  };
+  const [displayName, setDisplayName] = useState('');
 
-  const handleChangeTheme = (color) => {
-    // Add logic here for changing the theme -VA
-    // console.log('profile pic edit')
-  };
+  
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+                        // ?id=2
+        const response = await axios.get(`${API_URL}get_users`);
+
+          // set users doesn't get just one user
+
+        setUsers(response.data);
+        // console.log(response.data);
+        // console.log(users.id)
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+  
+    fetchUsers();
+  }, []);
+  
 
   const handleChangeDisplayName = (newDisplayName) => {
     // Add logic here for changing the theme -VA
     // console.log('profile pic edit')
   };
+
+  const handleEditPhoto = () => {
+    setIsEditing(!isEditing);
+    // console.log(process.env.API_URL);
+
+    // Add logic here for changing the profile photo -VA
+    // console.log('profile pic edit')
+  };
+
+  // const handleChangeTheme = (color) => {
+  //   // Add logic here for changing the theme -VA
+  //   // console.log('profile pic edit')
+  //   theme.changeTheme(color);
+  // };
+
+
+  // const handleChangeTheme = (themeName) => {
+  //   if (theme[themeName]) {
+  //     setCurrentTheme(theme[themeName]);
+  //   } else {
+  //     console.warn(`Theme '${themeName}' does not exist in themes.`);
+  //   }
+  // };
+
+  // const handleChangeTheme = (color) => {
+  //   changeTheme(color); // Call changeTheme directly from useTheme
+  // };
+
+
 
   
 
@@ -53,7 +94,7 @@ const SettingsScreen = ({ onLogout }) => {
 
 
 
-    <View style={styles.content}>
+    <View style={styles.screen}>
       <TabHeader title="Settings" />
         <ScrollView contentContainerStyle={styles.profileContainer}>
 
@@ -71,7 +112,8 @@ const SettingsScreen = ({ onLogout }) => {
             <View style={styles.profileTextContainer}>
               <Text>Display Name</Text>
               <TextInput style={styles.profileDisplayNameText} onChangeText={handleChangeDisplayName}
-              >Victoria</TextInput>
+               >victoria</TextInput>    
+               {/* // value={displayName}  */}
               <Text>User Name</Text>
               <Text style={styles.profileUsernameText}>@victoriaayala</Text>
             </View>
@@ -89,21 +131,22 @@ const SettingsScreen = ({ onLogout }) => {
 
           {/* Container for Icons */}
           <View style={styles.themeIconContainer}>
-            <TouchableOpacity onPress={handleChangeTheme('yellow')}>
-              <Ionicons name="color-palette" size={48} color={colors.yellow.main}/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleChangeTheme('blue')}>
-              <Ionicons name="color-palette" size={48} color={colors.blue.main}  />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleChangeTheme('purple')}>
-              <Ionicons name="color-palette" size={48} color={colors.purple.main} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleChangeTheme('pink')}>
-              <Ionicons name="color-palette" size={48} color={colors.pink.main}  />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleChangeTheme('green')}>
-              <Ionicons name="color-palette" size={48} color={colors.green.main}  />
-            </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeTheme('blue')}>
+            <Ionicons name="color-palette" size={48} color={colors.blue.main} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeTheme('pink')}>
+            <Ionicons name="color-palette" size={48} color={colors.pink.main} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeTheme('purple')}>
+            <Ionicons name="color-palette" size={48} color={colors.purple.main} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeTheme('green')}>
+            <Ionicons name="color-palette" size={48} color={colors.green.main} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => changeTheme('yellow')}>
+            <Ionicons name="color-palette" size={48} color={colors.yellow.main} />
+          </TouchableOpacity>
+
           </View>
 
           {/* Extra space between themes and notifications */}

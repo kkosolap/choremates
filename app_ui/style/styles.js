@@ -247,7 +247,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 250,
+      marginTop: 125,
     },
     
     logoutButtonText: {

@@ -6,7 +6,9 @@ import axios from 'axios'; // Make sure axios is installed
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import { API_URL } from '@env'; // Import your API URL
+// import { API_URL } from '@env'; // Import your API URL
+import { API_URL } from '../config.js';
+
 
 const Register = ({ navigation }) => {
   const { theme } = useTheme();

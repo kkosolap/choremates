@@ -13,9 +13,16 @@ export const ThemeProvider = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState(themes.purple);
 
   // function to change the theme
+  // const changeTheme = (themeName) => {
+  //   setCurrentTheme(themes[themeName]);
+  //   // example call: changeTheme('purple')  -MH
+  // };
   const changeTheme = (themeName) => {
-    setCurrentTheme(themes[themeName]);
-    // example call: changeTheme('purple')  -MH
+    if (themes[themeName]) {
+      setCurrentTheme(themes[themeName]);
+    } else {
+      console.warn(`Theme '${themeName}' does not exist in themes.`);
+    }
   };
 
   return (

@@ -22,6 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 require('dotenv').config();  // load env variables
 
 const db = mysql.createConnection({
+    // host: process.env.DB_HOST,
+    // database: "choremates",   
+    // user: process.env.DB_USER,
     host: "localhost",
     database: "choremates",   
     user: "root",
@@ -33,6 +36,7 @@ const db = mysql.createConnection({
 db.connect((err) =>{
     if (err){
         console.log("Error connecting to database: ", err.message);
+
         return;
     }
     console.log("Connected to database.");
@@ -79,8 +83,18 @@ app.get('/home', (req, res) => {
     res.send("Welcome to the Home Page!")
 });
 
+// app.get('/get_users', (req, res) => {
+//     db.query('SELECT * FROM users', (err, results) => {
+//         if (err) {
+//             console.error("API: Error querying database: ", err.message);
+//             return res.status(500).send("Error querying database.");
+//         }
+//         res.json(results);
+//     });
+// });
+
 app.get('/get_users', (req, res) => {
-    db.query('SELECT * FROM users', (err, results) => {
+    db.query('SELECT id, username, display_name FROM users', (err, results) => {
         if (err) {
             console.error("API: Error querying database: ", err.message);
             return res.status(500).send("Error querying database.");
@@ -88,6 +102,8 @@ app.get('/get_users', (req, res) => {
         res.json(results);
     });
 });
+
+
 
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
