@@ -28,9 +28,24 @@ const ChoresScreen = () => {
     </View>
   );
 };
+const ChoresScreen = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.screen}>
+      <TabHeader title="Weekly Chores" />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ChoresDisplay />
+      </ScrollView>
+    </View>
+  );
+};
 
 // page content  -MH
 const ChoresDisplay = () => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [data, setData] = useState([]);
@@ -59,6 +74,10 @@ const ChoresDisplay = () => {
   // group the tasks by chore -KK
   const groupedTasks = data.reduce((acc, task) => {
     if (!acc[task.chore_name]) {
+      acc[task.chore_name] = {
+          is_completed: task.chore_is_completed,
+          tasks: []
+      };
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
           tasks: []

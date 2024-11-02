@@ -53,8 +53,18 @@ app.get('/home', (req, res) => {
     res.send("Welcome to the Home Page!")
 });
 
+// app.get('/get_users', (req, res) => {
+//     db.query('SELECT * FROM users', (err, results) => {
+//         if (err) {
+//             console.error("API: Error querying database: ", err.message);
+//             return res.status(500).send("Error querying database.");
+//         }
+//         res.json(results);
+//     });
+// });
+
 app.get('/get_users', (req, res) => {
-    db.query('SELECT username FROM users', (err, results) => {
+    db.query('SELECT id, username, display_name FROM users', (err, results) => {
         if (err) {
             console.error("API get_users: Error querying database: ", err.message);
             return res.status(500).send("Error querying database.");
@@ -62,6 +72,8 @@ app.get('/get_users', (req, res) => {
         res.json(results);
     });
 });
+
+
 
 /********************************************************** */
 /*                HELPER FUNCTIONS BELOW:                */
@@ -168,7 +180,7 @@ app.post('/logout', (req, res) => {
 
 
 /********************************************************** */
-/*              CHORE IMPLEMENTATION BELOW:                 */
+/*             TASK IMPLEMENTATION BELOW:                   */
 /********************************************************** */
 // get all chores for a user -KK
 app.post('/get_chores', async (req, res) => {

@@ -8,7 +8,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import { API_URL } from '@env';
+import { API_URL } from './config';
+
 import { ThemeProvider, useTheme } from './style/ThemeProvider';
 import createStyles from './style/styles';
 import Signin from './screens/Signin';

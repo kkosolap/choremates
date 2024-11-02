@@ -57,7 +57,7 @@ const createStyles = (theme) => {
     // main content of a page  -MH
     content: {
       flex: 1,
-      width: 390,
+      width: 400,
       alignItems: 'center',   // Horizontally center content
       justifyContent: 'flex-start',  // Start content at the top
       paddingTop: 30,  // Optional: Add some space at the top
@@ -71,7 +71,6 @@ const createStyles = (theme) => {
     contentSection: {
       marginTop: 40,
       width: '90%',
-      alignItems: 'center',
     },
     sectionHeading: {
       fontSize: 24,
@@ -88,10 +87,6 @@ const createStyles = (theme) => {
       marginBottom: 15,
       width: '100%',
     },
-    spacer: {
-      height: 20,
-      width: '100%',
-  },
 
     // tab icons  -MH
     iconContainer: {
@@ -115,7 +110,7 @@ const createStyles = (theme) => {
     },
     tabTitle: {
       fontSize: 30,
-      fontWeight: '800',  // extra bold
+      fontWeight: 'bold',
       color: theme.text1,
     },
     screenHeader: {
@@ -151,12 +146,6 @@ const createStyles = (theme) => {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
     },
-    homeChoreBlock: {
-      ...baseChoreBlock,
-      backgroundColor: theme.lightest,
-      borderColor: theme.lighter,
-      borderWidth: 3,
-    },
     choreCheck: {
       position: 'absolute', // position it absolutely within the header
       left: 15, // distance from the right edge
@@ -169,33 +158,11 @@ const createStyles = (theme) => {
       color: theme.text3,
       textDecorationLine: 'line-through',  // Adds a strikeout effect
     },
-    homeChoreTitle: {
-      ...baseChoreTitle,
-      marginTop: 5,
-      marginBottom: 5,
-      fontSize: 20,
-      width: '85%',
-      height: 'auto',
-    },
-    recurrenceLabel: {
-      marginBottom: 5,
-      fontSize: 17,
-      fontWeight: '300',
-      color: theme.text2,
-      width: '85%',
-      height: 'auto',
-    },
     editChoreButton: {
       position: 'absolute', // position it absolutely within the header
       right: 15, // distance from the right edge
       top: 20, // distance from the top edge
       zIndex: 1, // ensure it's above other elements
-    },
-    choresList: {
-      flex: 1,
-      width: 390,
-      alignItems: 'center',   // Horizontally center content
-      justifyContent: 'flex-start',  // Start content at the top
     },
 
     // tasks  -MH
@@ -226,10 +193,6 @@ const createStyles = (theme) => {
       fontSize: 18,
       color: theme.text1,
       marginLeft: 5,
-    },
-    taskTextCompleted: {
-      textDecorationLine: 'line-through',
-      color: theme.gray, 
     },
     taskCheck: {
       marginTop: 3,
@@ -284,7 +247,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 500,
+      marginTop: 125,
     },
     
     logoutButtonText: {
@@ -311,6 +274,139 @@ const createStyles = (theme) => {
       alignSelf: 'center',
       textAlign: 'center',
     },
+
+
+
+  // Settings.js styles (for Profile/Settings page) -VA
+  //            Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+  profileContainer:{
+    flexGrow: 1,
+    width: 350,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 20,  // Optional: Add some space at the top
+    paddingBottom: 100,
+  },
+  profileSafeArea: {
+    // flex: 1,
+  },
+  profileTopSection: {
+    // width: 500,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 20,
+
+    // backgroundColor: theme.desaturated,
+    marginRight: 75,                                // Profile + name are off center
+  },
+  profilePictureArea: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: theme.lighter,
+    // backgroundColor: 'red',
+    marginRight: 75,
+    marginLeft: 75,                                // Profile + name are off center bc names are usually long -VA
+    // marginTop: 50,
+    // position: 'relative',
+    overflow: 'visible',  // Crop any overflow for circular shape
+  },
+  profilePicturePhoto: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+  },
+  profileTextContainer: {
+    // marginTop: 50,
+  },
+  profileDisplayNameText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#5c5c5c',
+  },
+  profileUsernameText: {
+    fontSize: 18,
+    color: theme.gray,
+    // marginTop: 5,
+  },
+  profilePhotoEditButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 50,
+    padding: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // zIndex: 1,
+  },
+  settingsPadding: {
+    paddingBottom: 20,
+  },
+  themeIconContainer: {
+    width: 400,
+    flexDirection: 'row',
+    alignItems: 'left',
+    justifyContent: 'center',
+    paddingRight: 100,
+    // backgroundColor: 'red',
+  },  
+  notificationContainer: {
+    // width: 400,
+    flexDirection: 'column',
+    alignItems: 'left',
+    justifyContent: 'center',
+    paddingLeft: 15,
+  },
+
+
+  buttonSection: {
+    padding: 5,
+    paddingLeft: 25,
+    paddingRight: 25,
+  },
+
+  buttonArea: {
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    alignItems: 'center'
+    },
+
+  iconArea: {
+    width: 50, 
+    height: 50, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
+  iconStyle: {
+    width: 30, 
+    height: 30,
+  },
+  buttonName:  { 
+    width: 300, 
+    fontSize: 20, 
+    color: 'black', 
+    marginLeft: 20,
+  },
+  // sp: {
+  //   width: 400, 
+  //   marginTop: 10, 
+  //   height: 2, 
+  //   backgroundColor: theme.main,
+  // },
+
+  // settingHeadingTitles: {
+  //   marginLeft: 125,
+  //   fontSize: 24,
+  //   // fontWeight: 'bold',
+  //   // color: '#5c5c5c',
+  // },
+  // profileContent: {
+  //   flexGrow: 1,
+  //   paddingBottom: 20,
+  // },
   });
 };
 
