@@ -30,7 +30,6 @@ const NewChoreScreen = ({ navigation }) => {
 const NewChoreDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-
   const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
   const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
   const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK

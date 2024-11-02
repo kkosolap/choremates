@@ -421,6 +421,98 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
 
+    // Settings.js styles (for Profile/Settings page) -VA
+    // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+    profileContainer:{
+      flexGrow: 1,
+      width: 350,
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      paddingTop: 20,         // Optional: Add some space at the top
+      paddingBottom: 100,
+    },
+    profileTopSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 75,        // Profile + name are off center
+    },
+    profilePictureArea: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      borderWidth: 3,
+      borderColor: theme.lighter,
+      marginRight: 75,
+      marginLeft: 75,         // Profile + name are off center bc names are usually long -VA
+      overflow: 'visible',    // Crop any overflow for circular shape
+    },
+    profilePicturePhoto: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 100,
+    },
+    profileDisplayNameText: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: '#5c5c5c',
+    },
+    profileUsernameText: {
+      fontSize: 18,
+      color: theme.gray,
+    },
+    profilePhotoEditButton: {
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      borderRadius: 50,
+      padding: 6,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    settingsPadding: {
+      paddingBottom: 20,
+    },
+    themeIconContainer: {
+      width: 400,
+      flexDirection: 'row',
+      alignItems: 'left',
+      justifyContent: 'center',
+      paddingRight: 100,
+    },  
+    notificationContainer: {
+      flexDirection: 'column',
+      alignItems: 'left',
+      justifyContent: 'center',
+      paddingLeft: 15,
+    },
+    buttonSection: {
+      padding: 5,
+      paddingLeft: 25,
+      paddingRight: 25,
+    },
+    buttonArea: {
+      flexDirection: 'row', 
+      justifyContent: 'center', 
+      alignItems: 'center'
+    },
+    iconArea: {
+      width: 50, 
+      height: 50, 
+      justifyContent: 'center', 
+      alignItems: 'center',
+    },
+    iconStyle: {
+      width: 30, 
+      height: 30,
+    },
+    buttonName:  { 
+      width: 300, 
+      fontSize: 20, 
+      color: 'black', 
+      marginLeft: 20,
+    },
   });
 };
 

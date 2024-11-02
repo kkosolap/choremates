@@ -3,16 +3,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios'; // Make sure axios is installed
 import * as SecureStore from 'expo-secure-store'; // Import SecureStore
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
+import themes from '../style/colors';
+
 import { API_URL } from '../config';
+import axios from 'axios'; 
 
 const Signin = ({ onSignin }) => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
+  // const { theme } = useTheme();
+  const styles = createStyles(themes.purple);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 

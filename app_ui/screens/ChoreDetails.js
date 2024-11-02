@@ -1,14 +1,17 @@
 // ChoreDetails.js
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
-import showHelloPopup from '../components/hello.js';
+
+import axios from 'axios';
+import { API_URL } from '../config';
 
 
 // header and page content
@@ -25,11 +28,35 @@ const ChoreDetailsScreen = ({ navigation }) => {
 };
 
 // page content
-const ChoreDetailsDisplay = () => {
+const ChoreDetailsDisplay = ({navigation}) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const route = useRoute();
   const { choreName, tasks } = route.params;  // Get chore name from parameters
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const getUsername = async () => {   // get the username from securestore -KK
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+      } else {
+        console.error("UI ChoreDetails.js: Username not found in SecureStore.");
+      }
+    };
+    getUsername();
+  }, []);
+
+  // deletes the chore from the database -KK
+  const deleteChore = async (chore_name) => {
+    try {
+      await axios.post(`${API_URL}delete_chore`, { chore_name, username });
+      navigation.goBack();   
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.content}>
@@ -64,7 +91,7 @@ const ChoreDetailsDisplay = () => {
       <View style={styles.centeredContent}>
         <TouchableOpacity
           style={styles.deleteChoreButton}
-          onPress={showHelloPopup}
+          onPress={() => deleteChore(choreName)}
           activeOpacity={0.8}
         >
           <Text style={styles.addChoreButtonText}>Delete Chore</Text>

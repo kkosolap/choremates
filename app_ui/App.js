@@ -81,11 +81,14 @@ const SettingsStack = () => {
 /************************************************************ */
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('token');
+      const user = await SecureStore.getItemAsync('username');
       setIsLoggedIn(!!token); // Check if token exists
+      setUsername(user);
     };
     checkToken();
   }, []);
@@ -93,6 +96,7 @@ const App = () => {
   const handleSignin = (username) => {
     console.log('Logging in as:', username);
     setIsLoggedIn(true);
+    setUsername(username);
   };
 
   const handleLogout = async () => {
@@ -102,7 +106,7 @@ const App = () => {
   };
 
   return (
-    <ThemeProvider>
+    <ThemeProvider username={username}>
       <NavigationContainer>
         {/* Call useTheme here to ensure it's within the provider -MH */}
         <AppContent isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleSignin={handleSignin} />

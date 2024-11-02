@@ -126,7 +126,7 @@ app.post('/register', async (req, res) => {
             const hashedPassword = await bcrypt.hash(password, 10);
             console.log("API register: Password hashed successfully");
 
-            db.query('INSERT INTO users (username, security_key) VALUES (?, ?)', [username, hashedPassword], 
+            db.query('INSERT INTO users (username, display_name, security_key) VALUES (?, ?, ?)', [username, username, hashedPassword], 
             (err, result) => {
                 if (err) {
                     console.error("API register: Error inserting into database: ", err.message);
@@ -164,6 +164,80 @@ app.post('/logout', (req, res) => {
     res.status(200).json({ message: 'Logged out successfully!' });
 });
 
+/********************************************************** */
+/*                USER IMPLEMENTATION BELOW:                */
+/********************************************************** */
+// get the user's display name
+app.post('/get_display', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get_display: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+        const user_id = await getUserId(username);
+
+        const [results] = await db.promise().query("SELECT display_name FROM users WHERE id = ?", [user_id]);
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("API get_display: Error:", error.message);
+        res.status(500).send("Error getting display name.");
+    }
+});
+
+// changes the display name for a user
+app.post('/update_display', async (req, res) => {
+    try {
+        const { username, display_name } = req.body;
+        if (!username || !display_name) {
+            console.log("API update_display: Missing username or display name.");
+            return res.status(400).send("Missing username or display name.");
+        }
+        const user_id = await getUserId(username);
+
+        const [results] = await db.promise().query("UPDATE users SET display_name = ? WHERE id = ?", [display_name, user_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API update_display: Error:", error.message);
+        res.status(500).send("Error updating display name.");
+    }
+});
+
+// get the user's theme
+app.post('/get_theme', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get_theme: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+        const user_id = await getUserId(username);
+
+        const [results] = await db.promise().query("SELECT theme FROM users WHERE id = ?", [user_id]);
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("API update_theme: Error:", error.message);
+        res.status(500).send("Error getting theme.");
+    }
+});
+
+// changes the theme for a user
+app.post('/update_theme', async (req, res) => {
+    try {
+        const { username, theme } = req.body;
+        if (!username || !theme) {
+            console.log("API update_theme: Missing username or theme.");
+            return res.status(400).send("Missing username or theme.");
+        }
+        const user_id = await getUserId(username);
+
+        const [results] = await db.promise().query("UPDATE users SET theme = ? WHERE id = ?", [theme, user_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API update_theme: Error:", error.message);
+        res.status(500).send("Error updating theme.");
+    }
+});
 
 /********************************************************** */
 /*             TASK IMPLEMENTATION BELOW:                   */

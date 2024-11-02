@@ -5,13 +5,14 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
+import themes from '../style/colors';
 
 import axios from 'axios';
 import { API_URL } from '../config';
 
 const Register = ({ navigation }) => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
+  // const { theme } = useTheme();
+  const styles = createStyles(themes.purple);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
