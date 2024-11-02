@@ -34,7 +34,7 @@ const createStyles = (theme) => {
 
   // all styles  -MH
   return StyleSheet.create({
-    // text
+    // basic text
     title: {
       fontSize: 30,
       fontWeight: 'bold',
@@ -137,7 +137,7 @@ const createStyles = (theme) => {
     backButton: {
       padding: 8,
       position: 'absolute',
-      left: 10, // 10 units from the left
+      left: 2, // units from the left
     },
 
     // circle button  -MH
@@ -224,12 +224,13 @@ const createStyles = (theme) => {
       marginBottom: 8,
     },
     addTaskInput: {
-      borderColor: theme.gray, 
+      borderColor: theme.text3, 
       borderWidth: 1,
       padding: 5,
       flex: 1,
       marginRight: 10,
       borderRadius: 10,
+      color: theme.text1,
     },
     taskText: {
       fontSize: 18,
@@ -320,6 +321,97 @@ const createStyles = (theme) => {
       alignSelf: 'center',
       textAlign: 'center',
     },
+
+    // add chore / chore details forms  -MH
+    formContainer: {
+      width: '95%',
+      alignItems: 'flex-start',
+    },
+    centeredContent: {
+      alignItems: 'center',
+      width: '100%',
+    },
+    label: {
+      fontSize: 18,
+      color: theme.text1,
+      fontWeight: '600', // semi-bold
+      marginBottom: 5,
+    },
+    input: {
+      width: '100%',
+      padding: 8,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      marginBottom: 20,
+      fontSize: 16,
+      color: theme.text1, // color when typing
+    },
+    smallerInput: {
+      width: '87%',
+      padding: 8,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      fontSize: 16,
+      color: theme.text1, // color when typing
+    },
+    inputAndButton: {
+      width: '100%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      marginBottom: 20,
+    },
+    inputButtonContainer: {
+      width: '13%',
+      justifyContent: 'center',
+      alignItems: 'flex-end', // align to the right
+    },
+    dropdown: {
+      width: '100%',
+      padding: 9,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      marginBottom: 20,
+    },
+    dropdownText: {
+      fontSize: 16,
+      color: theme.text1,
+    },
+    taskList: {
+      width: '100%',
+      marginBottom: 10,
+    },
+    bulletAndTask: {
+      width: '100%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      marginLeft: 5,
+    },
+    taskItem: {
+      fontSize: 16,
+      marginLeft: 10,
+      marginBottom: 2,
+      color: theme.text2,
+    },
+    addChoreButton: {
+      marginTop: 25,
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    addChoreButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+
   });
 };
 

@@ -37,7 +37,7 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
         style={styles.choreCheck}
         onPress={() => handleToggleChoreCompletion(user, choreName)}
       >
-        <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.gray : theme.text1} />
+        <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.text3 : theme.text1} />
       </TouchableOpacity>
 
       {/* Chore Title */}
@@ -49,7 +49,7 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
           style={styles.editChoreButton}
           onPress={() => onEdit(choreName)}
         >
-          <Icon name="pencil" size={22} color={theme.gray} />
+          <Icon name="pencil" size={22} color={theme.text3} />
         </TouchableOpacity>
       )}
 
@@ -62,7 +62,7 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
               style={styles.taskCheck}
               onPress={() => handleToggleTaskCompletion(user, choreName, task)}
             >
-              <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.gray : theme.text1} />
+              <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.text3 : theme.text1} />
             </TouchableOpacity> 
 
             {/* task text */}
@@ -76,7 +76,7 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
             <TouchableOpacity
             onPress={() => onDelete(choreName, task)}
           >
-            <Icon name="close-outline" size={24} color={theme.gray} />
+            <Icon name="close-outline" size={24} color={theme.text3} />
           </TouchableOpacity>
           )}
         </View>
@@ -87,16 +87,18 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
         <View style={styles.addTaskContainer}>
           <TextInput
             style={styles.addTaskInput}
-            placeholder="add a new task"
+            placeholder="add a new task . . ."
+            placeholderTextColor={theme.text3}
             value={newTask}
             onChangeText={setNewTask}
-            selectionColor={theme.main}
+            selectionColor={theme.text2}
+            onSubmitEditing={() => onAddTask(choreName)}
           />
 
           <TouchableOpacity
             onPress={() => onAddTask(choreName)}
           >
-            <Icon name="arrow-forward-circle-outline" size={30} color={theme.gray} />
+            <Icon name="arrow-forward-circle-outline" size={30} color={theme.text3} />
           </TouchableOpacity>
           
         </View>
