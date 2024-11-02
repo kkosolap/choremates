@@ -53,17 +53,8 @@ app.get('/home', (req, res) => {
     res.send("Welcome to the Home Page!")
 });
 
-// app.get('/get_users', (req, res) => {
-//     db.query('SELECT * FROM users', (err, results) => {
-//         if (err) {
-//             console.error("API: Error querying database: ", err.message);
-//             return res.status(500).send("Error querying database.");
-//         }
-//         res.json(results);
-//     });
-// });
-
 app.get('/get_users', (req, res) => {
+    // db.query('SELECT * FROM users', (err, results) => {
     db.query('SELECT id, username, display_name FROM users', (err, results) => {
         if (err) {
             console.error("API get_users: Error querying database: ", err.message);
@@ -72,7 +63,6 @@ app.get('/get_users', (req, res) => {
         res.json(results);
     });
 });
-
 
 
 /********************************************************** */
@@ -153,10 +143,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-
-/********************************************************** */
-/*              LOGIN/LOGOUT BELOW:                         */
-/********************************************************** */
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 

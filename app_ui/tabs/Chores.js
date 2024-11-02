@@ -5,8 +5,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Text, View, ScrollView, } from 'react-native';
 import * as SecureStore from 'expo-secure-store'; 
 
-import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
+import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ActiveChoreBlock } from '../components/blocks.js';
 
@@ -28,24 +28,9 @@ const ChoresScreen = () => {
     </View>
   );
 };
-const ChoresScreen = () => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
-
-  return (
-    <View style={styles.screen}>
-      <TabHeader title="Weekly Chores" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <ChoresDisplay />
-      </ScrollView>
-    </View>
-  );
-};
 
 // page content  -MH
 const ChoresDisplay = () => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [data, setData] = useState([]);

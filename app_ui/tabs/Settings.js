@@ -1,23 +1,20 @@
 // Settings.js
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, Button, ScrollView} from 'react-native';
-import { useEffect, useState }  from 'react';
-import colors from '../style/colors';
-import styles from '../style/styles';
-import axios from 'axios';
 
+import axios from 'axios';
 import { API_URL } from '../config';
+
+import colors from '../style/colors';
+import createStyles from '../style/styles';
+import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import LogoutButton from '../components/logout'; 
 import { Ionicons } from '@expo/vector-icons'; // For an edit icon
 
-
-// After Git Pulling: 
-import { useTheme } from '../style/ThemeProvider';
-import createStyles from '../style/styles';
-
 const profilePicture = require('../icons/profile_duck.jpg');
+
 
 // Header and page content
 const SettingsScreen = ({ onLogout }) => {
@@ -89,6 +86,7 @@ const SettingsScreen = ({ onLogout }) => {
   const handleLogout = () => {
     onLogout();
   };
+  
   return (
     //   <View style={styles.horizontalLine}></View>
 

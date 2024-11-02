@@ -6,10 +6,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store'; 
 
-import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
-import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
 
