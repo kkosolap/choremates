@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import showHelloPopup from '../components/hello.js'
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -17,9 +18,9 @@ const NewChoreScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
-  // this is the "add new chore" at the top of the screen -KK
   return (
     <View style={styles.screen}>
+      {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Add a New Chore" navigation={navigation} />
       <NewChoreDisplay navigation={navigation} />
     </View>
@@ -81,6 +82,11 @@ const NewChoreDisplay = ({ navigation }) => {
     }
   };
 
+  // delete task from the task list  -MH
+  const deleteTask = (index) => {
+    setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
+  };
+
   // this is the box for adding a new chore -KK
   return (
     <View style={styles.content}>
@@ -133,10 +139,16 @@ const NewChoreDisplay = ({ navigation }) => {
           <FlatList
             data={tasks}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View style={styles.bulletAndTask}>
                 <Icon name={"square-outline"} size={15} color={theme.text2} />
                 <Text style={styles.taskItem}>{item}</Text>
+                <TouchableOpacity
+                  style={styles.newChoreDeleteTask}
+                  onPress={() => deleteTask(index)}
+                >
+                  <Icon name="close-outline" size={24} color={theme.text3} />
+                </TouchableOpacity>
               </View>
             )}
           />

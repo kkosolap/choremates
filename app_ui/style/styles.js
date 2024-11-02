@@ -403,11 +403,16 @@ const createStyles = (theme) => {
       justifyContent: 'flex-start',
       marginLeft: 5,
     },
+    newChoreDeleteTask: {
+      position: 'absolute',
+      right: 15,
+    },
     taskItem: {
       fontSize: 16,
       marginLeft: 10,
       marginBottom: 2,
       color: theme.text2,
+      width: '80%',
     },
     addChoreButton: {
       marginTop: 25,

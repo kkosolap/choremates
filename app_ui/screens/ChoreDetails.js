@@ -21,6 +21,7 @@ const ChoreDetailsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
+      {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Chore Details" navigation={navigation} />
       <ChoreDetailsDisplay navigation={navigation} />
     </View>
@@ -31,8 +32,16 @@ const ChoreDetailsScreen = ({ navigation }) => {
 const ChoreDetailsDisplay = ({navigation}) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+
   const route = useRoute();
   const { choreName, tasks } = route.params;  // Get chore name from parameters
+  /* gonna come back to this lol -MH
+  const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
+  const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
+  const [newTasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
+  const [newTask, setNewTask] = useState('');          // block for the new task to add to the list -KK
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  */
   const [username, setUsername] = useState(null);
 
   useEffect(() => {

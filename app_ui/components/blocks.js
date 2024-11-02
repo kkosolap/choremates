@@ -74,10 +74,10 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
           {/* delete button */}
           {isEditing && (
             <TouchableOpacity
-            onPress={() => onDelete(choreName, task)}
-          >
-            <Icon name="close-outline" size={24} color={theme.text3} />
-          </TouchableOpacity>
+              onPress={() => onDelete(choreName, task)}
+            >
+              <Icon name="close-outline" size={24} color={theme.text3} />
+            </TouchableOpacity>
           )}
         </View>
       ))}
