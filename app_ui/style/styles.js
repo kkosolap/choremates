@@ -409,7 +409,16 @@ const createStyles = (theme) => {
     addChoreButtonText: {
       color: theme.white,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 20,
+    },
+    deleteChoreButton: {
+      marginTop: 50,
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.red,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
 
   });

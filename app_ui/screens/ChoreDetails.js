@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import showHelloPopup from '../components/hello.js';
 
 
 // header and page content
@@ -55,16 +56,20 @@ const ChoreDetailsDisplay = () => {
             <Text style={styles.taskText}>{task}</Text>
           </View>
 
-          {/* delete button */}
-          {true && (
-            <TouchableOpacity
-            onPress={() => onDelete(choreName, task)}
-          >
-            <Icon name="close-outline" size={24} color={theme.gray} />
-          </TouchableOpacity>
-          )}
         </View>
       ))}
+
+
+      {/* DELETE Button */}
+      <View style={styles.centeredContent}>
+        <TouchableOpacity
+          style={styles.deleteChoreButton}
+          onPress={showHelloPopup}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addChoreButtonText}>Delete Chore</Text>
+        </TouchableOpacity>
+      </View>
 
     </View>
   );
