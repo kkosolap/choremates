@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
 
+import { API_URL } from '../config';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import themes from '../style/colors';
-
-import axios from 'axios';
-import { API_URL } from '../config';
+import { RegisterHeader } from '../components/headers.js';
 
 const Register = ({ navigation }) => {
   // const { theme } = useTheme();
@@ -30,7 +30,8 @@ const Register = ({ navigation }) => {
 
   return (
     <View style={styles.signinContainer}>
-        <Text style={styles.signinTitle}>Register</Text>
+        {/*<Text style={styles.signinTitle}>Register</Text>*/}
+        <RegisterHeader title="Register" navigation={navigation} />
 
         <TextInput
             style={styles.signinInput}

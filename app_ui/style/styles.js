@@ -134,6 +134,18 @@ const createStyles = (theme) => {
       alignItems: 'center',
       marginTop: 60,
     },
+    registerHeader: {
+      //height: 60,
+      width: 400,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: -40,
+
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: theme.text1,
+      marginBottom: 30,
+    },
     backButton: {
       padding: 8,
       position: 'absolute',
@@ -294,7 +306,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 500,
+      marginTop: 40,
     },
     
     logoutButtonText: {
