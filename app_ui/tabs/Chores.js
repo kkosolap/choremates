@@ -80,6 +80,9 @@ const ChoresDisplay = () => {
       ...prevState,
       [chore_name]: !prevState[chore_name],
     }));
+
+    // set edit to null when toggling visibility  -MH
+    setEdit(null);
   };
 
   // add task button -KK

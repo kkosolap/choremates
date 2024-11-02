@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
@@ -11,20 +12,25 @@ import { ScreenHeader } from '../components/headers.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
+// header and page content
 const NewChoreScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
   // this is the "add new chore" at the top of the screen -KK
   return (
-    <View style={[styles.screen]}>
+    <View style={styles.screen}>
       <ScreenHeader title="Add a New Chore" navigation={navigation} />
       <NewChoreDisplay navigation={navigation} />
     </View>
   );
 };
 
+// page content
 const NewChoreDisplay = ({ navigation }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
   const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
   const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
   const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
@@ -78,105 +84,102 @@ const NewChoreDisplay = ({ navigation }) => {
 
   // this is the box for adding a new chore -KK
   return (
-    <View style={styles.formContainer}>
-      {/* the chore name bit -KK */}
-      <Text style={styles.label}>Chore Name:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter chore name"
-        value={chore_name}
-        onChangeText={setChoreName}
-      />
+    <View style={styles.content}>
+      <View style={styles.formContainer}>
+        {/* the chore name bit -KK */}
+        <Text style={styles.label}>Chore Name:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Chore Name . . ."
+          placeholderTextColor={theme.text3}
+          value={chore_name}
+          selectionColor={theme.text2}
+          onChangeText={setChoreName}
+        />
 
-      {/* the recurrence bit -KK */}
-      <Text style={styles.label}>Recurrence:</Text>
-      <TouchableOpacity
-        style={styles.dropdown}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Text style={styles.dropdownText}>{recurrence}</Text>
-      </TouchableOpacity>
+        {/* the recurrence bit -KK */}
+        <Text style={styles.label}>Recurrence:</Text>
+        <TouchableOpacity
+          style={styles.dropdown}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={styles.dropdownText}>{recurrence}</Text>
+        </TouchableOpacity>
 
-      {/* modal is acting as the "drop down" menu for recurence */}
-      {/* this will be changed as recurrence is further implemented -KK */}
-      <Modal
-        visible={isModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
-              <Text style={styles.modalItem}>Just Once</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsModalVisible(false); }}>
-              <Text style={styles.modalItem}>Weekly</Text>
+        {/* modal is acting as the "drop down" menu for recurence */}
+        {/* this will be changed as recurrence is further implemented -KK */}
+        <Modal
+          visible={isModalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setIsModalVisible(false)}
+        >
+          <View style={oldStyles.modalOverlay}>
+            <View style={oldStyles.modalContainer}>
+              <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
+                <Text style={oldStyles.modalItem}>Just Once</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsModalVisible(false); }}>
+                <Text style={oldStyles.modalItem}>Weekly</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Tasks */}
+        <Text style={styles.label}>Tasks:</Text>
+
+        {/* Show task list  -MH */}
+        <View style={styles.taskList}>
+          <FlatList
+            data={tasks}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.bulletAndTask}>
+                <Icon name={"square-outline"} size={15} color={theme.text2} />
+                <Text style={styles.taskItem}>{item}</Text>
+              </View>
+            )}
+          />
+        </View>
+
+        {/* Add Task input and button  -MH */}
+        <View style={styles.inputAndButton}>
+          <TextInput
+            style={styles.smallerInput}
+            placeholder="Add Task . . ."
+            placeholderTextColor={theme.text3}
+            value={newTask}
+            selectionColor={theme.text2}
+            onChangeText={setNewTask}
+            onSubmitEditing={addTask}
+          />
+
+          {/* add task button  -MH */}
+          <View style={styles.inputButtonContainer}>
+            <TouchableOpacity onPress={addTask}>
+              <Icon name="arrow-forward-circle-outline" size={40} color={theme.main} />
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
 
-      {/* the task bit -KK */}
-      <Text style={styles.label}>Tasks:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Add task..."
-        value={newTask}
-        onChangeText={setNewTask}
-      />
-      <Button title="Add Task" onPress={addTask} />
-
-      {/* prints the task list underneath the add task bit -KK */}
-      <FlatList
-        data={tasks}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text style={styles.taskItem}>- {item}</Text>
-        )}
-      />
-
-      <View style={styles.buttonContainer}>
-        <Button title="Add Chore" onPress={addChore} />
+        <View style={styles.centeredContent}>
+          <TouchableOpacity
+            style={styles.addChoreButton}
+            onPress={addChore}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.addChoreButtonText}>Add Chore</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 
 // temporary styles for this screen -KK
-const styles = StyleSheet.create({
-  formContainer: {
-    width: '90%', // Adjust percentage as needed
-    padding: 20,
-    backgroundColor: '#E5EAF2',
-    borderRadius: 10,
-    marginHorizontal: '5%', // Center the box by adding equal margins on both sides
-    marginTop: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-  dropdown: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 5,
-  },
-  dropdownText: {
-    fontSize: 16,
-    color: '#555',
-  },
+const oldStyles = StyleSheet.create({
+  
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -196,15 +199,7 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
   },
-  taskItem: {
-    fontSize: 14,
-    marginLeft: 10,
-    color: '#333',
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
+  
 });
 
 export default NewChoreScreen;

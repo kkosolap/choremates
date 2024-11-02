@@ -34,7 +34,7 @@ const createStyles = (theme) => {
 
   // all styles  -MH
   return StyleSheet.create({
-    // text
+    // basic text
     title: {
       fontSize: 30,
       fontWeight: 'bold',
@@ -77,19 +77,28 @@ const createStyles = (theme) => {
       fontSize: 24,
       fontWeight: 'bold',
       color: theme.text1,
-      marginBottom: 20,
+      marginBottom: 5,
       textAlign: 'left',
       alignSelf: 'flex-start',
     },
     horizontalLine: {
-      borderBottomColor: theme.lighter,
-      borderBottomWidth: 1,    // thickness of the line
-      marginTop: -15,
-      marginBottom: 15,
+      borderTopColor: theme.lighter,
+      borderTopWidth: 1,
       width: '100%',
+      height: 0,
+      padding: 0,
+      marginBottom: 15,
+    },
+    horizontalLineNoSpace: {
+      borderTopColor: theme.lighter,
+      borderTopWidth: 1,
+      width: '100%',
+      height: 0,
+      padding: 0,
+      margin: 0,
     },
     spacer: {
-      height: 20,
+      height: 10,
       width: '100%',
   },
 
@@ -128,7 +137,7 @@ const createStyles = (theme) => {
     backButton: {
       padding: 8,
       position: 'absolute',
-      left: 10, // 10 units from the left
+      left: 2, // units from the left
     },
 
     // circle button  -MH
@@ -215,12 +224,13 @@ const createStyles = (theme) => {
       marginBottom: 8,
     },
     addTaskInput: {
-      borderColor: theme.gray, 
+      borderColor: theme.text3, 
       borderWidth: 1,
       padding: 5,
       flex: 1,
       marginRight: 10,
       borderRadius: 10,
+      color: theme.text1,
     },
     taskText: {
       fontSize: 18,
@@ -312,114 +322,105 @@ const createStyles = (theme) => {
       textAlign: 'center',
     },
 
-    // Settings.js styles (for Profile/Settings page) -VA
-    // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
-    profileContainer:{
-      flexGrow: 1,
-      width: 350,
+    // add chore / chore details forms  -MH
+    formContainer: {
+      width: '95%',
+      alignItems: 'flex-start',
+    },
+    centeredContent: {
+      alignItems: 'center',
+      width: '100%',
+    },
+    label: {
+      fontSize: 18,
+      color: theme.text1,
+      fontWeight: '600', // semi-bold
+      marginBottom: 5,
+    },
+    input: {
+      width: '100%',
+      padding: 8,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      marginBottom: 20,
+      fontSize: 16,
+      color: theme.text1, // color when typing
+    },
+    smallerInput: {
+      width: '87%',
+      padding: 8,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      fontSize: 16,
+      color: theme.text1, // color when typing
+    },
+    inputAndButton: {
+      width: '100%',
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      paddingTop: 20,  // Optional: Add some space at the top
-      paddingBottom: 100,
+      marginBottom: 20,
     },
-    profileSafeArea: {
-      // flex: 1,
-    },
-    profileTopSection: {
-      // width: 500,
-      flexDirection: 'row',
-      alignItems: 'center',
+    inputButtonContainer: {
+      width: '13%',
       justifyContent: 'center',
-      // paddingVertical: 20,
-      // backgroundColor: theme.desaturated,
-      marginRight: 75,                                // Profile + name are off center
+      alignItems: 'flex-end', // align to the right
     },
-    profilePictureArea: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
-      borderWidth: 3,
-      borderColor: theme.lighter,
-      // backgroundColor: 'red',
-      marginRight: 75,
-      marginLeft: 75,                                // Profile + name are off center bc names are usually long -VA
-      // marginTop: 50,
-      // position: 'relative',
-      overflow: 'visible',  // Crop any overflow for circular shape
-    },
-    profilePicturePhoto: {
+    dropdown: {
       width: '100%',
-      height: '100%',
-      borderRadius: 100,
+      padding: 9,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      marginBottom: 20,
     },
-    profileTextContainer: {
-      // marginTop: 50,
+    dropdownText: {
+      fontSize: 16,
+      color: theme.text1,
     },
-    profileDisplayNameText: {
-      fontSize: 30,
-      fontWeight: 'bold',
-      color: '#5c5c5c',
+    taskList: {
+      width: '100%',
+      marginBottom: 10,
     },
-    profileUsernameText: {
-      fontSize: 18,
-      color: theme.gray,
-      // marginTop: 5,
-    },
-    profilePhotoEditButton: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      borderRadius: 50,
-      padding: 6,
-      justifyContent: 'center',
-      alignItems: 'center',
-      // zIndex: 1,
-    },
-    settingsPadding: {
-      paddingBottom: 20,
-    },
-    themeIconContainer: {
-      width: 400,
+    bulletAndTask: {
+      width: '100%',
       flexDirection: 'row',
-      alignItems: 'left',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      marginLeft: 5,
+    },
+    taskItem: {
+      fontSize: 16,
+      marginLeft: 10,
+      marginBottom: 2,
+      color: theme.text2,
+    },
+    addChoreButton: {
+      marginTop: 25,
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
       justifyContent: 'center',
-      paddingRight: 100,
-      // backgroundColor: 'red',
-    },  
-    notificationContainer: {
-      // width: 400,
-      flexDirection: 'column',
-      alignItems: 'left',
-      justifyContent: 'center',
-      paddingLeft: 15,
-    },
-    buttonSection: {
-      padding: 5,
-      paddingLeft: 25,
-      paddingRight: 25,
-    },
-    buttonArea: {
-      flexDirection: 'row', 
-      justifyContent: 'center', 
-      alignItems: 'center'
-    },
-    iconArea: {
-      width: 50, 
-      height: 50, 
-      justifyContent: 'center', 
       alignItems: 'center',
     },
-    iconStyle: {
-      width: 30, 
-      height: 30,
+    addChoreButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 20,
     },
-    buttonName:  { 
-      width: 300, 
-      fontSize: 20, 
-      color: 'black', 
-      marginLeft: 20,
+    deleteChoreButton: {
+      marginTop: 50,
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.red,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
+
   });
 };
 
