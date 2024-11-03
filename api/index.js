@@ -168,6 +168,7 @@ app.post('/logout', (req, res) => {
 /*                USER IMPLEMENTATION BELOW:                */
 /********************************************************** */
 // get the user's display name
+
 app.post('/get_display', async (req, res) => {
     try {
         const { username } = req.body;
@@ -202,6 +203,41 @@ app.post('/update_display', async (req, res) => {
         res.status(500).send("Error updating display name.");
     }
 });
+
+// app.post('/update_display', async (req, res) => {
+//     console.log("Received request body:", req.body); 
+//     if (!req.body) {
+//         console.log("Request body is undefined");
+//         return res.status(400).send("Missing request body.");
+//     }
+    
+
+//     try {
+//         const { username, newDisplayName } = req.body; // Destructure the body
+//         console.log("index.js: current username: " + username);
+//         console.log("index.js: new display name: " + newDisplayName); 
+
+//         // Check if username and newDisplayName are provided
+//         if (!username || !newDisplayName) {
+//             console.log("Missing values:", { username, newDisplayName });
+//             console.log("Server received username:", username);
+//             console.log("Server received newDisplayName:", newDisplayName);
+
+//             return res.status(400).send("Missing username or display name.");
+//         }
+
+//         const [results] = await db.promise().query("UPDATE users SET display_name = ? WHERE username = ?", [newDisplayName, username]);
+//         res.status(200).json({ message: 'Display name updated successfully', results });
+//     } catch (error) {
+//         console.error("API update_display: Error:", error.message);
+//         res.status(500).send("Error updating display name.");
+//     }
+// });
+
+
+
+
+
 
 // get the user's theme
 app.post('/get_theme', async (req, res) => {
@@ -356,6 +392,18 @@ app.post('/complete_chore', async (req, res) => {
         res.status(500).send("An error occurred while toggling chore completion status.");
     }
 });
+
+// Update the display name when changed -VA
+app.post('/update_display', async (req, res) => {
+    const { userId, display_name } = req.body;
+    try {
+      await db.query('UPDATE users SET display_name = ? WHERE id = ?', [display_name, userId]);
+      res.status(200).send({ message: "Display name updated successfully." });
+    } catch (error) {
+      res.status(500).send({ error: "Error updating display name" });
+    }
+  });
+  
 
 
 /********************************************************** */

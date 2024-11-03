@@ -24,6 +24,27 @@ const SettingsScreen = ({ onLogout }) => {
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState(null);
 
+  // useEffect(() => {
+  //   const getUsername = async () => {
+  //     const username = await SecureStore.getItemAsync('username');
+  //     console.log("Retrieved username from SecureStore:", username); // Log the retrieved username
+  //     if (username) {
+  //         setUsername(username);
+  //         try {
+  //             const response = await axios.post(`${API_URL}get_display`, { username });
+  //             setDisplayName(response.data[0]?.display_name);
+  //         } catch (error) {
+  //             console.error("UI Settings.js: Error loading display:", error);
+  //         }
+  //     } else {
+  //         console.error("UI Settings.js: Username not found in SecureStore.");
+  //     }
+  // };
+  
+  //   getUsername();
+  // }, []);
+
+
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
       const username = await SecureStore.getItemAsync('username');
@@ -41,11 +62,41 @@ const SettingsScreen = ({ onLogout }) => {
     };
     getUsername();
   }, []);
+
+
+  //Trying to change display name
+const handleChangeDisplayName = async (newDisplayName) => {
+  // console.log("Updating display name to:", newDisplayName);
+  // console.log("Current username:", username);
+
+  // setDisplayName(newDisplayName);
+
+//   const requestBody = {
+//       username, // Send the username
+//       newDisplayName // Send the new display name
+//   };
+// console.log("Request Body:", JSON.stringify(requestBody)); // Log the request body
+
   
-  const handleChangeDisplayName = (newDisplayName) => {
-    // Add logic here for changing the theme -VA
-    // console.log('profile pic edit')
-  };
+  // console.log("Request Body:", requestBody); // Log the request body to check its structure
+
+  try {
+      const response = await axios.post(`${API_URL}update_display`, {username, newDisplayName});
+      console.log("API response:", response.data); // Log the response from the API
+  } catch (error) {
+
+    // constantly returns " ERROR  UI Settings.js: Error updating display name: Missing username or display name"
+    // unsure why bc console.log shows that neither is empty and both are strings
+    // won't even go to {API_URL}update_display bc of the error
+    // -VA
+
+      console.log("Settings.js: current username: " + username);
+      // console.log(typeof username, typeof newDisplayName);
+      console.log("Settings.js: new display name: " + newDisplayName);
+      
+      console.error("UI Settings.js: Error updating display name:", error.response ? error.response.data : error.message);
+  }
+};
 
   const handleEditPhoto = () => {
     setIsEditing(!isEditing);
@@ -72,10 +123,17 @@ const SettingsScreen = ({ onLogout }) => {
               </View>
               <View style={styles.profileTextContainer}>
                 <Text>Display Name</Text>
-                <TextInput 
+                {/* <TextInput 
                   style={styles.profileDisplayNameText} onChangeText={handleChangeDisplayName}>
                   {displayName}
-                </TextInput>    
+                </TextInput>     */}
+                <TextInput 
+                  style={styles.profileDisplayNameText} 
+                  value={displayName} 
+                  onChangeText={setDisplayName} 
+                  onEndEditing={(e) => handleChangeDisplayName(e.nativeEvent.text)} // Call when editing ends
+                />
+
                 {/* // value={displayName}  */}
                 <Text>User Name</Text>
                 <Text style={styles.profileUsernameText}>{username}</Text>
