@@ -92,7 +92,7 @@ app.get('/get_users', (req, res) => {
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
 /********************************************************** */
-// user registration 
+// user registration -ET
 app.post('/register', async (req, res) => {
     console.log("Registration request received");
     console.log(req.body);
@@ -135,7 +135,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// user login
+// user login -ET
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -152,7 +152,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-// user logout
+// user logout -ET
 app.post('/logout', (req, res) => {
     // Nathan pls handle token invalidation on the client side. -- Ethan
     res.status(200).json({ message: 'Logged out successfully!' });
@@ -323,6 +323,160 @@ app.delete('/delete_task', (req, res) => {
 })
 
 
+/********************************************************** */
+/*              GROUP IMPLEMENTATION BELOW:                 */
+/********************************************************** */
+// create a new group -ET
+// input: group_name, user_id (the person who wants to create the group)
+app.post('/createGroup', (req, res) => {
+    const { group_name, user_id } = req.body;
+
+    // check if group name and user ID are provided
+    if (!group_name || !user_id) {
+        return res.status(400).json({ error: "Missing group name or user ID" });
+    }
+
+    // insert the new group into group_names
+    db.query('INSERT INTO group_names (group_name) VALUES (?)', [group_name], (err, result) => {
+        if (err) {
+            console.error("Error creating group: ", err.message);
+            return res.status(500).json({ error: "Failed to create group" });
+        }
+
+        // id of the newly created group
+        const groupId = result.insertId;
+
+        // add the creator as a member of the group with the role of admin
+        db.query('INSERT INTO group_members (user_id, group_id, role) VALUES (?, ?, ?)', [user_id, groupId, 'admin'], (err) => {
+            if (err) {
+                console.error("Error adding group member: ", err.message);
+                return res.status(500).json({ error: "Failed to add user to group" });
+            }
+
+            res.status(201).json({ message: 'Group created successfully', group_id: groupId });
+        });
+    });
+});
+
+// get all members and their roles of a specific group 
+// input: group_id
+// output: member name, role
+app.get('/groupMembers', (req, res) => {
+    const { group_id } = req.query;
+
+    // Query to retrieve member names for the specified group
+    const getGroupMembersQuery = `
+        SELECT users.username, group_members.role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE group_members.group_id = ?
+    `;
+
+    db.query(getGroupMembersQuery, [group_id], (err, results) => {
+        if (err) {
+            console.error("Error retrieving group members: ", err.message);
+            return res.status(500).json({ error: "Failed to retrieve group members" });
+        }
+        res.status(200).json(results);
+    });
+});
+
+// send an invitation, only 'admin' can invite --ET
+// input: inviter_id, invitee_id, group_id
+app.post('/sendInvitation', (req, res) => {
+    const { inviter_id, invitee_id, group_id } = req.body;
+
+    // check if inviter is an admin in the group
+    const adminCheckQuery = `
+        SELECT role FROM group_members 
+        WHERE user_id = ? AND group_id = ? AND role = 'admin'
+    `;
+
+    db.query(adminCheckQuery, [inviter_id, group_id], (err, results) => {
+        if (err) {
+            console.error("Error checking admin role when inviting: ", err.message);
+            return res.status(500).json({ error: "Failed to verify inviter's role" });
+        }
+        if (results.length === 0) {
+            return res.status(403).json({ error: "Only admins can invite members to the group" });
+        }
+
+        // insert invitation into group_invitations table
+        const insertInvitationQuery = `
+            INSERT INTO group_invitations (inviter_id, invitee_id, group_id, status)
+            VALUES (?, ?, ?, 'pending')
+        `;
+        db.query(insertInvitationQuery, [inviter_id, invitee_id, group_id], (err, result) => {
+            if (err) {
+                console.error("Error creating invitation: ", err.message);
+                return res.status(500).json({ error: "Failed to send invitation" });
+            }
+            res.status(200).json({ message: "Invitation sent successfully" });
+        });
+    });
+});
+
+// get received pending invitations for a specific user --ET
+// input: user_id (want to retrieve this person's pending invitations)
+// output: pending invitations for that user
+app.get('/receivedInvitations', (req, res) => {
+    const { user_id } = req.query;
+
+    const sql = `SELECT * FROM group_invitations WHERE invitee_id = ? AND status = 'pending'`;
+    db.query(sql, [user_id], (err, results) => {
+        if (err) {
+            console.error("Error fetching pending invitations:", err);
+            return res.status(500).json({ error: "Failed to retrieve pending invitations" });
+        }
+        res.status(200).json(results);
+    });
+});
+
+// respond to invitation based on user's response (accepted / rejected) --ET
+// input: invitation_id, response (either "accepted" or "rejected")
+app.post('/respondToInvitation', (req, res) => {
+    const { invitation_id, response } = req.body;
+
+    // Update the status in the group_invitations table
+    const updateSql = `UPDATE group_invitations SET status = ? WHERE id = ?`;
+    db.query(updateSql, [response, invitation_id], (err) => {
+        if (err) {
+            console.error("Error updating invitation status:", err);
+            return res.status(500).json({ error: "Failed to update invitation status" });
+        }
+
+        // if accepted, add the user to the group
+        if (response === 'accepted') {
+            // find the user's id and the group's id
+            const getGroupDetailsSql = `
+                SELECT invitee_id, group_id 
+                FROM group_invitations 
+                WHERE id = ?
+            `;
+            db.query(getGroupDetailsSql, [invitation_id], (err, result) => {
+                if (err || result.length === 0) {
+                    console.error("Error retrieving group details when adding user to the group:", err);
+                    return res.status(500).json({ error: "Failed to retrieve group details when adding user to the group" });
+                }
+                
+                const { invitee_id, group_id } = result[0];
+                // add user to the group
+                const addMemberSql = `INSERT INTO group_members (user_id, group_id, role) VALUES (?, ?, 'member')`;
+                db.query(addMemberSql, [invitee_id, group_id], (err) => {
+                    if (err) {
+                        console.error("Error adding member:", err);
+                        return res.status(500).json({ error: "Failed to add member to group" });
+                    }
+                    res.status(200).json({ message: "Invitation accepted, added to group" });
+                });
+            });
+        } 
+        // invitation rejected
+        else { 
+            res.status(200).json({ message: "Invitation declined" });
+        }
+    });
+});
 
 
 // keep this at the very bottom of the file -KK
