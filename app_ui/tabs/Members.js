@@ -7,42 +7,61 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { API_URL } from '../config';
 
 
-// header and page content
+// main screen 
 const MembersScreen = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
+  const [hasInvitations, setHasInvitations] = useState(false);
+
+  // if invitation received, button turns red
+  useEffect(() => {
+    const fetchPendingInvitations = async () => {
+      try {
+        const response = await axios.get(`${API_URL}receivedInvitations`, {
+        });
+        setHasInvitations(response.data.length > 0);
+      } catch (error) {
+        console.error("Error fetching pending invitations:", error);
+      }
+    };
+
+    fetchPendingInvitations();
+  }, []);
+
+  // invitation button
+  const handleMailPress = () => {
+    navigation.navigate('GroupInvitations');
+  };
 
   return (
     <View style={styles.screen}>
+
+      <TouchableOpacity
+        onPress={handleMailPress}
+        style={[
+          styles.mailButton,
+          hasInvitations && { backgroundColor: theme.red }
+        ]}
+      >
+        <Icon name="mail" size={25} color="#fff" />
+      </TouchableOpacity>
+
       <TabHeader title="Members" />
       <MembersDisplay navigation={navigation}/>
     </View>
   );
 };
 
-// page content
+// members display
 const MembersDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [members, setMembers] = useState([]);
-
-  // useEffect(() => {
-  //   const fetchMembers = async () => {
-  //     try {
-  //       const groupId = "";
-  //       const response = await axios.get(`${API_URL}api/groups/${groupId}/members`);
-  //       setMembers(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching members:', error);
-  //     }
-  //   };
-
-  //   fetchMembers();
-  // }, []);
 
   const handleManageGroup = () => {
     navigation.navigate('Manage');
@@ -51,11 +70,7 @@ const MembersDisplay = ({ navigation }) => {
   return (
     <View style={styles.content}>
 
-      {/* {members.map((member, index) => (
-        <View key={index} style={styles.members}>
-          <Text style={styles.memberText}>{member.username}</Text>
-        </View>
-      ))} */}
+      {/* display list of member profiles */}
 
       <TouchableOpacity 
         style={styles.membersButtons} 

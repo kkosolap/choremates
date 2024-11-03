@@ -325,7 +325,17 @@ const createStyles = (theme) => {
       position: 'absolute',
       top: 60,
       left: 20,
-    }
+    },
+
+    // invitation - NN
+    mailButton: {
+      position: 'absolute',
+      backgroundColor: theme.gray,
+      borderRadius: 20,
+      padding: 8,
+      top: 60,
+      right: 20
+    },
   });
 };
 

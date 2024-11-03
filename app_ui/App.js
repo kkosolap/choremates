@@ -19,6 +19,7 @@ import MembersScreen from './tabs/Members';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 import ManageScreen from './screens/Manage';
+import GroupInvitations from './screens/GroupInvitations';
 
 
 /************************************************************ */
@@ -59,6 +60,7 @@ const MembersStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MembersMain" component={MembersScreen} />
       <Stack.Screen name="Manage" component={ManageScreen} />
+      <Stack.Screen name="GroupInvitations" component={GroupInvitations} />
     </Stack.Navigator>
   );
 };

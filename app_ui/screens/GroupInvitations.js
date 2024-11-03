@@ -1,4 +1,4 @@
-// Manage.js - NN
+// GroupInvitations.js
 
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
@@ -9,7 +9,7 @@ import { TabHeader } from '../components/headers.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
-const ManageScreen = ({ navigation, route }) => {
+const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
@@ -19,13 +19,13 @@ const ManageScreen = ({ navigation, route }) => {
           <Icon name="arrow-back" size={25} color="black" />
       </TouchableOpacity>
 
-      <TabHeader title="Manage Group" />
+      <TabHeader title="Group Invitations" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
       </ScrollView>
 
-      {/* will need to show all the members along with adding and deleting functionality*/}
+      {/* will need to show all group invitations with an accept and decline option */}
     </View>
   );
 };
 
-export default ManageScreen;
+export default GroupInvitations;
