@@ -48,13 +48,13 @@ const GroupInvitations = ({ navigation, route }) => {
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 
-                onPress={() => handleResponse(item.id, 'accept')}
+                onPress={() => handleResponse(item.id, 'accepted')}
               >
                 <Text style={styles.buttonText}>Accept</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.declineButton} 
-                onPress={() => handleResponse(item.id, 'decline')}
+                onPress={() => handleResponse(item.id, 'rejected')}
               >
                 <Text style={styles.buttonText}>Decline</Text>
               </TouchableOpacity>

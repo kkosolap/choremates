@@ -53,6 +53,7 @@ const MembersScreen = ({ groupId, userId }) => {
       return;
     }
     try {
+      //console.log(groupName, userId);
       const response = await axios.post(`${API_URL}createGroup`, {
         group_name: groupName,
         user_id: userId,
