@@ -169,7 +169,7 @@ app.post('/logout', (req, res) => {
 /********************************************************** */
 /*                USER IMPLEMENTATION BELOW:                */
 /********************************************************** */
-// get the user's display name
+// get the user's display name -KK
 app.post('/get_display', async (req, res) => {
     try {
         const { username } = req.body;
@@ -187,7 +187,7 @@ app.post('/get_display', async (req, res) => {
     }
 });
 
-// changes the display name for a user
+// changes the display name for a user -KK
 app.post('/update_display', async (req, res) => {
     try {
         const { username, display_name } = req.body;
@@ -205,7 +205,7 @@ app.post('/update_display', async (req, res) => {
     }
 });
 
-// get the user's theme
+// get the user's theme -KK
 app.post('/get_theme', async (req, res) => {
     try {
         const { username } = req.body;
@@ -223,7 +223,7 @@ app.post('/get_theme', async (req, res) => {
     }
 });
 
-// changes the theme for a user
+// changes the theme for a user -KK
 app.post('/update_theme', async (req, res) => {
     try {
         const { username, theme } = req.body;
@@ -237,6 +237,42 @@ app.post('/update_theme', async (req, res) => {
         res.json(results);
     } catch (error) {
         console.error("API update_theme: Error:", error.message);
+        res.status(500).send("Error updating theme.");
+    }
+});
+
+// get the user's profile pic -KK
+app.post('/get_profile', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get_profile: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+        const user_id = await getUserId(username);
+
+        const [results] = await db.promise().query("SELECT profile_pic FROM users WHERE id = ?", [user_id]);
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("API get_profile: Error:", error.message);
+        res.status(500).send("Error getting theme.");
+    }
+});
+
+// changes the theme for a user -KK
+app.post('/update_profile', async (req, res) => {
+    try {
+        const { username, profile_pic } = req.body;
+        if (!username || !profile_pic) {
+            console.log("API update_profile: Missing username or profile pic.");
+            return res.status(400).send("Missing username or profile pic.");
+        }
+        const user_id = await getUserId(username);
+
+        const [results] = await db.promise().query("UPDATE users SET profile_pic = ? WHERE id = ?", [profile_pic, user_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API update_profile: Error:", error.message);
         res.status(500).send("Error updating theme.");
     }
 });
@@ -358,6 +394,18 @@ app.post('/complete_chore', async (req, res) => {
         res.status(500).send("An error occurred while toggling chore completion status.");
     }
 });
+
+// Update the display name when changed -VA
+app.post('/update_display', async (req, res) => {
+    const { userId, display_name } = req.body;
+    try {
+      await db.query('UPDATE users SET display_name = ? WHERE id = ?', [display_name, userId]);
+      res.status(200).send({ message: "Display name updated successfully." });
+    } catch (error) {
+      res.status(500).send({ error: "Error updating display name" });
+    }
+  });
+  
 
 
 /********************************************************** */
