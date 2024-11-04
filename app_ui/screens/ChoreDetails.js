@@ -34,13 +34,12 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const styles = createStyles(theme);
 
   const route = useRoute();
-  const { routed_chore_name, routed_tasks } = route.params;  // Get chore name from parameters
-  //const { routed_chore_name, routed_tasks, routed_recurrence } = route.params;  // Get chore name from parameters
+  const { routed_chore_name, routed_tasks, routed_recurrence } = route.params;  // Get chore name from parameters
 
-  const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
-  const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
-  const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
-  const [newTask, setNewTask] = useState('');          // block for the new task to add to the list -KK
+  const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
+  const [recurrence, setRecurrence] = useState('Just Once');  // how often the chore recurrs, added to the db -KK
+  const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
+  const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [username, setUsername] = useState(null);
 
@@ -51,24 +50,18 @@ const ChoreDetailsDisplay = ({navigation}) => {
       if (storedUsername) {
         setUsername(storedUsername);
       } else {
-        console.error("UI NewChore.js: Username not found in SecureStore.");
+        console.error("UI ChoreDetails.js: Username not found in SecureStore.");
       }
     };
     getUsername();
   }, []);
 
   // Set form starting values to the saved details of the chore -MH
-  /*
   useEffect(() => {
     setChoreName(routed_chore_name);
     setTasks(routed_tasks);
     setRecurrence(routed_recurrence);
   }, [routed_chore_name, routed_tasks, routed_recurrence]);
-  */
-  useEffect(() => {
-    setChoreName(routed_chore_name);
-    setTasks(routed_tasks);
-  }, [routed_chore_name, routed_tasks]);
 
   // Add the chore to the database
   // (gets called when the "add chore" button is pressed) -KK
@@ -151,8 +144,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
           style={styles.input}
-          //placeholder="Enter Chore Name . . ."
-          //placeholderTextColor={theme.text3}
           value={chore_name}
           selectionColor={theme.text2}
           onChangeText={setChoreName}

@@ -317,7 +317,6 @@ app.post('/add_chore', async (req, res) => {
     }
 });
 
-/*
 // update the details of a chore -MH
 app.post('/update_chore', async (req, res) => {
     try {
@@ -343,7 +342,6 @@ app.post('/update_chore', async (req, res) => {
         res.status(500).send("An error occurred while updating the chore.");
     }
 });
-*/
 
 // deletes a chore for the user from the database -KK
 app.post('/delete_chore', async (req, res) => {
