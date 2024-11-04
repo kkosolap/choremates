@@ -121,21 +121,19 @@ const MembersScreen = ({ groupId, userId }) => {
 
       <MembersDisplay groupId={groupId} navigation={navigation}/>
 
-      {!isGroupCreated ? ( // only shows create group/invite members depending on if you are in a group or not
-        <TouchableOpacity 
-          style={styles.createButton} 
-          onPress={() => setIsGroupModalVisible(true)}
-        >
-          <Text style={styles.managecreateButtonText}>Create Group</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity 
-          style={styles.createButton} 
-          onPress={() => setIsInviteModalVisible(true)}
-        >
-          <Text style={styles.managecreateButtonText}>Invite Members</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity 
+        style={styles.createButton} 
+        onPress={() => setIsGroupModalVisible(true)}
+      >
+        <Text style={styles.managecreateButtonText}>Create Group</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.inviteButton} 
+        onPress={() => setIsInviteModalVisible(true)}
+      >
+        <Text style={styles.managecreateButtonText}>Invite Members</Text>
+      </TouchableOpacity>
 
       <Modal // create group modal
         animationType="slide"

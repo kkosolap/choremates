@@ -628,16 +628,28 @@ const createStyles = (theme) => {
       color: theme.white,
     },
 
-    //create button & pop-up - NN
+    // create/invite button & pop-up - NN
     createButton: {
       position: 'absolute',
-      width: '78%',
+      width: '35%',
       bottom: 170,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      left: 50,
+    },
+    inviteButton: {
+      position: 'absolute',
+      width: '35%',
+      bottom: 170,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+      right: 50,
     },
     modalView: {
       flex: 1,
