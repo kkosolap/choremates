@@ -21,7 +21,8 @@ const SettingsScreen = ({ onLogout }) => {
   const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
   const [isEditing, setIsEditing] = useState(false);
-  const [displayName, setDisplayName] = useState('');
+  const [display_name, setDisplayName] = useState('');
+  const [profile_pic, setProfilePic] = useState('');
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
@@ -29,9 +30,21 @@ const SettingsScreen = ({ onLogout }) => {
       const username = await SecureStore.getItemAsync('username');
       if (username) {
         setUsername(username);
-        try {
-          const response = await axios.post(`${API_URL}get_display`, { username });
-          setDisplayName(response.data[0]?.display_name);
+        try { // get the user's display name and profile picture -KK
+          const displayResponse  = await axios.post(`${API_URL}get_display`, { username });
+          const display = displayResponse.data[0]?.display_name;
+          setDisplayName(display);
+          
+          const profilePicResponse = await axios.post(`${API_URL}get_profile`, { username });
+          const pfp = profilePicResponse.data[0]?.profile_pic
+          
+          console.log("UI Settings.js: display_name and profile_pic are ", display, pfp);
+          /*try { // load the user's profile picture
+            console.log("UI Settings.js: Loading profile pic: ", pfp);
+            setProfilePic(require(`..icons/'${pfp}.jpg`)); // this wont work -KK
+          } catch (error) {
+            console.error("UI Settings.js: Error loading profile picture.");
+          }*/
         } catch (error) {
           console.error("UI Settings.js: Error loading display:", error);
         }
@@ -42,30 +55,29 @@ const SettingsScreen = ({ onLogout }) => {
     getUsername();
   }, []);
 
+  // Trying to change display name -VA
+  const handleChangeDisplayName = async () => {
+    console.log("UI Settings.js: Updating display name to:", display_name);
+    try {
+        await axios.post(`${API_URL}update_display`, {username, display_name});
+    } catch (error) {
+      console.log("UI Settings.js: Error changing display name.");
+    }
+  };
 
-  //Trying to change display name
-const handleChangeDisplayName = async (newDisplayName) => {
-  console.log("Updating display name to:", newDisplayName);
-  console.log("Current username:", username);
-  try {
-      const response = await axios.post(`${API_URL}update_display`, {username, newDisplayName});
-      console.log("API response:", response.data); // Log the response from the API
-  } catch (error) {
-    // constantly returns " ERROR  UI Settings.js: Error updating display name: Missing username or display name"
-    // unsure why bc console.log shows that neither is empty and both are strings
-    // won't even go to {API_URL}update_display bc of the error -VA
-    console.log("Settings.js: current username: " + username);
-    console.log("Settings.js: new display name: " + newDisplayName);
-    console.error("UI Settings.js: Error updating display name:", error.response ? error.response.data : error.message);
-  }
-};
-
-  const handleEditPhoto = () => {
-    setIsEditing(!isEditing);
-    // console.log(process.env.API_URL);
-
-    // Add logic here for changing the profile photo -VA
-    // console.log('profile pic edit')
+  // changes the user's profile picture -KK
+  const handleChangeProfilePic = async () => {
+    console.log("UI Settings.js: Updating profile picture to:", profile_pic);
+    /* try {
+        await axios.post(`${API_URL}update_profile`, {username, profile_pic});
+        try { // load the new profile picture -KK
+          setProfilePic(require(`..icons/'${profile_pic}.jpg`));
+        } catch (error) {
+          console.log("UI Settings.js: Error loading new profile picture.");
+        }
+    } catch (error) {
+      console.log("UI Settings.js: Error changing profile picture.");
+    }*/
   };
 
   return (
@@ -79,24 +91,20 @@ const handleChangeDisplayName = async (newDisplayName) => {
             <View style={styles.profileTopSection}>
               <View style={styles.profilePictureArea}>
                 <Image source={profilePicture} style={styles.profilePicturePhoto} />
-                <TouchableOpacity style={styles.profilePhotoEditButton} onPress={handleEditPhoto}>
+                <TouchableOpacity style={styles.profilePhotoEditButton} onPress={handleChangeProfilePic}>
                   <Ionicons name="images" size={24} color="white" />
                 </TouchableOpacity>
               </View>
               <View style={styles.profileTextContainer}>
                 <Text>Display Name</Text>
-                {/* <TextInput 
-                  style={styles.profileDisplayNameText} onChangeText={handleChangeDisplayName}>
-                  {displayName}
-                </TextInput>     */}
                 <TextInput 
                   style={styles.profileDisplayNameText} 
-                  value={displayName} 
+                  value={display_name} 
                   onChangeText={setDisplayName} 
-                  onEndEditing={(e) => handleChangeDisplayName(e.nativeEvent.text)} // Call when editing ends
+                  onSubmitEditing={handleChangeDisplayName}
                 />
 
-                {/* // value={displayName}  */}
+                {/* // value={display_name}  */}
                 <Text>User Name</Text>
                 <Text style={styles.profileUsernameText}>{username}</Text>
               </View>
