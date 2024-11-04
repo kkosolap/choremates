@@ -89,7 +89,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
     }
   };
 
-  /*
   // Update the chore in the database
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
@@ -108,7 +107,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
         console.error("Error updating chore:", error);
     }
   };
-  */
 
   // Adds the task entered into the input box to the task list
   // These will only get added to the db after the "add chore" button is pressed -KK
@@ -224,8 +222,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
         <View style={styles.centeredContent}>
           <TouchableOpacity
             style={styles.addChoreButton}
-            //onPress={updateChore}
-            onPress={addChore}
+            onPress={updateChore}
             activeOpacity={0.8}
           >
             <Text style={styles.addChoreButtonText}>Save Changes</Text>
