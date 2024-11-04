@@ -96,7 +96,7 @@ const MembersScreen = ({ groupId, userId }) => {
         group_id: 2, // hardcoded, current only works with group_id = 2
       });
       Alert.alert('Invitation sent successfully', `Invitation sent to user: ${inviteeName}`);
-      setInviteeName(''); // Clear invitee ID after sending
+      setInviteeName(''); // Clear invitee username after sending
       setIsInviteModalVisible(false);
     } catch (error) {
       console.error("Error sending invitation:", error);
