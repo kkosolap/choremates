@@ -79,13 +79,23 @@ const HomeDisplay = () => {
     navigation.navigate('NewChore');
   };
 
+  /*
   // open ChoreDetails page above current page
-  const openChoreDetails = (chore_name, grouped_tasks) => {
+  const openChoreDetails = (chore_name, grouped_tasks, recurrence) => {
     navigation.navigate('ChoreDetails', {
-      choreName: chore_name,
-      tasks: grouped_tasks,
+      routed_chore_name: chore_name,
+      routed_tasks: grouped_tasks,
+      routed_recurrence: recurrence,
     });
   };
+  */
+ // open ChoreDetails page above current page
+ const openChoreDetails = (chore_name, grouped_tasks) => {
+  navigation.navigate('ChoreDetails', {
+    routed_chore_name: chore_name,
+    routed_tasks: grouped_tasks,
+  });
+};
 
   // group the tasks by chore -KK
   const groupedTasks = data.reduce((acc, task) => {
@@ -141,6 +151,13 @@ const HomeDisplay = () => {
               key={chore_name}
               choreName={chore_name}
               tasks={groupedTasks[chore_name].tasks}
+              /*
+              onOpenChoreDetails={() => openChoreDetails(
+                chore_name,
+                groupedTasks[chore_name].tasks,
+                groupedTasks[chore_name].recurrence
+              )}
+              */
               onOpenChoreDetails={() => openChoreDetails(
                 chore_name,
                 groupedTasks[chore_name].tasks
