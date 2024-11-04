@@ -214,6 +214,7 @@ app.post('/get_theme', async (req, res) => {
             return res.status(400).send("Missing username.");
         }
         const user_id = await getUserId(username);
+        console.log(user_id);
 
         const [results] = await db.promise().query("SELECT theme FROM users WHERE id = ?", [user_id]);
         res.status(200).json(results);
@@ -531,14 +532,16 @@ app.post('/match_task', async (req, res) => {
 /*              GROUP IMPLEMENTATION BELOW:                 */
 /********************************************************** */
 // create a new group -ET
-// input: group_name, user_id (the person who wants to create the group)
-app.post('/createGroup', (req, res) => {
-    const { group_name, user_id } = req.body;
+// input: group_name, username (the person who wants to create the group)
+app.post('/createGroup', async (req, res) => {
+    const { group_name, username } = req.body;
 
     // check if group name and user ID are provided
-    if (!group_name || !user_id) {
-        return res.status(400).json({ error: "Missing group name or user ID" });
+    if (!group_name || !username) {
+        return res.status(400).json({ error: "Missing group name or username" });
     }
+
+    const user_id = await getUserId(username);
 
     // insert the new group into group_names
     db.query('INSERT INTO group_names (group_name) VALUES (?)', [group_name], (err, result) => {
@@ -586,9 +589,12 @@ app.get('/groupMembers', (req, res) => {
 });
 
 // send an invitation, only 'admin' can invite --ET
-// input: inviter_id, invitee_id, group_id
-app.post('/sendInvitation', (req, res) => {
-    const { inviter_id, invitee_id, group_id } = req.body;
+// input: inviter_name, invitee_name, group_id
+app.post('/sendInvitation', async (req, res) => {
+    const { inviter_name, invitee_name, group_id } = req.body;
+
+    const inviter_id = await getUserId(inviter_name);
+    const invitee_id = await getUserId(invitee_name);
 
     // check if inviter is an admin in the group
     const adminCheckQuery = `
@@ -621,10 +627,12 @@ app.post('/sendInvitation', (req, res) => {
 });
 
 // get received pending invitations for a specific user --ET
-// input: user_id (want to retrieve this person's pending invitations)
+// input: username (want to retrieve this person's pending invitations)
 // output: pending invitations for that user
-app.get('/receivedInvitations', (req, res) => {
-    const { user_id } = req.query;
+app.get('/receivedInvitations', async (req, res) => {
+    const { username } = req.query;
+
+    const user_id = await getUserId(username);
 
     const sql = `SELECT * FROM group_invitations WHERE invitee_id = ? AND status = 'pending'`;
     db.query(sql, [user_id], (err, results) => {
