@@ -3,7 +3,9 @@ import { View, Text, FlatList, Alert, StyleSheet } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { StatusBar } from 'expo-status-bar';
 
-import { API_URL } from '@env';
+import axios from 'axios';
+import { API_URL } from '../config';
+
 
 const DisplayChoresList = () => {
     const [chores, setChores] = useState([]);

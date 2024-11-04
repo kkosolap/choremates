@@ -8,7 +8,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import { API_URL } from '@env';
+import { API_URL } from './config';
+
 import { ThemeProvider, useTheme } from './style/ThemeProvider';
 import createStyles from './style/styles';
 import Signin from './screens/Signin';
@@ -18,6 +19,7 @@ import ChoresScreen from './tabs/Chores';
 import MembersScreen from './tabs/Members';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
+import ChoreDetailsScreen from './screens/ChoreDetails';
 import ManageScreen from './screens/Manage';
 import GroupInvitations from './screens/GroupInvitations';
 
@@ -41,6 +43,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
+      <Stack.Screen name="ChoreDetails" component={ChoreDetailsScreen} />
     </Stack.Navigator>
   );
 };
@@ -82,27 +85,32 @@ const SettingsStack = () => {
 /************************************************************ */
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('token');
+      const user = await SecureStore.getItemAsync('username');
       setIsLoggedIn(!!token); // Check if token exists
+      setUsername(user);
     };
     checkToken();
   }, []);
 
-  const handleSignin = (username, password) => {
-    console.log('Logging in with:', username, password);
+  const handleSignin = (username) => {
+    console.log('Logging in as:', username);
     setIsLoggedIn(true);
+    setUsername(username);
   };
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync('token'); // Remove token securely
+    await SecureStore.deleteItemAsync('username'); 
     setIsLoggedIn(false); // Update logged-in state
   };
 
   return (
-    <ThemeProvider>
+    <ThemeProvider username={username}>
       <NavigationContainer>
         {/* Call useTheme here to ensure it's within the provider -MH */}
         <AppContent isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleSignin={handleSignin} />

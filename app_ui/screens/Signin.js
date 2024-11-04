@@ -3,16 +3,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios'; // Make sure axios is installed
 import * as SecureStore from 'expo-secure-store'; // Import SecureStore
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import { API_URL } from '../config'; // Import your API URL
+import themes from '../style/colors';
+
+import { API_URL } from '../config';
+import axios from 'axios'; 
 
 const Signin = ({ onSignin }) => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
+  // const { theme } = useTheme();
+  const styles = createStyles(themes.purple);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,7 +25,8 @@ const Signin = ({ onSignin }) => {
       const response = await axios.post(`${API_URL}login`, { username, password });
       const token = response.data.token;
       await SecureStore.setItemAsync('token', token); // Store the token securely
-      onSignin(username, password); // Update the logged-in state
+      await SecureStore.setItemAsync('username', username); // Store username securely
+      onSignin(username); // Update the logged-in state
     } catch (error) {
       console.error('Login Error:', error);
       Alert.alert('Error', error.response?.data?.message || 'Login failed');
