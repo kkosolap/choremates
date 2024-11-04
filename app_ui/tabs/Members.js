@@ -10,6 +10,7 @@ import { TabHeader } from '../components/headers.js';
 import Mail from 'react-native-vector-icons/Ionicons';
 import { API_URL } from '../config';
 import Icon from 'react-native-vector-icons/Ionicons'
+import * as SecureStore from 'expo-secure-store';
 
 
 // members invitation and group creation
@@ -21,16 +22,30 @@ const MembersScreen = ({ groupId, userId }) => {
   const [isGroupModalVisible, setIsGroupModalVisible] = useState(false);
   const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
   const [groupName, setGroupName] = useState('');
-  const [inviteeId, setInviteeId] = useState('');
+  const [inviteeName, setInviteeName] = useState('');
   const [displayGroupName, setDisplayGroupName] = useState('');
   const [isGroupCreated, setIsGroupCreated] = useState(false);
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const getUsername = async () => {   // get the username from securestore -KK
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+        //console.log(username);
+      } else {
+        console.error("UI Member.js: Username not found in SecureStore.");
+      }
+    };
+    getUsername();
+  }, []);
 
   // if invitation received, button turns red
   useEffect(() => {
     const fetchPendingInvitations = async () => {
       try {
         const response = await axios.get(`${API_URL}receivedInvitations`, {
-          params: { user_id: userId }
+          params: { username: username }
         });
         setHasInvitations(response.data.length > 0);
       } catch (error) {
@@ -53,9 +68,10 @@ const MembersScreen = ({ groupId, userId }) => {
       return;
     }
     try {
+      //console.log(groupName, username);
       const response = await axios.post(`${API_URL}createGroup`, {
         group_name: groupName,
-        user_id: userId,
+        username: username,
       });
       Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
       setDisplayGroupName(groupName);
@@ -69,18 +85,18 @@ const MembersScreen = ({ groupId, userId }) => {
 
   // sending invitation button
   const handleSendInvitation = async () => {
-    if (!inviteeId) {
-      Alert.alert('Please enter the invitee ID');
+    if (!inviteeName) {
+      Alert.alert('Please enter the invitee username');
       return;
     }
     try {
       const response = await axios.post(`${API_URL}sendInvitation`, {
-        inviter_id: userId,
-        invitee_id: inviteeId,
-        group_id: groupId,
+        inviter_id: username,
+        invitee_id: inviteeName,
+        group_id: 2, // hardcoded, current only works with group_id = 2
       });
-      Alert.alert('Invitation sent successfully', `Invitation sent to user ID: ${inviteeId}`);
-      setInviteeId(''); // Clear invitee ID after sending
+      Alert.alert('Invitation sent successfully', `Invitation sent to user: ${inviteeName}`);
+      setInviteeName(''); // Clear invitee username after sending
       setIsInviteModalVisible(false);
     } catch (error) {
       console.error("Error sending invitation:", error);
@@ -164,9 +180,9 @@ const MembersScreen = ({ groupId, userId }) => {
           <Text style={styles.modalTitle}>Enter Invitee ID</Text>
           <TextInput
             style={styles.input}
-            placeholder="Invitee ID"
-            value={inviteeId}
-            onChangeText={setInviteeId}
+            placeholder="Invitee Username"
+            value={inviteeName}
+            onChangeText={setInviteeName}
           />
           <TouchableOpacity
             style={styles.submitButton}
