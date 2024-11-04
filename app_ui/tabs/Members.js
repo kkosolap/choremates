@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
@@ -12,7 +12,7 @@ import { API_URL } from '../config';
 
 
 // main screen 
-const MembersScreen = () => {
+const MembersScreen = ({ groupId, userId }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
@@ -23,6 +23,7 @@ const MembersScreen = () => {
     const fetchPendingInvitations = async () => {
       try {
         const response = await axios.get(`${API_URL}receivedInvitations`, {
+          params: { user_id: userId }
         });
         setHasInvitations(response.data.length > 0);
       } catch (error) {
@@ -31,7 +32,7 @@ const MembersScreen = () => {
     };
 
     fetchPendingInvitations();
-  }, []);
+  }, [userId]);
 
   // invitation button
   const handleMailPress = () => {
@@ -52,34 +53,60 @@ const MembersScreen = () => {
       </TouchableOpacity>
 
       <TabHeader title="Members" />
-      <MembersDisplay navigation={navigation}/>
+      <MembersDisplay groupId={groupId} navigation={navigation}/>
     </View>
   );
 };
 
 // members display
-const MembersDisplay = ({ navigation }) => {
+const MembersDisplay = ({ groupId, navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [members, setMembers] = useState([]);
 
+  // fetch members of the group
+  useEffect(() => {
+    const fetchGroupMembers = async () => {
+        try {
+          const response = await axios.get(`${API_URL}groupMembers`, {
+            params: { group_id: groupId }
+          });
+          setMembers(response.data);
+        } catch (error) {
+            Alert.alert('Error retrieving group members: ' + error.message);
+        }
+    };
+
+    fetchGroupMembers();
+}, [groupId]);
+
+
   const handleManageGroup = () => {
-    navigation.navigate('Manage');
+    navigation.navigate('Manage', {members});
   };
 
   return (
     <View style={styles.content}>
 
-      {/* display list of member profiles */}
+      <FlatList
+          data={members}
+          keyExtractor={(item) => item.username}
+          renderItem={({ item }) => (
+              <View style={styles.memberItem}>
+                  <Text style={styles.memberName}>{item.username}</Text>
+                  <Text style={styles.memberRole}>Role: {item.role}</Text>
+              </View>
+          )}
+      />
 
       <TouchableOpacity 
-        style={styles.membersButtons} 
+        style={styles.manageButton} 
         onPress={() => {
           console.log('Manage Group button pressed');
           handleManageGroup();
         }}
       >
-        <Text style={styles.membersButtonText}>Manage Group</Text>
+        <Text style={styles.manageButtonText}>Manage Group</Text>
       </TouchableOpacity>
     </View>
   );

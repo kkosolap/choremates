@@ -250,7 +250,6 @@ const createStyles = (theme) => {
       alignItems: 'center',
       marginTop: 500,
     },
-    
     logoutButtonText: {
       color: theme.white,
       fontWeight: 'bold',
@@ -277,33 +276,7 @@ const createStyles = (theme) => {
     },
 
     //members page -NN
-    members: {
-      width: '80%',
-      padding: 15,
-      marginBottom: 20,
-      borderWidth: 1,
-      borderColor: theme.gray,
-      borderRadius: 10,
-      backgroundColor: theme.lighter,
-      alignItems: 'center',
-    },
-
-    memberText: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: theme.text1,
-    },
-
-    membersbuttonContainer: {
-      position: 'absolute',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      width: '80%',
-      paddingBottom: 20,
-      bottom: 130,
-    },
-
-    membersButtons: {
+    manageButton: {
       position: 'absolute',
       width: '80%',
       bottom: 120,
@@ -313,13 +286,11 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-
-    membersButtonText: {
+    manageButtonText: {
       color: theme.white,
       fontWeight: 'bold',
       fontSize: 16,
     },
-
     backPageButton: {
       padding: 10,
       position: 'absolute',
@@ -333,8 +304,89 @@ const createStyles = (theme) => {
       backgroundColor: theme.gray,
       borderRadius: 20,
       padding: 8,
-      top: 60,
+      top: 70,
       right: 20
+    },
+    
+    // members card - NN
+    memberItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      marginVertical: 15,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      borderRadius: 20,
+      width: '95%', 
+      alignSelf: 'center',
+      backgroundColor: theme.lighter,
+    },
+    memberName: {
+      textAlign: 'left',
+      fontSize: 25,
+      fontWeight: 'bold',
+    },
+    memberRole: {
+      textAlign: 'right',
+      fontSize: 20,
+    },
+
+    // manage members screen - NN
+    manageMemberItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginVertical: 15,
+    },
+    manageMemberName: {
+      textAlign: 'left',
+      fontSize: 25,
+      fontWeight: 'bold',
+      padding: 20,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      borderRadius: 20,
+      width: '70%', 
+      backgroundColor: theme.lighter,
+    },
+    deleteButton: {
+      backgroundColor: theme.red,
+      padding: 20,
+      borderWidth: 1,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    
+    // group invitations screen - NN
+    invitationItem: {
+      marginVertical: 10,
+      padding: 15,
+      borderWidth: 1,
+      borderColor: theme.gray,
+      borderRadius: 8,
+    },
+    invitationText: {
+      fontSize: 16,
+      marginBottom: 10,
+    },
+    invitationButtonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    acceptButton: {
+      backgroundColor: '#0b6623',
+      padding: 10,
+      borderRadius: 5,
+    },
+    declineButton: {
+      backgroundColor: theme.red,
+      padding: 10,
+      borderRadius: 5,
+    },
+    buttonText: {
+      color: theme.white,
     },
   });
 };

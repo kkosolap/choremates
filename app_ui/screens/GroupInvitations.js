@@ -1,10 +1,10 @@
-// GroupInvitations.js
+// GroupInvitations.js - NN
 
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Arrow from 'react-native-vector-icons/MaterialIcons';
 import { TabHeader } from '../components/headers.js';
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -12,18 +12,49 @@ import { API_URL } from '../config';
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const invitations = route.params?.invitations || []; // Get invitations from route params
+
+  const handleAccept = (invitationId) => {
+    console.log(`Accepted invitation with ID: ${group_id}`);
+    // logic to accept the invitation
+  };
+
+  const handleDecline = (invitationId) => {
+    console.log(`Declined invitation with ID: ${group_id}`);
+    // logic to decline the invitation
+  };
 
   return (
     <View style={styles.screen}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backPageButton}>
-          <Icon name="arrow-back" size={25} color="black" />
+          <Arrow name="arrow-back" size={25} color="black" />
       </TouchableOpacity>
 
       <TabHeader title="Group Invitations" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-      </ScrollView>
 
-      {/* will need to show all group invitations with an accept and decline option */}
+      <FlatList
+        data={invitations}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.invitationItem}>
+            <Text style={styles.invitationText}>Group ID: {item.groupId}</Text>
+            <View style={styles.invitationButtonContainer}>
+              <TouchableOpacity 
+                style={styles.acceptButton} 
+                onPress={() => handleAccept(item.id)}
+              >
+                <Text style={styles.buttonText}>Accept</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.declineButton} 
+                onPress={() => handleDecline(item.id)}
+              >
+                <Text style={styles.buttonText}>Decline</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      />
     </View>
   );
 };
