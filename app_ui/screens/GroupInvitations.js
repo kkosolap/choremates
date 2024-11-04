@@ -12,22 +12,29 @@ import { API_URL } from '../config';
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const invitations = route.params?.invitations || []; // Get invitations from route params
+  const invitations = route.params?.invitations || []; // get invitations from route params
 
-  const handleAccept = (invitationId) => {
-    console.log(`Accepted invitation with ID: ${group_id}`);
-    // logic to accept the invitation
-  };
-
-  const handleDecline = (invitationId) => {
-    console.log(`Declined invitation with ID: ${group_id}`);
-    // logic to decline the invitation
+  const handleResponse = async (invitationId, response) => {
+    try {
+      const res = await axios.post(`${API_URL}respondToInvitation`, {
+        invitation_id: invitationId,
+        response,
+      });
+      
+      if (res.status === 200) {
+        Alert.alert(`Invitation ${response}ed successfully.`);
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error(`Failed to ${response} invitation:`, error);
+      Alert.alert(`Failed to ${response} invitation.`);
+    }
   };
 
   return (
     <View style={styles.screen}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backPageButton}>
-          <Arrow name="arrow-back" size={25} color="black" />
+        <Arrow name="arrow-back" size={25} color="black" />
       </TouchableOpacity>
 
       <TabHeader title="Group Invitations" />
@@ -41,13 +48,13 @@ const GroupInvitations = ({ navigation, route }) => {
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 
-                onPress={() => handleAccept(item.id)}
+                onPress={() => handleResponse(item.id, 'accept')}
               >
                 <Text style={styles.buttonText}>Accept</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.declineButton} 
-                onPress={() => handleDecline(item.id)}
+                onPress={() => handleResponse(item.id, 'decline')}
               >
                 <Text style={styles.buttonText}>Decline</Text>
               </TouchableOpacity>

@@ -279,14 +279,14 @@ const createStyles = (theme) => {
     manageButton: {
       position: 'absolute',
       width: '80%',
-      bottom: 120,
+      bottom: 100,
       height: 50,
       borderRadius: 10,
-      backgroundColor: theme.gray,
+      backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
     },
-    manageButtonText: {
+    managecreateButtonText: {
       color: theme.white,
       fontWeight: 'bold',
       fontSize: 16,
@@ -294,7 +294,7 @@ const createStyles = (theme) => {
     backPageButton: {
       padding: 10,
       position: 'absolute',
-      top: 60,
+      top: 70,
       left: 20,
     },
 
@@ -304,7 +304,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.gray,
       borderRadius: 20,
       padding: 8,
-      top: 70,
+      top: 63,
       right: 20
     },
     
@@ -387,6 +387,66 @@ const createStyles = (theme) => {
     },
     buttonText: {
       color: theme.white,
+    },
+
+    //create button & pop-up - NN
+    createButton: {
+      position: 'absolute',
+      width: '78%',
+      bottom: 170,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.white,
+    },
+    modalContainer: {
+      width: '80%',
+      padding: 20,
+      borderRadius: 10,
+      backgroundColor: theme.white,
+      alignItems: 'center',
+    },
+    modalTitle: {
+      fontSize: 25,
+      fontWeight: 'bold',
+      color: theme.black,
+      marginBottom: 15,
+    },
+    input: {
+      width: '85%',
+      height: 40,
+      paddingHorizontal: 10,
+      borderRadius: 5,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      marginBottom: 20,
+      backgroundColor: theme.lightGray,
+    },
+    submitButton: {
+      width: '85%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    submitButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 20,
+      right: 20,
+      padding: 5,
     },
   });
 };
