@@ -45,6 +45,8 @@ const HomeDisplay = () => {
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {   // get the username from securestore -KK
+        console.log("refreshing");
+        
         const storedUsername = await SecureStore.getItemAsync('username');
         if (storedUsername) { 
           refresh(storedUsername); 
@@ -98,7 +100,8 @@ const HomeDisplay = () => {
       };
     }
     if (task.task_name) { // only push if task_name is non-null -MH
-      acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name });
+      //acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name });
+      acc[task.chore_name].tasks.push(task.task_name);
     }
     return acc;
   }, {});

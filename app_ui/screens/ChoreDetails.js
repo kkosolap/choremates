@@ -63,29 +63,51 @@ const ChoreDetailsDisplay = ({navigation}) => {
     setRecurrence(routed_recurrence);
   }, [routed_chore_name, routed_tasks, routed_recurrence]);
 
-  // Add the chore to the database
-  // (gets called when the "add chore" button is pressed) -KK
-  const addChore = async () => {
+  // Get the existing tasks for the chore from the database -MH
+  const getExistingTasks = async () => {
+    const response = await axios.post(`${API_URL}get_tasks`, { chore_name, username });
+    
+    // get result as array of strings
+    return response.data.map(taskObj => taskObj.task_name);
+  };
+
+  // Compare 'tasks' list with the database and add/remove tasks from the database to match 'tasks' -MH
+  const updateTasksInDatabase = async () => {
     try {
-      // add the chore to the database -KK
-      await axios.post(`${API_URL}add_chore`, { chore_name, username, recurrence });
+      const existingTasks = await getExistingTasks();
 
-      // loop through tasks and add each one to the db -KK
-      await Promise.all(tasks.map(task_name =>
-        axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
-      ));
+      console.log("existing tasks:", existingTasks);
 
-      // reset everything -KK
-      setChoreName('');
-      setNewTask('');
-      setRecurrence('Just Once');
-      setTasks([]);
+      // determine which tasks are new
+      const tasksToAdd = tasks.filter(task => 
+        !existingTasks.includes(task)
+      );
 
-      // exit and go back to home -KK
-      navigation.goBack();
+      console.log("tasks to add:", tasksToAdd);
+
+      // determine which tasks were deleted
+      const tasksToRemove = existingTasks.filter(existingTask => 
+        !tasks.includes(existingTask)
+      );
+
+      console.log("tasks to remove:", tasksToRemove);
+
+      // add new tasks
+      await Promise.all(
+        tasksToAdd.map(task_name =>
+          axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
+        )
+      );
+
+      // remove tasks that are no longer in the array
+      await Promise.all(
+        tasksToRemove.map(task_name =>
+          axios.post(`${API_URL}delete_task`, { chore_name, task_name, username })
+        )
+      );
 
     } catch (error) {
-      console.error("Error adding chore:", error);
+      console.error("Error updating tasks in database:", error);
     }
   };
 
@@ -95,12 +117,15 @@ const ChoreDetailsDisplay = ({navigation}) => {
     try {
         await axios.post(`${API_URL}update_chore`, {
             old_chore_name: routed_chore_name,  // original chore name
-            new_chore_name: chore_name,         // updated chore name from input
+            new_chore_name: chore_name,  // updated chore name from input
             username,
             recurrence,
         });
 
-        // exit and go back to home -MH
+        // add/remove tasks in database to match list in edit details window
+        await updateTasksInDatabase();
+
+        // exit and go back to home
         navigation.goBack();
 
     } catch (error) {
@@ -109,7 +134,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   };
 
   // Adds the task entered into the input box to the task list
-  // These will only get added to the db after the "add chore" button is pressed -KK
+  // These will only get added to the db after the "save changes" button is pressed -MH
   const addTask = () => {
     if (newTask.trim()) {
       setTasks([...tasks, newTask]);
@@ -138,7 +163,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
     <View style={styles.content}>
 
       <View style={styles.formContainer}>
-        {/* the chore name bit -KK */}
+
+        {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
           style={styles.input}
@@ -147,7 +173,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           onChangeText={setChoreName}
         />
 
-        {/* the recurrence bit -KK */}
+        {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
         <TouchableOpacity
           style={styles.dropdown}
@@ -179,7 +205,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
 
-        {/* Show task list  -MH */}
+        {/* show task list  -MH */}
         <View style={styles.taskList}>
           <FlatList
             data={tasks}
@@ -187,7 +213,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
             renderItem={({ item, index }) => (
               <View style={styles.bulletAndTask}>
                 <Icon name={"square-outline"} size={15} color={theme.text2} />
-                <Text style={styles.taskItem}>{item.task}</Text>
+                <Text style={styles.taskItem}>{item}</Text>
                 <TouchableOpacity
                   style={styles.newChoreDeleteTask}
                   onPress={() => deleteTask(index)}
@@ -199,7 +225,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           />
         </View>
 
-        {/* Add Task input and button  -MH */}
+        {/* 'Add Task' input and button  -MH */}
         <View style={styles.inputAndButton}>
           <TextInput
             style={styles.smallerInput}
