@@ -195,6 +195,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
               <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
                 <Text style={oldStyles.modalItem}>Just Once</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => { setRecurrence('Daily'); setIsModalVisible(false); }}>
+                <Text style={oldStyles.modalItem}>Daily</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsModalVisible(false); }}>
                 <Text style={oldStyles.modalItem}>Weekly</Text>
               </TouchableOpacity>
