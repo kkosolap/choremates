@@ -67,7 +67,7 @@ app.get('/get_users', (req, res) => {
 
 
 /********************************************************** */
-/*                HELPER FUNCTIONS BELOW:                */
+/*                HELPER FUNCTIONS BELOW:                   */
 /********************************************************** */
 // gets the user id given a username -KK
 async function getUserId(username) {
@@ -284,7 +284,6 @@ app.post('/update_profile', async (req, res) => {
 /********************************************************** */
 // Cron job for daily and weekly resets - AT
 // every minute for test purposes - AT
-
 cron.schedule('* * * * *', async () => {
     await resetRecurringChores('Every Minute');
 });
@@ -301,18 +300,18 @@ cron.schedule('0 0 * * 1', async () => {
 function checkIfResetNeeded(lastCompleted, type) {
     const now = new Date();
     const lastCompletedDate = new Date(lastCompleted);
-
     if (type === 'Every Minute') {
-        return now - lastCompletedDate >= 60000;
+        return (now - lastCompletedDate) >= 60000;
     } else if (type === 'Daily') {
         return now.getDate() !== lastCompletedDate.getDate();
     } else if (type === 'Weekly') {
-        return now.getDate() >= lastCompletedDate.getDate() + 7;
+        return now.getDate() >= (lastCompletedDate.getDate() + 7);
     }
 }
 
 // Function to handle recurrence and overdue flagging - AT
 async function resetRecurringChores(type) {
+    console.log("API resetRecurringChores: reset every " + type);
     const query = `
         SELECT id, last_completed, is_completed, is_overdue
         FROM chores
@@ -323,7 +322,8 @@ async function resetRecurringChores(type) {
 
     for (const chore of chores) {
         const resetNeeded = checkIfResetNeeded(chore.last_completed, type);
-        
+        console.log("API resetRecurringChores: chore " + JSON.stringify(chore) + " needs reset? " + resetNeeded);
+
         if (resetNeeded) {
             await db.promise().query(`
                 UPDATE chores 
@@ -332,14 +332,14 @@ async function resetRecurringChores(type) {
                     is_overdue = false
                 WHERE id = ?
             `, [chore.id]);
-            console.log(`Reset chore ID: ${chore.id}`); // Log the reset
+            console.log(`API resetRecurringChores: Reset chore with ID ${chore.id}`); // Log the reset -AT
         } else {
             await db.promise().query(`
                 UPDATE chores
                 SET is_overdue = true
                 WHERE id = ?
             `, [chore.id]);
-            console.log(`Marked chore ID: ${chore.id} as overdue`); // Log overdue marking
+            console.log(`API resetRecurringChores: Marked chore with ID ${chore.id} as overdue`); // Log overdue marking -AT
         }
     }
 }
@@ -415,8 +415,11 @@ app.post('/add_chore', async (req, res) => {
             return res.status(400).send("This chore already exists!");
         }
 
-        const query = "INSERT INTO chores (user_id, chore_name, is_completed, recurrence) VALUES (?, ?, false, ?)";
-        await db.promise().query(query, [user_id, chore_name, recurrence]);
+        // get the timestamp for the chore -KK
+        const timestamp = new Date();
+
+        const query = "INSERT INTO chores (user_id, chore_name, is_completed, last_completed, recurrence) VALUES (?, ?, false, ?, ?)";
+        await db.promise().query(query, [user_id, chore_name, timestamp, recurrence]);
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add_chore: Error:", error.message);
@@ -474,16 +477,22 @@ app.post('/delete_chore', async (req, res) => {
 app.post('/complete_chore', async (req, res) => {
     try {
         const { chore_name, username } = req.body;
-        const timestamp = is_complete ? new Date() : null; // get timestamp if completed, else null - AT
+    
         if (!chore_name || !username) {
             console.log("API complete_chore: Missing username or chore name.");
             return res.status(400).send("Missing username or chore name.");
         }
         
         const user_id = await getUserId(username);
-        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const timestamp = is_completed ? new Date() : null; // get timestamp if completed, else null - AT
 
-        await db.promise().query("UPDATE chores SET is_completed = NOT is_completed, last_completed = ?, WHERE id = ?", [timestamp, chore_id]);
+        if(timestamp) { // if the chore got marked completed, set the timestamp -KK
+            await db.promise().query("UPDATE chores SET is_completed = NOT is_completed, last_completed = ? WHERE id = ?", [timestamp, chore_id]);
+        } 
+        else {  // reset the chore -KK
+            await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
+        }
         res.status(200).json({ message: "Chore completion status toggled successfully." });
     } catch (error) {
         console.error("API complete_chore: Error:", error.message);
