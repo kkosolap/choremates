@@ -7,6 +7,7 @@ const cors = require("cors");
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cron = require('node-cron');
 
 const PORT = 3000;
 
@@ -279,6 +280,64 @@ app.post('/update_profile', async (req, res) => {
 });
 
 /********************************************************** */
+/*             RECURRENCE IMPLEMENTATION BELOW:             */
+/********************************************************** */
+// Cron job for daily and weekly resets - AT
+cron.schedule('0 0 * * *', async () => {
+    await resetRecurringChores('Daily');
+});
+
+cron.schedule('0 0 * * 1', async () => {
+    await resetRecurringChores('Weekly');
+});
+
+// Function to handle recurrence and overdue flagging - AT
+async function resetRecurringChores(type) {
+    const query = `
+        SELECT id, last_completed
+        FROM chores
+        WHERE recurrence = ? 
+          AND (is_completed = true OR is_overdue = true)
+    `;
+
+    const [chores] = await db.promise().query(query, [type]);
+
+    for (const chore of chores) {
+        const resetNeeded = checkIfResetNeeded(chore.last_completed, type);
+        
+        if (resetNeeded) {
+            await db.promise().query(`
+                UPDATE chores 
+                SET is_completed = false, 
+                    last_completed = NOW(),
+                    is_overdue = false
+                WHERE id = ?
+            `, [chore.id]);
+        } else {
+            await db.promise().query(`
+                UPDATE chores
+                SET is_overdue = true
+                WHERE id = ?
+            `, [chore.id]);
+        }
+    }
+}
+
+// Helper function to determine if a reset is needed - AT
+function checkIfResetNeeded(lastCompleted, type) {
+    const now = new Date();
+    const lastCompletedDate = new Date(lastCompleted);
+
+    if (type === 'daily') {
+        return now.getDate() !== lastCompletedDate.getDate();
+    } else if (type === 'weekly') {
+        return now.getDate() >= lastCompletedDate.getDate() + 7;
+    } else if (type === 'monthly') {
+        return now.getMonth() !== lastCompletedDate.getMonth();
+    }
+}
+
+/********************************************************** */
 /*             CHORE IMPLEMENTATION BELOW:                  */
 /********************************************************** */
 // get all chores for a user -KK
@@ -410,6 +469,15 @@ app.post('/complete_chore', async (req, res) => {
             console.log("API complete_chore: Missing username or chore name.");
             return res.status(400).send("Missing username or chore name.");
         }
+
+        // Toggle the chore's completion status - AT
+        const newCompletionStatus = !is_completed;
+        await db.promise().query(`
+            UPDATE chores 
+            SET is_completed = ?, 
+                last_completed = CASE WHEN ? THEN NOW() ELSE last_completed END
+            WHERE id = ?
+        `, [newCompletionStatus, newCompletionStatus, chore_id]);
 
         const user_id = await getUserId(username);
         const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
