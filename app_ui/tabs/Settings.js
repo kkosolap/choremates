@@ -10,6 +10,8 @@ import LogoutButton from '../components/logout';
 import { TabHeader } from '../components/headers.js';
 import { useTheme } from '../style/ThemeProvider';
 import { Ionicons } from '@expo/vector-icons'; // For an edit icon
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -24,6 +26,8 @@ const SettingsScreen = ({ onLogout }) => {
   const [display_name, setDisplayName] = useState('');
   const [profile_pic, setProfilePic] = useState('');
   const [username, setUsername] = useState(null);
+  const navigation = useNavigation(); // get the navigation object
+
 
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
@@ -65,9 +69,12 @@ const SettingsScreen = ({ onLogout }) => {
     }
   };
 
+  // open navigation to the profile pic window to update picture -VA
   // changes the user's profile picture -KK
-  const handleChangeProfilePic = async () => {
-    console.log("UI Settings.js: Updating profile picture to:", profile_pic);
+    // const openChangeProfilePic = async () => {
+  const openChangeProfilePic = () => {
+    navigation.navigate('ChangeProfilePic');
+    // console.log("UI Settings.js: Updating profile picture to:", profile_pic);
     /* try {
         await axios.post(`${API_URL}update_profile`, {username, profile_pic});
         try { // load the new profile picture -KK
@@ -91,7 +98,9 @@ const SettingsScreen = ({ onLogout }) => {
             <View style={styles.profileTopSection}>
               <View style={styles.profilePictureArea}>
                 <Image source={profilePicture} style={styles.profilePicturePhoto} />
-                <TouchableOpacity style={styles.profilePhotoEditButton} onPress={handleChangeProfilePic}>
+                <TouchableOpacity style={styles.profilePhotoEditButton} 
+                  onPress={openChangeProfilePic}>
+                    
                   <Ionicons name="images" size={24} color="white" />
                 </TouchableOpacity>
               </View>

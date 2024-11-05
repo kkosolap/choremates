@@ -20,6 +20,7 @@ import MembersScreen from './tabs/Members';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 import ChoreDetailsScreen from './screens/ChoreDetails';
+import ChangeProfilePic from './screens/NewProfilePicture';
 
 
 /************************************************************ */
@@ -42,6 +43,7 @@ const HomeStack = () => {
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
       <Stack.Screen name="ChoreDetails" component={ChoreDetailsScreen} />
+      <Stack.Screen name="ChangeProfilePic" component={ChangeProfilePic} />
     </Stack.Navigator>
   );
 };
