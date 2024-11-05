@@ -68,7 +68,6 @@ const NewChoreDisplay = ({ navigation }) => {
       setRecurrence('Just Once');
       setTasks([]);
       navigation.goBack();    // exit and go back to home -KK
-
     } catch (error) {
       console.error("Error adding chore:", error);
     }

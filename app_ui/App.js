@@ -11,6 +11,7 @@ import * as SecureStore from 'expo-secure-store';
 import { API_URL } from './config';
 
 import { ThemeProvider, useTheme } from './style/ThemeProvider';
+import { LogoutProvider } from './style/LogOutProvider';
 import createStyles from './style/styles';
 import Signin from './screens/Signin';
 import Register from './screens/Register';
@@ -20,7 +21,7 @@ import MembersScreen from './tabs/Members';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 import ChoreDetailsScreen from './screens/ChoreDetails';
-import ChangeProfilePic from './screens/NewProfilePicture';
+import ChangeProfilePicScreen from './screens/NewProfilePicture';
 
 
 /************************************************************ */
@@ -43,7 +44,6 @@ const HomeStack = () => {
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
       <Stack.Screen name="ChoreDetails" component={ChoreDetailsScreen} />
-      <Stack.Screen name="ChangeProfilePic" component={ChangeProfilePic} />
     </Stack.Navigator>
   );
 };
@@ -71,11 +71,10 @@ const SettingsStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="SettingsMain" component={SettingsScreen} />
+      <Stack.Screen name="ChangeProfilePic" component={ChangeProfilePicScreen} />
     </Stack.Navigator>
   );
 };
-
-
 
 
 /************************************************************ */
@@ -109,16 +108,18 @@ const App = () => {
 
   return (
     <ThemeProvider username={username}>
-      <NavigationContainer>
-        {/* Call useTheme here to ensure it's within the provider -MH */}
-        <AppContent isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleSignin={handleSignin} />
-      </NavigationContainer>
+      <LogoutProvider handleLogout={handleLogout}>
+        <NavigationContainer>
+          {/* Call useTheme here to ensure it's within the provider -MH */}
+          <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
+        </NavigationContainer>
+      </LogoutProvider>
     </ThemeProvider>
   );
 };
 
 // AppContent component to handle logged-in and logged-out states
-const AppContent = ({ isLoggedIn, handleLogout, handleSignin }) => {
+const AppContent = ({ isLoggedIn, handleSignin }) => {
   const { theme } = useTheme(); // Get the theme inside the provider
   const styles = createStyles(theme);
 
@@ -168,9 +169,7 @@ const AppContent = ({ isLoggedIn, handleLogout, handleSignin }) => {
           <Tab.Screen name="Home" component={HomeStack} />
           <Tab.Screen name="Chores" component={ChoresStack} />
           <Tab.Screen name="Members" component={MembersStack} />
-          <Tab.Screen name="Settings">
-            {(props) => <SettingsScreen {...props} onLogout={handleLogout} />}
-          </Tab.Screen>
+          <Tab.Screen name="Settings" component={SettingsStack} />
         </Tab.Navigator>
       ) : (
         <Stack.Navigator>

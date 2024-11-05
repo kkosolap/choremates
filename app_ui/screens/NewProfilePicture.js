@@ -1,10 +1,9 @@
 // NewProfilePicture.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, FlatList, Modal, Image } from 'react-native';
+import { View, TouchableOpacity, Image } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
-
 
 import { useTheme } from '../style/ThemeProvider.js';
 import createStyles from '../style/styles.js';
@@ -25,11 +24,7 @@ const yellowAvatar = require('../icons/yellowAvatar.jpg');
 const ChangeProfilePicScreen = ({ navigation }) => {
   const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
-
   const [username, setUsername] = useState(null);
-  const [profile_pic, setProfilePic] = useState('');
-
-
 
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
@@ -43,29 +38,20 @@ const ChangeProfilePicScreen = ({ navigation }) => {
     getUsername();
   }, []);
 
-    const changePFP = async (username, profile_pic) => {
-      console.log("UI NewProfilePicture.js: Updating profile picture to:", profile_pic);
-      try {
-          await axios.post(`${API_URL}update_profile`, {username, profile_pic});
-          try { // load the new profile picture -KK
-            console.log("Profile pic: "+profile_pic);
-            setProfilePic(`..icons/'${profile_pic}.jpg`); // might not work
-          } catch (error) {
-            console.log("UI NewProfilePicture.js: Error loading new profile picture.");
-          }
-      } catch (error) {
-        console.log("UI NewProfilePicture.js: Error changing profile picture.");
-      }
-      navigation.goBack();    // need to edit to go back to settings -VA
-
+  // updates the database with the new pfp -VA
+  const changePFP = async (username, profile_pic) => {
+    console.log("UI NewProfilePicture.js: Updating profile picture to:", profile_pic);
+    try {
+        await axios.post(`${API_URL}update_profile`, {username, profile_pic});
+    } catch (error) {
+      console.log("UI NewProfilePicture.js: Error changing profile picture.");
+    }
+    navigation.goBack();
   }
 
   return (
-
-    
     <View style={styles.pfpContainer}>
       <ScreenHeader title="Set a Profile Picture" navigation={navigation} />
-
       {/* <Text style={styles.title}>Choose a Profile Picture</Text> */}
       <View style={styles.pfpIconContainer}>
         {/* Add more icons as options for profile pictures */}
