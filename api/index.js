@@ -284,6 +284,7 @@ app.post('/update_profile', async (req, res) => {
 /********************************************************** */
 // Cron job for daily and weekly resets - AT
 // every minute for test purposes - AT
+
 cron.schedule('* * * * *', async () => {
     await resetRecurringChores('Every Minute');
 });
@@ -296,13 +297,26 @@ cron.schedule('0 0 * * 1', async () => {
     await resetRecurringChores('Weekly');
 });
 
+// Helper function to determine if a reset is needed - AT
+function checkIfResetNeeded(lastCompleted, type) {
+    const now = new Date();
+    const lastCompletedDate = new Date(lastCompleted);
+
+    if (type === 'Every Minute') {
+        return now - lastCompletedDate >= 60000;
+    } else if (type === 'Daily') {
+        return now.getDate() !== lastCompletedDate.getDate();
+    } else if (type === 'Weekly') {
+        return now.getDate() >= lastCompletedDate.getDate() + 7;
+    }
+}
+
 // Function to handle recurrence and overdue flagging - AT
 async function resetRecurringChores(type) {
     const query = `
-        SELECT id, last_completed
+        SELECT id, last_completed, is_completed, is_overdue
         FROM chores
         WHERE recurrence = ? 
-          AND (is_completed = true OR is_overdue = true)
     `;
 
     const [chores] = await db.promise().query(query, [type]);
@@ -318,27 +332,15 @@ async function resetRecurringChores(type) {
                     is_overdue = false
                 WHERE id = ?
             `, [chore.id]);
+            console.log(`Reset chore ID: ${chore.id}`); // Log the reset
         } else {
             await db.promise().query(`
                 UPDATE chores
                 SET is_overdue = true
                 WHERE id = ?
             `, [chore.id]);
+            console.log(`Marked chore ID: ${chore.id} as overdue`); // Log overdue marking
         }
-    }
-}
-
-// Helper function to determine if a reset is needed - AT
-function checkIfResetNeeded(lastCompleted, type) {
-    const now = new Date();
-    const lastCompletedDate = new Date(lastCompleted);
-
-    if (type === 'Every Minute') {
-        return now - lastCompletedDate >= 60000;
-    } else if (type === 'Daily') {
-        return now.getDate() !== lastCompletedDate.getDate();
-    } else if (type === 'Weekly') {
-        return now.getDate() >= lastCompletedDate.getDate() + 7;
     }
 }
 
@@ -472,24 +474,16 @@ app.post('/delete_chore', async (req, res) => {
 app.post('/complete_chore', async (req, res) => {
     try {
         const { chore_name, username } = req.body;
+        const timestamp = is_complete ? new Date() : null; // get timestamp if completed, else null - AT
         if (!chore_name || !username) {
             console.log("API complete_chore: Missing username or chore name.");
             return res.status(400).send("Missing username or chore name.");
         }
         
-        // Toggle the chore's completion status; Implemented to get last_completed - AT
-        const newCompletionStatus = !is_completed;
-        await db.promise().query(`
-            UPDATE chores 
-            SET is_completed = ?, 
-                last_completed = CASE WHEN ? THEN NOW() ELSE last_completed END
-            WHERE id = ?
-        `, [newCompletionStatus, newCompletionStatus, chore_id]);
-        
         const user_id = await getUserId(username);
         const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
 
-        await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
+        await db.promise().query("UPDATE chores SET is_completed = NOT is_completed, last_completed = ?, WHERE id = ?", [timestamp, chore_id]);
         res.status(200).json({ message: "Chore completion status toggled successfully." });
     } catch (error) {
         console.error("API complete_chore: Error:", error.message);
