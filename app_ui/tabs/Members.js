@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Text, View, StyleSheet, TouchableOpacity, Alert, FlatList, TextInput, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
@@ -40,22 +40,24 @@ const MembersScreen = ({ groupId }) => {
   }, []);
 
   // if invitation received, button turns red
-  useEffect(() => {
-    const fetchPendingInvitations = async () => {
-      if (!username) return;
-      try {
-        //console.log(username);
-        const response = await axios.get(`${API_URL}receivedInvitations`, {
-          params: { username: username }
-        });
-        setHasInvitations(response.data.length > 0);
-      } catch (error) {
-        console.error("Error fetching pending invitations:", error);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchPendingInvitations = async () => {
+        if (!username) return;
+        try {
+          //console.log(username);
+          const response = await axios.get(`${API_URL}receivedInvitations`, {
+            params: { username: username }
+          });
+          setHasInvitations(response.data.length > 0);
+        } catch (error) {
+          console.error("Error fetching pending invitations:", error);
+        }
+      };
 
-    fetchPendingInvitations();
-  }, [username]);
+      fetchPendingInvitations();
+    }, [username])
+  )
 
   // invitation button
   const handleMailPress = () => {
