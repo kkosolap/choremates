@@ -283,6 +283,11 @@ app.post('/update_profile', async (req, res) => {
 /*             RECURRENCE IMPLEMENTATION BELOW:             */
 /********************************************************** */
 // Cron job for daily and weekly resets - AT
+// every minute for test purposes - AT
+cron.schedule('* * * * *', async () => {
+    await resetRecurringChores('Every Minute');
+});
+
 cron.schedule('0 0 * * *', async () => {
     await resetRecurringChores('Daily');
 });
@@ -328,12 +333,12 @@ function checkIfResetNeeded(lastCompleted, type) {
     const now = new Date();
     const lastCompletedDate = new Date(lastCompleted);
 
-    if (type === 'daily') {
+    if (type === 'Every Minute') {
+        return now - lastCompletedDate >= 60000;
+    } else if (type === 'Daily') {
         return now.getDate() !== lastCompletedDate.getDate();
-    } else if (type === 'weekly') {
+    } else if (type === 'Weekly') {
         return now.getDate() >= lastCompletedDate.getDate() + 7;
-    } else if (type === 'monthly') {
-        return now.getMonth() !== lastCompletedDate.getMonth();
     }
 }
 
@@ -375,6 +380,8 @@ app.post('/get_chores_data', async (req, res) => {
                 chores.chore_name, 
                 chores.is_completed AS chore_is_completed, 
                 chores.recurrence AS chore_recurrence,
+                chores.is_overdue AS is_overdue,
+                chores.last_completed AS last_completed,
                 tasks.task_name, 
                 tasks.is_completed AS task_is_completed
             FROM chores
@@ -469,8 +476,8 @@ app.post('/complete_chore', async (req, res) => {
             console.log("API complete_chore: Missing username or chore name.");
             return res.status(400).send("Missing username or chore name.");
         }
-
-        // Toggle the chore's completion status - AT
+        
+        // Toggle the chore's completion status; Implemented to get last_completed - AT
         const newCompletionStatus = !is_completed;
         await db.promise().query(`
             UPDATE chores 
@@ -478,7 +485,7 @@ app.post('/complete_chore', async (req, res) => {
                 last_completed = CASE WHEN ? THEN NOW() ELSE last_completed END
             WHERE id = ?
         `, [newCompletionStatus, newCompletionStatus, chore_id]);
-
+        
         const user_id = await getUserId(username);
         const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
 
