@@ -13,8 +13,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import * as SecureStore from 'expo-secure-store';
 
 
-// members invitation and group creation
-const MembersScreen = ({ groupId, userId }) => {
+// members invitation, group creation, and invitations
+const MembersScreen = ({ groupId }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
@@ -24,7 +24,6 @@ const MembersScreen = ({ groupId, userId }) => {
   const [groupName, setGroupName] = useState('');
   const [inviteeName, setInviteeName] = useState('');
   const [displayGroupName, setDisplayGroupName] = useState('');
-  const [isGroupCreated, setIsGroupCreated] = useState(false);
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
@@ -60,7 +59,7 @@ const MembersScreen = ({ groupId, userId }) => {
 
   // invitation button
   const handleMailPress = () => {
-    navigation.navigate('GroupInvitations');
+    navigation.navigate('GroupInvitations', { username });
   };
 
   // creating a group button
@@ -77,7 +76,6 @@ const MembersScreen = ({ groupId, userId }) => {
       });
       Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
       setDisplayGroupName(groupName);
-      setIsGroupCreated(true);
       setIsGroupModalVisible(false);
     } catch (error) {
       console.error("Error creating group:", error);
