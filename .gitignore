@@ -18,6 +18,7 @@ node_modules/
 
 # Miscellaneous
 .env
+app_ui/config.js
 
 # Gradle files
 .gradle/
@@ -64,3 +65,5 @@ proguard-rules.pro
 # Android NDK
 ndkBuild/
 local.properties
+
+%ProgramData%/

@@ -1,9 +1,10 @@
-// NewChore.js
+// ChoreDetails.js
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
@@ -12,28 +13,33 @@ import { ScreenHeader } from '../components/headers.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
+
 // header and page content
-const NewChoreScreen = ({ navigation }) => {
+const ChoreDetailsScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
   return (
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
-      <ScreenHeader title="Add a New Chore" navigation={navigation} />
-      <NewChoreDisplay navigation={navigation} />
+      <ScreenHeader title="Chore Details" navigation={navigation} />
+      <ChoreDetailsDisplay navigation={navigation} />
     </View>
   );
 };
 
 // page content
-const NewChoreDisplay = ({ navigation }) => {
+const ChoreDetailsDisplay = ({navigation}) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
-  const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
-  const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
-  const [newTask, setNewTask] = useState('');          // block for the new task to add to the list -KK
+
+  const route = useRoute();
+  const { routed_chore_name, routed_tasks, routed_recurrence } = route.params;  // Get chore name from parameters
+
+  const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
+  const [recurrence, setRecurrence] = useState('Just Once');  // how often the chore recurrs, added to the db -KK
+  const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
+  const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [username, setUsername] = useState(null);
 
@@ -44,37 +50,91 @@ const NewChoreDisplay = ({ navigation }) => {
       if (storedUsername) {
         setUsername(storedUsername);
       } else {
-        console.error("UI NewChore.js: Username not found in SecureStore.");
+        console.error("UI ChoreDetails.js: Username not found in SecureStore.");
       }
     };
     getUsername();
   }, []);
 
-  // Add the chore to the database
-  // (gets called when the "add chore" button is pressed) -KK
-  const addChore = async () => {
+  // Set form starting values to the saved details of the chore -MH
+  useEffect(() => {
+    setChoreName(routed_chore_name);
+    setTasks(routed_tasks);
+    setRecurrence(routed_recurrence);
+  }, [routed_chore_name, routed_tasks, routed_recurrence]);
+
+  // Get the existing tasks for the chore from the database -MH
+  const getExistingTasks = async () => {
+    const response = await axios.post(`${API_URL}get_tasks`, { chore_name, username });
+    
+    // get result as array of strings
+    return response.data.map(taskObj => taskObj.task_name);
+  };
+
+  // Compare 'tasks' list with the database and add/remove tasks from the database to match 'tasks' -MH
+  const updateTasksInDatabase = async () => {
     try {
-      // add the chore to the database -KK
-      await axios.post(`${API_URL}add_chore`, { chore_name, username, recurrence });
+      const existingTasks = await getExistingTasks();
 
-      // loop through tasks and add each one to the db -KK
-      await Promise.all(tasks.map(task_name =>
-        axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
-      ));
+      console.log("existing tasks:", existingTasks);
 
-      // reset everything -KK
-      setChoreName('');
-      setNewTask('');
-      setRecurrence('Just Once');
-      setTasks([]);
-      navigation.goBack();    // exit and go back to home -KK
+      // determine which tasks are new
+      const tasksToAdd = tasks.filter(task => 
+        !existingTasks.includes(task)
+      );
+
+      console.log("tasks to add:", tasksToAdd);
+
+      // determine which tasks were deleted
+      const tasksToRemove = existingTasks.filter(existingTask => 
+        !tasks.includes(existingTask)
+      );
+
+      console.log("tasks to remove:", tasksToRemove);
+
+      // add new tasks
+      await Promise.all(
+        tasksToAdd.map(task_name =>
+          axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
+        )
+      );
+
+      // remove tasks that are no longer in the array
+      await Promise.all(
+        tasksToRemove.map(task_name =>
+          axios.post(`${API_URL}delete_task`, { chore_name, task_name, username })
+        )
+      );
+
     } catch (error) {
-      console.error("Error adding chore:", error);
+      console.error("Error updating tasks in database:", error);
+    }
+  };
+
+  // Update the chore in the database
+  // (gets called when the "update chore" button is pressed) -MH
+  const updateChore = async () => {
+    try {
+        await axios.post(`${API_URL}update_chore`, {
+            old_chore_name: routed_chore_name,  // original chore name
+            new_chore_name: chore_name,  // updated chore name from input
+            username,
+            recurrence,
+        });
+
+        // add/remove tasks in database to match list in edit details window
+        await updateTasksInDatabase();
+
+        // exit and go back to home
+        navigation.goBack();
+
+    } catch (error) {
+        console.error("Error updating chore:", error);
     }
   };
 
   // Adds the task entered into the input box to the task list
-  // These will only get added to the db after the "add chore" button is pressed -KK
+  // These will only get added to the db after the "save changes" button is pressed -MH
   const addTask = () => {
     if (newTask.trim()) {
       setTasks([...tasks, newTask]);
@@ -82,27 +142,38 @@ const NewChoreDisplay = ({ navigation }) => {
     }
   };
 
-  // Delete task from the task list  -MH
+  // Delete task from the task list -MH
   const deleteTask = (index) => {
     setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
+  };
+
+  // Deletes the chore from the database -KK
+  const deleteChore = async (chore_name) => {
+    try {
+      await axios.post(`${API_URL}delete_chore`, { chore_name, username });
+      navigation.goBack();   
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
+
       <View style={styles.formContainer}>
-        {/* the chore name bit -KK */}
+
+        {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Chore Name . . ."
-          placeholderTextColor={theme.text3}
           value={chore_name}
           selectionColor={theme.text2}
           onChangeText={setChoreName}
         />
 
-        {/* the recurrence bit -KK */}
+        {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
         <TouchableOpacity
           style={styles.dropdown}
@@ -137,7 +208,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
 
-        {/* Show task list  -MH */}
+        {/* show task list  -MH */}
         <View style={styles.taskList}>
           <FlatList
             data={tasks}
@@ -157,7 +228,7 @@ const NewChoreDisplay = ({ navigation }) => {
           />
         </View>
 
-        {/* Add Task input and button  -MH */}
+        {/* 'Add Task' input and button  -MH */}
         <View style={styles.inputAndButton}>
           <TextInput
             style={styles.smallerInput}
@@ -176,16 +247,28 @@ const NewChoreDisplay = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
+      </View>
 
-        <View style={styles.centeredContent}>
-          <TouchableOpacity
-            style={styles.addChoreButton}
-            onPress={addChore}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.addChoreButtonText}>Add Chore</Text>
-          </TouchableOpacity>
-        </View>
+      {/* SAVE CHANGES Button */}
+      <View style={styles.centeredContent}>
+        <TouchableOpacity
+          style={styles.addChoreButton}
+          onPress={updateChore}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addChoreButtonText}>Save Changes</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* DELETE Button */}
+      <View style={styles.centeredContent}>
+        <TouchableOpacity
+          style={styles.deleteChoreButton}
+          onPress={() => deleteChore(routed_chore_name)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -216,5 +299,4 @@ const oldStyles = StyleSheet.create({
   },
 });
 
-
-export default NewChoreScreen;
+export default ChoreDetailsScreen;

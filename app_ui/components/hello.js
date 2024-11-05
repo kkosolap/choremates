@@ -1,3 +1,7 @@
+// hello.js
+// temp function for testing buttons
+// import showHelloPopup from '../components/hello.js'
+
 import { Alert } from 'react-native';
 
 
