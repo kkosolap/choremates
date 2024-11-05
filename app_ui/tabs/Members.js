@@ -43,7 +43,9 @@ const MembersScreen = ({ groupId, userId }) => {
   // if invitation received, button turns red
   useEffect(() => {
     const fetchPendingInvitations = async () => {
+      if (!username) return;
       try {
+        //console.log(username);
         const response = await axios.get(`${API_URL}receivedInvitations`, {
           params: { username: username }
         });
@@ -54,7 +56,7 @@ const MembersScreen = ({ groupId, userId }) => {
     };
 
     fetchPendingInvitations();
-  }, [userId]);
+  }, [username]);
 
   // invitation button
   const handleMailPress = () => {
@@ -90,9 +92,10 @@ const MembersScreen = ({ groupId, userId }) => {
       return;
     }
     try {
+      //console.log("inviter: ", username, "\n invitee: ", inviteeName);
       const response = await axios.post(`${API_URL}sendInvitation`, {
-        inviter_id: username,
-        invitee_id: inviteeName,
+        inviter_name: username,
+        invitee_name: inviteeName,
         group_id: 2, // hardcoded, current only works with group_id = 2
       });
       Alert.alert('Invitation sent successfully', `Invitation sent to user: ${inviteeName}`);
@@ -175,7 +178,7 @@ const MembersScreen = ({ groupId, userId }) => {
           >
             <Icon name="close" size={30} color={theme.black} />
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Enter Invitee ID</Text>
+          <Text style={styles.modalTitle}>Enter Invitee Username</Text>
           <TextInput
             style={styles.input}
             placeholder="Invitee Username"
