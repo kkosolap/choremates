@@ -34,8 +34,8 @@ const ChoresDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
-  const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
+  const [visible, setVisible] = useState({});     // tracks which chores are visible -KK
+  const [edit, setEdit] = useState(null);         // tracks which chores are being edited -KK
   const [task_name, setNewTask] = useState('');   // contains the text for the new task -KK
   const [username, setUsername] = useState(null);
 
