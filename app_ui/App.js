@@ -22,6 +22,9 @@ import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 import ChoreDetailsScreen from './screens/ChoreDetails';
 import ChangeProfilePicScreen from './screens/NewProfilePicture';
+import GroupInvitations from './screens/GroupInvitations';
+import ManageScreen from './screens/Manage';
+
 
 
 /************************************************************ */
@@ -62,6 +65,8 @@ const MembersStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MembersMain" component={MembersScreen} />
+      <Stack.Screen name="Manage" component={ManageScreen} />
+      <Stack.Screen name="GroupInvitations" component={GroupInvitations} />
     </Stack.Navigator>
   );
 };
@@ -124,6 +129,7 @@ const AppContent = ({ isLoggedIn, handleSignin }) => {
   const styles = createStyles(theme);
 
   return (
+    // Will only display if user is logged in
     <>
       {isLoggedIn ? (
         <Tab.Navigator

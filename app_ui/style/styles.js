@@ -291,6 +291,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      marginTop: 15
     },
     signinButtonText: {
       color: theme.white,
@@ -308,7 +309,6 @@ const createStyles = (theme) => {
       alignItems: 'center',
       marginTop: 40,
     },
-    
     logoutButtonText: {
       color: theme.white,
       fontWeight: 'bold',
@@ -568,6 +568,192 @@ const createStyles = (theme) => {
       fontSize: 20, 
       color: 'black', 
       marginLeft: 20,
+    },
+
+    //members page -NN
+    manageButton: {
+      position: 'absolute',
+      width: '80%',
+      bottom: 100,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    managecreateButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    backPageButton: {
+      padding: 10,
+      position: 'absolute',
+      top: 70,
+      left: 20,
+    },
+
+    // invitation - NN
+    mailButton: {
+      position: 'absolute',
+      backgroundColor: theme.gray,
+      borderRadius: 20,
+      padding: 8,
+      top: 63,
+      right: 20
+    },
+    
+    // members card - NN
+    memberItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      marginVertical: 15,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      borderRadius: 20,
+      width: '95%', 
+      alignSelf: 'center',
+      backgroundColor: theme.lighter,
+    },
+    memberName: {
+      textAlign: 'left',
+      fontSize: 25,
+      fontWeight: 'bold',
+    },
+    memberRole: {
+      textAlign: 'right',
+      fontSize: 20,
+    },
+
+    // manage members screen - NN
+    manageMemberItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginVertical: 15,
+    },
+    manageMemberName: {
+      textAlign: 'left',
+      fontSize: 25,
+      fontWeight: 'bold',
+      padding: 20,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      borderRadius: 20,
+      width: '70%', 
+      backgroundColor: theme.lighter,
+    },
+    deleteButton: {
+      backgroundColor: theme.red,
+      padding: 20,
+      borderWidth: 1,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    
+    // group invitations screen - NN
+    invitationItem: {
+      marginVertical: 10,
+      padding: 15,
+      borderWidth: 1,
+      borderColor: theme.gray,
+      borderRadius: 8,
+    },
+    invitationText: {
+      fontSize: 16,
+      marginBottom: 10,
+    },
+    invitationButtonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    acceptButton: {
+      backgroundColor: '#0b6623',
+      padding: 10,
+      borderRadius: 5,
+    },
+    declineButton: {
+      backgroundColor: theme.red,
+      padding: 10,
+      borderRadius: 5,
+    },
+    buttonText: {
+      color: theme.white,
+    },
+
+    // create/invite button & pop-up - NN
+    createButton: {
+      position: 'absolute',
+      width: '35%',
+      bottom: 170,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+      left: 50,
+    },
+    inviteButton: {
+      position: 'absolute',
+      width: '35%',
+      bottom: 170,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+      right: 50,
+    },
+    modalView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.white,
+    },
+    modalContainer: {
+      width: '80%',
+      padding: 20,
+      borderRadius: 10,
+      backgroundColor: theme.white,
+      alignItems: 'center',
+    },
+    modalTitle: {
+      fontSize: 25,
+      fontWeight: 'bold',
+      color: theme.black,
+      marginBottom: 15,
+    },
+    input: {
+      width: '85%',
+      height: 40,
+      paddingHorizontal: 10,
+      borderRadius: 5,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      marginBottom: 20,
+      backgroundColor: theme.lightGray,
+    },
+    submitButton: {
+      width: '85%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    submitButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 20,
+      right: 20,
+      padding: 5,
     },
   });
 };

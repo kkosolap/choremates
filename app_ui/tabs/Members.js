@@ -1,34 +1,251 @@
 // Members.js
 
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, FlatList, TextInput, Modal } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
+import Mail from 'react-native-vector-icons/Ionicons';
+import { API_URL } from '../config';
+import Icon from 'react-native-vector-icons/Ionicons'
+import * as SecureStore from 'expo-secure-store';
 
 
-// header and page content
-const MembersScreen = () => {
+// members invitation and group creation
+const MembersScreen = ({ groupId, userId }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const navigation = useNavigation();
+  const [hasInvitations, setHasInvitations] = useState(false);
+  const [isGroupModalVisible, setIsGroupModalVisible] = useState(false);
+  const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
+  const [groupName, setGroupName] = useState('');
+  const [inviteeName, setInviteeName] = useState('');
+  const [displayGroupName, setDisplayGroupName] = useState('');
+  const [isGroupCreated, setIsGroupCreated] = useState(false);
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const getUsername = async () => {   // get the username from securestore -KK
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+        //console.log(username);
+      } else {
+        console.error("UI Member.js: Username not found in SecureStore.");
+      }
+    };
+    getUsername();
+  }, []);
+
+  // if invitation received, button turns red
+  useEffect(() => {
+    const fetchPendingInvitations = async () => {
+      if (!username) return;
+      try {
+        //console.log(username);
+        const response = await axios.get(`${API_URL}receivedInvitations`, {
+          params: { username: username }
+        });
+        setHasInvitations(response.data.length > 0);
+      } catch (error) {
+        console.error("Error fetching pending invitations:", error);
+      }
+    };
+
+    fetchPendingInvitations();
+  }, [username]);
+
+  // invitation button
+  const handleMailPress = () => {
+    navigation.navigate('GroupInvitations');
+  };
+
+  // creating a group button
+  const handleCreateGroup = async () => {
+    if (!groupName) {
+      Alert.alert('Please enter a group name');
+      return;
+    }
+    try {
+      //console.log(groupName, username);
+      const response = await axios.post(`${API_URL}createGroup`, {
+        group_name: groupName,
+        username: username,
+      });
+      Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
+      setDisplayGroupName(groupName);
+      setIsGroupCreated(true);
+      setIsGroupModalVisible(false);
+    } catch (error) {
+      console.error("Error creating group:", error);
+      Alert.alert("Failed to create group.");
+    }
+  };
+
+  // sending invitation button
+  const handleSendInvitation = async () => {
+    if (!inviteeName) {
+      Alert.alert('Please enter the invitee username');
+      return;
+    }
+    try {
+      //console.log("inviter: ", username, "\n invitee: ", inviteeName);
+      const response = await axios.post(`${API_URL}sendInvitation`, {
+        inviter_name: username,
+        invitee_name: inviteeName,
+        group_id: 2, // hardcoded, current only works with group_id = 2
+      });
+      Alert.alert('Invitation sent successfully', `Invitation sent to user: ${inviteeName}`);
+      setInviteeName(''); // Clear invitee username after sending
+      setIsInviteModalVisible(false);
+    } catch (error) {
+      console.error("Error sending invitation:", error);
+      Alert.alert("Failed to send invitation.");
+    }
+  };
 
   return (
     <View style={styles.screen}>
-      <TabHeader title="Members" />
-      <MembersDisplay />
+
+      <TouchableOpacity // invite button red when received invitation
+        onPress={handleMailPress}
+        style={[
+          styles.mailButton,
+          hasInvitations && { backgroundColor: theme.red }
+        ]}
+      >
+        <Mail name="mail" size={25} color="#fff" />
+      </TouchableOpacity>
+
+      <TabHeader title={displayGroupName ? `${displayGroupName}: Members` : "Members"} />
+
+      <MembersDisplay groupId={groupId} navigation={navigation}/>
+
+      <TouchableOpacity 
+        style={styles.createButton} 
+        onPress={() => setIsGroupModalVisible(true)}
+      >
+        <Text style={styles.managecreateButtonText}>Create Group</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.inviteButton} 
+        onPress={() => setIsInviteModalVisible(true)}
+      >
+        <Text style={styles.managecreateButtonText}>Invite Members</Text>
+      </TouchableOpacity>
+
+      <Modal // create group modal
+        animationType="slide"
+        transparent={true}
+        visible={isGroupModalVisible}
+      >
+        <View style={styles.modalView}>
+          <TouchableOpacity 
+            onPress={() => setIsGroupModalVisible(false)}
+            style={styles.closeButton}
+          >
+            <Icon name="close" size={30} color={theme.black} />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Enter Group Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Group Name"
+            value={groupName}
+            onChangeText={setGroupName}
+          />
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleCreateGroup}
+          >
+            <Text style={styles.submitButtonText}>Create</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      <Modal // invite member modal
+        animationType="slide"
+        transparent={true}
+        visible={isInviteModalVisible}
+      >
+        <View style={styles.modalView}>
+          <TouchableOpacity 
+            onPress={() => setIsInviteModalVisible(false)}
+            style={styles.closeButton}
+          >
+            <Icon name="close" size={30} color={theme.black} />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Enter Invitee Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Invitee Username"
+            value={inviteeName}
+            onChangeText={setInviteeName}
+          />
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSendInvitation}
+          >
+            <Text style={styles.submitButtonText}>Send Invitation</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-// page content
-const MembersDisplay = () => {
+// members display & management
+const MembersDisplay = ({ groupId, navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const [members, setMembers] = useState([]);
+
+  // fetch members of the group
+  useEffect(() => {
+    const fetchGroupMembers = async () => {
+        try {
+          const response = await axios.get(`${API_URL}groupMembers`, {
+            params: { group_id: groupId }
+          });
+          setMembers(response.data);
+        } catch (error) {
+            Alert.alert('Error retrieving group members: ' + error.message);
+        }
+    };
+
+    fetchGroupMembers();
+}, [groupId]);
+
+
+  const handleManageGroup = () => {
+    navigation.navigate('Manage', {members});
+  };
 
   return (
     <View style={styles.content}>
-      <Text style={styles.subtitle}>Members Screen</Text>
+      <FlatList
+          data={members}
+          keyExtractor={(item) => item.username}
+          renderItem={({ item }) => (
+              <View style={styles.memberItem}>
+                  <Text style={styles.memberName}>{item.username}</Text>
+                  <Text style={styles.memberRole}>Role: {item.role}</Text>
+              </View>
+          )}
+      />
+
+      <TouchableOpacity 
+        style={styles.manageButton} 
+        onPress={() => {
+          console.log('Manage Group button pressed');
+          handleManageGroup();
+        }}
+      >
+        <Text style={styles.managecreateButtonText}>Manage Group</Text>
+      </TouchableOpacity>
     </View>
   );
 };
