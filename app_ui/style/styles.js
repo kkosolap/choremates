@@ -498,6 +498,40 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       paddingRight: 100,
     },  
+
+
+
+
+    setProfileIcon: {
+      width: 80, // Width of the button
+      height: 80, // Height of the button
+      borderRadius: 40, // Makes the button circular
+      overflow: 'hidden', // Ensures the image is clipped to the button shape
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 20,
+
+    },
+    pfpImage: {
+      width: 80, // Ensures the image covers the button area
+      height: 80, // Ensures the image covers the button area
+      resizeMode: 'cover', // Keeps the image aspect ratio
+      
+    },
+
+    pfpIconContainer: {
+      flexDirection: 'row', 
+      flexWrap: 'wrap',
+      justifyContent: 'space-around', 
+      width: '85%',
+    },
+    pfpContainer: {
+      flex: 1, 
+      justifyContent: 'center', 
+      alignItems: 'center'
+    },
+
+
     notificationContainer: {
       flexDirection: 'column',
       alignItems: 'left',
