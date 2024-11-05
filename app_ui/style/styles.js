@@ -172,6 +172,11 @@ const createStyles = (theme) => {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
     },
+    choreBlockOverdue: { // - AT
+      ...this.choreBlock,           // Inherits base chore block styles
+      borderColor: 'red',           // Red border for overdue indication
+      borderWidth: 1,
+    },
     homeChoreBlock: {
       ...baseChoreBlock,
       backgroundColor: theme.lightest,
@@ -190,6 +195,10 @@ const createStyles = (theme) => {
       color: theme.text3,
       textDecorationLine: 'line-through',  // Adds a strikeout effect
     },
+    choreTitleOverdue: { // - AT
+      ...this.choreTitle,           // Inherits base chore title styles
+      color: 'red',                 // Red text color for overdue
+    },
     homeChoreTitle: {
       ...baseChoreTitle,
       marginTop: 5,
@@ -205,6 +214,11 @@ const createStyles = (theme) => {
       color: theme.text2,
       width: '85%',
       height: 'auto',
+    },
+    overdueLabel: { // - AT
+      fontSize: 12,
+      color: 'red',                 // Color to match overdue indicator
+      marginLeft: 5,
     },
     editChoreButton: {
       position: 'absolute', // position it absolutely within the header

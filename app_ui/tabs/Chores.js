@@ -61,6 +61,7 @@ const ChoresDisplay = () => {
     if (!acc[task.chore_name]) {
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
+          is_overdue: task.chore_is_overdue, // track overdue status - AT
           tasks: []
       };
       acc[task.chore_name] = {
@@ -129,6 +130,7 @@ const ChoresDisplay = () => {
           setNewTask={setNewTask}
           onAddTask={addTask}
           refresh={refresh}
+          isOverdue={groupedTasks[chore_name].is_overdue} // pass overdue status - AT
         />
       ))}
 
