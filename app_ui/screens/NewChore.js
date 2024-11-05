@@ -124,6 +124,9 @@ const NewChoreDisplay = ({ navigation }) => {
               <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
                 <Text style={oldStyles.modalItem}>Just Once</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => { setRecurrence('Every Minute'); setIsModalVisible(false); }}>
+                <Text style={oldStyles.modalItem}>Every Minute</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => { setRecurrence('Daily'); setIsModalVisible(false); }}>
                 <Text style={oldStyles.modalItem}>Daily</Text>
               </TouchableOpacity>
