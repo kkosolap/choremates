@@ -16,10 +16,27 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
 
-const profilePicture = require('../icons/profile_duck.jpg');
+const profilePicture = require('../icons/duck.jpg');
+
+// const duck = require('../icons/duck.jpg');
+// const pinkAvatar = require('../icons/pinkAvatar.jpg');
+// const blueAvatar = require('../icons/blueAvatar.jpg');
+// const purpleAvatar = require('../icons/purpleAvatar.jpg');
+// const greenAvatar = require('../icons/greenAvatar.jpg');
+// const yellowAvatar = require('../icons/yellowAvatar.jpg');
 
 // Header and page content
 const SettingsScreen = ({ onLogout }) => {
+
+  const avatarMap = {
+    duck: require('../icons/duck.jpg'),
+    pinkAvatar: require('../icons/pinkAvatar.jpg'),
+    blueAvatar: require('../icons/blueAvatar.jpg'),
+    purpleAvatar: require('../icons/purpleAvatar.jpg'),
+    greenAvatar: require('../icons/greenAvatar.jpg'),
+    yellowAvatar: require('../icons/yellowAvatar.jpg'),
+  };
+  
   const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
   const [isEditing, setIsEditing] = useState(false);
@@ -29,37 +46,71 @@ const SettingsScreen = ({ onLogout }) => {
   const navigation = useNavigation(); // get the navigation object
 
 
+  // useEffect(() => {
+  //   const getUsername = async () => {   // get the username from securestore -KK
+  //     const username = await SecureStore.getItemAsync('username');
+  //     if (username) {
+  //       setUsername(username);
+  //       try { // get the user's display name and profile picture -KK
+  //         const displayResponse  = await axios.post(`${API_URL}get_display`, { username });
+  //         const display = displayResponse.data[0]?.display_name;
+  //         setDisplayName(display);
+          
+  //         const profilePicResponse = await axios.post(`${API_URL}get_profile`, { username });
+
+  //         const pfp = profilePicResponse.data[0]?.profile_pic;
+
+  //         if (pfp) {
+  //           setProfilePic(pfp); // Set profile picture path
+  //         }
+  //         // console.log("PFP = "+pfp);
+          
+  //         console.log("UI Settings.js: display_name and profile_pic are ", display, pfp);
+  //         /*try { // load the user's profile picture
+  //           console.log("UI Settings.js: Loading profile pic: ", pfp);
+  //           setProfilePic(require(`..icons/'${pfp}.jpg`)); // this wont work -KK
+  //         } catch (error) {
+  //           console.error("UI Settings.js: Error loading profile picture.");
+  //         }*/
+  //       } catch (error) {
+  //         console.error("UI Settings.js: Error loading display:", error);
+  //       }
+  //     } else {
+  //       console.error("UI Settings.js: Username not found in SecureStore.");
+  //     }
+  //   };
+  //   getUsername();
+  // }, []);
+
   useEffect(() => {
-    const getUsername = async () => {   // get the username from securestore -KK
+    const getUsername = async () => {   
       const username = await SecureStore.getItemAsync('username');
       if (username) {
         setUsername(username);
-        try { // get the user's display name and profile picture -KK
+        try {
           const displayResponse  = await axios.post(`${API_URL}get_display`, { username });
           const display = displayResponse.data[0]?.display_name;
           setDisplayName(display);
           
           const profilePicResponse = await axios.post(`${API_URL}get_profile`, { username });
-          const pfp = profilePicResponse.data[0]?.profile_pic
+          const pfp = profilePicResponse.data[0]?.profile_pic;
           
-          console.log("UI Settings.js: display_name and profile_pic are ", display, pfp);
-          /*try { // load the user's profile picture
-            console.log("UI Settings.js: Loading profile pic: ", pfp);
-            setProfilePic(require(`..icons/'${pfp}.jpg`)); // this wont work -KK
-          } catch (error) {
-            console.error("UI Settings.js: Error loading profile picture.");
-          }*/
+          if (pfp) {
+            setProfilePic(pfp); // Set profile picture path
+            console.log("SETTING.js: "+profile_pic); 
+          }
+  
         } catch (error) {
-          console.error("UI Settings.js: Error loading display:", error);
+          console.error("Error loading display or profile picture:", error);
         }
       } else {
-        console.error("UI Settings.js: Username not found in SecureStore.");
+        console.error("Username not found in SecureStore.");
       }
     };
     getUsername();
   }, []);
+  
 
-  // Trying to change display name -VA
   const handleChangeDisplayName = async () => {
     console.log("UI Settings.js: Updating display name to:", display_name);
     try {
@@ -70,6 +121,7 @@ const SettingsScreen = ({ onLogout }) => {
   };
 
   // open navigation to the profile pic window to update picture -VA
+  // current error: opens chore pop up for a split second and returns to home
   // changes the user's profile picture -KK
     // const openChangeProfilePic = async () => {
   const openChangeProfilePic = () => {
@@ -88,6 +140,7 @@ const SettingsScreen = ({ onLogout }) => {
   };
 
   return (
+    console.log("IN VIEW: "+profile_pic),
     <View style={styles.screen}>
       <TabHeader title="Settings" />
         <ScrollView contentContainerStyle={styles.profileContainer}>
@@ -97,7 +150,17 @@ const SettingsScreen = ({ onLogout }) => {
           <View style={styles.horizontalLine}></View>
             <View style={styles.profileTopSection}>
               <View style={styles.profilePictureArea}>
-                <Image source={profilePicture} style={styles.profilePicturePhoto} />
+              {/* <Image 
+                source={profile_pic ? { uri: profile_pic } : require('../icons/duck.jpg')} 
+                style={styles.profilePicturePhoto} /> */}
+              <Image 
+              source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.duck} 
+              style={styles.profilePicturePhoto} 
+            />
+
+
+                {/* <Image 
+                source={profilePicture} style={styles.profilePicturePhoto} /> */}
                 <TouchableOpacity style={styles.profilePhotoEditButton} 
                   onPress={openChangeProfilePic}>
                     
