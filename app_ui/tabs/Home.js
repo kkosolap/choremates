@@ -35,9 +35,9 @@ const HomeDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const scale = React.useRef(new Animated.Value(1)).current;
-  const navigation = useNavigation(); // get the navigation object
+  const navigation = useNavigation();
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState({});   // tracks which chores are visible -KK
+  const [visible, setVisible] = useState({});  // tracks which chores are visible -KK
   const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
   const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
 
@@ -80,10 +80,11 @@ const HomeDisplay = () => {
   };
 
   // open ChoreDetails page above current page
-  const openChoreDetails = (chore_name, grouped_tasks) => {
+  const openChoreDetails = (chore_name, grouped_tasks, recurrence) => {
     navigation.navigate('ChoreDetails', {
-      choreName: chore_name,
-      tasks: grouped_tasks,
+      routed_chore_name: chore_name,
+      routed_tasks: grouped_tasks,
+      routed_recurrence: recurrence,
     });
   };
 
@@ -143,7 +144,8 @@ const HomeDisplay = () => {
               tasks={groupedTasks[chore_name].tasks}
               onOpenChoreDetails={() => openChoreDetails(
                 chore_name,
-                groupedTasks[chore_name].tasks
+                groupedTasks[chore_name].tasks,
+                groupedTasks[chore_name].recurrence
               )}
               recurrence={groupedTasks[chore_name].recurrence}
             />

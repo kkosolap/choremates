@@ -134,6 +134,18 @@ const createStyles = (theme) => {
       alignItems: 'center',
       marginTop: 60,
     },
+    registerHeader: {
+      //height: 60,
+      width: 400,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: -40,
+
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: theme.text1,
+      marginBottom: 30,
+    },
     backButton: {
       padding: 8,
       position: 'absolute',
@@ -294,7 +306,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 250,
+      marginTop: 40,
     },
     
     logoutButtonText: {
@@ -391,11 +403,16 @@ const createStyles = (theme) => {
       justifyContent: 'flex-start',
       marginLeft: 5,
     },
+    newChoreDeleteTask: {
+      position: 'absolute',
+      right: 15,
+    },
     taskItem: {
       fontSize: 16,
       marginLeft: 10,
       marginBottom: 2,
       color: theme.text2,
+      width: '80%',
     },
     addChoreButton: {
       marginTop: 25,

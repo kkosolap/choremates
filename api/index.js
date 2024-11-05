@@ -353,6 +353,32 @@ app.post('/add_chore', async (req, res) => {
     }
 });
 
+// update the details of a chore -MH
+app.post('/update_chore', async (req, res) => {
+    try {
+        const { old_chore_name, new_chore_name, username, recurrence } = req.body;
+        if (!old_chore_name || !new_chore_name || !username || !recurrence) {
+            console.log("API update_chore: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }
+
+        const user_id = await getUserId(username);
+        
+        // Update the chore details in the database
+        const query = `
+            UPDATE chores
+            SET chore_name = ?, recurrence = ?
+            WHERE user_id = ? AND chore_name = ?
+        `;
+        await db.promise().query(query, [new_chore_name, recurrence, user_id, old_chore_name]);
+
+        res.status(200).json({ message: "Chore updated successfully." });
+    } catch (error) {
+        console.error("API update_chore: Error:", error.message);
+        res.status(500).send("An error occurred while updating the chore.");
+    }
+});
+
 // deletes a chore for the user from the database -KK
 app.post('/delete_chore', async (req, res) => {
     try {

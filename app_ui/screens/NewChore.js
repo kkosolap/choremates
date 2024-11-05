@@ -1,7 +1,7 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -17,9 +17,9 @@ const NewChoreScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
-  // this is the "add new chore" at the top of the screen -KK
   return (
     <View style={styles.screen}>
+      {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Add a New Chore" navigation={navigation} />
       <NewChoreDisplay navigation={navigation} />
     </View>
@@ -37,6 +37,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [username, setUsername] = useState(null);
 
+  // Get user
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
       const storedUsername = await SecureStore.getItemAsync('username');
@@ -49,7 +50,8 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
-  // add the chore to the database, gets called when the "add chore" button is pressed -KK
+  // Add the chore to the database
+  // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
     try {
       // add the chore to the database -KK
@@ -68,12 +70,12 @@ const NewChoreDisplay = ({ navigation }) => {
       navigation.goBack();    // exit and go back to home -KK
 
     } catch (error) {
-      console.error(error);
+      console.error("Error adding chore:", error);
     }
   };
 
-  // adds the task entered into the input box to the task list
-  // these will only get added to the db after the "add chore" button is pressed -KK
+  // Adds the task entered into the input box to the task list
+  // These will only get added to the db after the "add chore" button is pressed -KK
   const addTask = () => {
     if (newTask.trim()) {
       setTasks([...tasks, newTask]);
@@ -81,7 +83,12 @@ const NewChoreDisplay = ({ navigation }) => {
     }
   };
 
-  // this is the box for adding a new chore -KK
+  // Delete task from the task list  -MH
+  const deleteTask = (index) => {
+    setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
+  };
+
+  // ---------- Page Content ----------
   return (
     <View style={styles.content}>
       <View style={styles.formContainer}>
@@ -136,10 +143,16 @@ const NewChoreDisplay = ({ navigation }) => {
           <FlatList
             data={tasks}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View style={styles.bulletAndTask}>
                 <Icon name={"square-outline"} size={15} color={theme.text2} />
                 <Text style={styles.taskItem}>{item}</Text>
+                <TouchableOpacity
+                  style={styles.newChoreDeleteTask}
+                  onPress={() => deleteTask(index)}
+                >
+                  <Icon name="close-outline" size={24} color={theme.text3} />
+                </TouchableOpacity>
               </View>
             )}
           />
@@ -179,6 +192,7 @@ const NewChoreDisplay = ({ navigation }) => {
   );
 };
 
+
 // temporary styles for this screen -KK
 const oldStyles = StyleSheet.create({
   
@@ -201,7 +215,7 @@ const oldStyles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
   },
-  
 });
+
 
 export default NewChoreScreen;
