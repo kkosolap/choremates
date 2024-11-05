@@ -45,8 +45,6 @@ const HomeDisplay = () => {
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {   // get the username from securestore -KK
-        console.log("refreshing");
-        
         const storedUsername = await SecureStore.getItemAsync('username');
         if (storedUsername) { 
           refresh(storedUsername); 

@@ -244,18 +244,18 @@ const ChoreDetailsDisplay = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.centeredContent}>
-          <TouchableOpacity
-            style={styles.addChoreButton}
-            onPress={updateChore}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.addChoreButtonText}>Save Changes</Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
+      {/* SAVE CHANGES Button */}
+      <View style={styles.centeredContent}>
+        <TouchableOpacity
+          style={styles.addChoreButton}
+          onPress={updateChore}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addChoreButtonText}>Save Changes</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* DELETE Button */}
       <View style={styles.centeredContent}>
@@ -264,11 +264,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
           onPress={() => deleteChore(routed_chore_name)}
           activeOpacity={0.8}
         >
-          <Text style={styles.addChoreButtonText}>Delete Chore</Text>
+          <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
         </TouchableOpacity>
       </View>
-
-
     </View>
   );
 };
