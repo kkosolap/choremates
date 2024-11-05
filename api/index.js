@@ -579,7 +579,7 @@ app.post('/createGroup', async (req, res) => {
     });
 });
 
-// get all members and their roles of a specific group 
+// get all members and their roles of a specific group -ET
 // input: group_id
 // output: member name, role
 app.get('/groupMembers', (req, res) => {
@@ -602,7 +602,7 @@ app.get('/groupMembers', (req, res) => {
     });
 });
 
-// send an invitation, only 'admin' can invite --ET
+// send an invitation, only 'admin' can invite -ET
 // input: inviter_name, invitee_name, group_id
 app.post('/sendInvitation', async (req, res) => {
     const { inviter_name, invitee_name, group_id } = req.body;
@@ -640,7 +640,7 @@ app.post('/sendInvitation', async (req, res) => {
     });
 });
 
-// get received pending invitations for a specific user --ET
+// get received pending invitations for a specific user -ET
 // input: username (want to retrieve this person's pending invitations)
 // output: pending invitations for that user
 app.get('/receivedInvitations', async (req, res) => {
@@ -658,7 +658,7 @@ app.get('/receivedInvitations', async (req, res) => {
     });
 });
 
-// respond to invitation based on user's response (accepted / rejected) --ET
+// respond to invitation based on user's response (accepted / rejected) -ET
 // input: invitation_id, response (either "accepted" or "rejected")
 app.post('/respondToInvitation', (req, res) => {
     const { invitation_id, response } = req.body;
@@ -703,6 +703,11 @@ app.post('/respondToInvitation', (req, res) => {
         }
     });
 });
+
+
+
+
+
 
 
 // keep this at the very bottom of the file -KK
