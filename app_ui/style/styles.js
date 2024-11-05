@@ -443,7 +443,7 @@ const createStyles = (theme) => {
       borderRadius: 50,
       borderWidth: 3,
       borderColor: theme.lighter,
-      marginRight: 75,
+      marginRight: 70,
       marginLeft: 75,         // Profile + name are off center bc names are usually long -VA
       overflow: 'visible',    // Crop any overflow for circular shape
     },
@@ -452,10 +452,16 @@ const createStyles = (theme) => {
       height: '100%',
       borderRadius: 100,
     },
+    // profileTextContainer:{
+    //   scrollEnabled: false,
+    // },
     profileDisplayNameText: {
       fontSize: 30,
       fontWeight: 'bold',
       color: '#5c5c5c',
+      maxWidth: 85,                   // works with this width but cuts name off
+      // textAlign: 'right' ,
+      // scrollEnabled: false,
     },
     profileUsernameText: {
       fontSize: 18,

@@ -97,7 +97,7 @@ const SettingsScreen = ({ onLogout }) => {
           
           if (pfp) {
             setProfilePic(pfp); // Set profile picture path
-            console.log("SETTING.js: "+profile_pic); 
+            // console.log("SETTING.js: "+profile_pic); 
           }
   
         } catch (error) {
@@ -112,11 +112,11 @@ const SettingsScreen = ({ onLogout }) => {
   
 
   const handleChangeDisplayName = async () => {
-    console.log("UI Settings.js: Updating display name to:", display_name);
+    // console.log("UI Settings.js: Updating display name to:", display_name);
     try {
         await axios.post(`${API_URL}update_display`, {username, display_name});
     } catch (error) {
-      console.log("UI Settings.js: Error changing display name.");
+      // console.log("UI Settings.js: Error changing display name.");
     }
   };
 
@@ -140,7 +140,7 @@ const SettingsScreen = ({ onLogout }) => {
   };
 
   return (
-    console.log("IN VIEW: "+profile_pic),
+    // console.log("IN VIEW: "+profile_pic),
     <View style={styles.screen}>
       <TabHeader title="Settings" />
         <ScrollView contentContainerStyle={styles.profileContainer}>
@@ -174,6 +174,11 @@ const SettingsScreen = ({ onLogout }) => {
                   value={display_name} 
                   onChangeText={setDisplayName} 
                   onSubmitEditing={handleChangeDisplayName}
+                  
+                  // multiline={false}
+                  scrollEnabled={false}
+                  // numberOfLines={1}
+
                 />
 
                 {/* // value={display_name}  */}

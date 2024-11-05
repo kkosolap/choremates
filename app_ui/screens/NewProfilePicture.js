@@ -44,11 +44,11 @@ const ChangeProfilePicScreen = ({ navigation }) => {
   }, []);
 
     const changePFP = async (username, profile_pic) => {
-      console.log("UI NewProfilePicture.js: Updating profile picture to:", profile_pic);
+      // console.log("UI NewProfilePicture.js: Updating profile picture to:", profile_pic);
       try {
           await axios.post(`${API_URL}update_profile`, {username, profile_pic});
           try { // load the new profile picture -KK
-            console.log("Profile pic: "+profile_pic);
+            // console.log("Profile pic: "+profile_pic);
             setProfilePic(`..icons/'${profile_pic}.jpg`); // might not work
           } catch (error) {
             console.log("UI NewProfilePicture.js: Error loading new profile picture.");
