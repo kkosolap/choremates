@@ -276,7 +276,7 @@ app.post('/update_profile', async (req, res) => {
 });
 
 /********************************************************** */
-/*             TASK IMPLEMENTATION BELOW:                   */
+/*             CHORE IMPLEMENTATION BELOW:                  */
 /********************************************************** */
 // get all chores for a user -KK
 app.post('/get_chores', async (req, res) => {
@@ -418,19 +418,7 @@ app.post('/complete_chore', async (req, res) => {
         res.status(500).send("An error occurred while toggling chore completion status.");
     }
 });
-
-// Update the display name when changed -VA
-app.post('/update_display', async (req, res) => {
-    const { userId, display_name } = req.body;
-    try {
-      await db.query('UPDATE users SET display_name = ? WHERE id = ?', [display_name, userId]);
-      res.status(200).send({ message: "Display name updated successfully." });
-    } catch (error) {
-      res.status(500).send({ error: "Error updating display name" });
-    }
-  });
   
-
 
 /********************************************************** */
 /*               TASK IMPLEMENTATION BELOW:                 */
