@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { Ionicons } from '@expo/vector-icons';
 
 import { useTheme } from '../style/ThemeProvider.js';
 import createStyles from '../style/styles.js';
@@ -20,9 +19,8 @@ const greenAvatar = require('../icons/greenAvatar.jpg');
 const yellowAvatar = require('../icons/yellowAvatar.jpg');
 
 
-// navigation goes to home screen
 const ChangeProfilePicScreen = ({ navigation }) => {
-  const { theme, changeTheme } = useTheme();
+  const { theme } = useTheme();
   const styles = createStyles(theme);
   const [username, setUsername] = useState(null);
 
@@ -52,12 +50,9 @@ const ChangeProfilePicScreen = ({ navigation }) => {
   return (
     <View style={styles.pfpContainer}>
       <ScreenHeader title="Set a Profile Picture" navigation={navigation} />
-      {/* <Text style={styles.title}>Choose a Profile Picture</Text> */}
       <View style={styles.pfpIconContainer}>
         {/* Add more icons as options for profile pictures */}
         <TouchableOpacity onPress={() => changePFP(username, 'pinkAvatar')} style={styles.setProfileIcon}>
-          {/* <Ionicons name="person-circle" size={64} color="blue" /> */}
-          {/* <Image source={PINK}  /> */}
           <Image source={pinkAvatar} style={styles.pfpImage} />
         </TouchableOpacity>
 
@@ -78,24 +73,17 @@ const ChangeProfilePicScreen = ({ navigation }) => {
         </TouchableOpacity> 
 
         <TouchableOpacity onPress={() => changePFP(username, 'duck')} style={styles.setProfileIcon}>
-          {/* <Ionicons name="person-circle" size={64} color="blue" /> */}
-          {/* <Image source={PINK}  /> */}
           <Image source={duck} style={styles.pfpImage} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.setProfileIcon}>
-          {/* <Ionicons name="person-circle" size={64} color="blue" /> */}
-          {/* <Image source={PINK}  /> */}
           <Image source={blueAvatar} style={styles.pfpImage} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.setProfileIcon}>
-          {/* <Ionicons name="person-circle" size={64} color="blue" /> */}
-          {/* <Image source={PINK}  /> */}
           <Image source={purpleAvatar} style={styles.pfpImage} />
         </TouchableOpacity>
         
-
         {/* Add more icons if needed */}
       </View>
     </View>

@@ -1,16 +1,18 @@
 // Members.js
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Text, View, StyleSheet, TouchableOpacity, Alert, FlatList, TextInput, Modal } from 'react-native';
+import { Text, View, TouchableOpacity, Alert, FlatList, TextInput, Modal } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import Mail from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons'
+import * as SecureStore from 'expo-secure-store';
+
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
-import Mail from 'react-native-vector-icons/Ionicons';
+
+import axios from 'axios';
 import { API_URL } from '../config';
-import Icon from 'react-native-vector-icons/Ionicons'
-import * as SecureStore from 'expo-secure-store';
 
 
 // members invitation, group creation, and invitations
@@ -31,7 +33,6 @@ const MembersScreen = ({ groupId }) => {
       const storedUsername = await SecureStore.getItemAsync('username');
       if (storedUsername) {
         setUsername(storedUsername);
-        //console.log(username);
       } else {
         console.error("UI Member.js: Username not found in SecureStore.");
       }
@@ -45,7 +46,6 @@ const MembersScreen = ({ groupId }) => {
       const fetchPendingInvitations = async () => {
         if (!username) return;
         try {
-          //console.log(username);
           const response = await axios.get(`${API_URL}receivedInvitations`, {
             params: { username: username }
           });
@@ -117,7 +117,7 @@ const MembersScreen = ({ groupId }) => {
           hasInvitations && { backgroundColor: theme.red }
         ]}
       >
-        <Mail name="mail" size={25} color="#fff" />
+      <Mail name="mail" size={25} color="#fff" />
       </TouchableOpacity>
 
       <TabHeader title={displayGroupName ? `${displayGroupName}: Members` : "Members"} />
@@ -128,7 +128,7 @@ const MembersScreen = ({ groupId }) => {
         style={styles.createButton} 
         onPress={() => setIsGroupModalVisible(true)}
       >
-        <Text style={styles.managecreateButtonText}>Create Group</Text>
+      <Text style={styles.managecreateButtonText}>Create Group</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -148,7 +148,7 @@ const MembersScreen = ({ groupId }) => {
             onPress={() => setIsGroupModalVisible(false)}
             style={styles.closeButton}
           >
-            <Icon name="close" size={30} color={theme.black} />
+          <Icon name="close" size={30} color={theme.black} />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Enter Group Name</Text>
           <TextInput
@@ -161,7 +161,7 @@ const MembersScreen = ({ groupId }) => {
             style={styles.submitButton}
             onPress={handleCreateGroup}
           >
-            <Text style={styles.submitButtonText}>Create</Text>
+          <Text style={styles.submitButtonText}>Create</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -176,7 +176,7 @@ const MembersScreen = ({ groupId }) => {
             onPress={() => setIsInviteModalVisible(false)}
             style={styles.closeButton}
           >
-            <Icon name="close" size={30} color={theme.black} />
+          <Icon name="close" size={30} color={theme.black} />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Enter Invitee Username</Text>
           <TextInput
@@ -189,7 +189,7 @@ const MembersScreen = ({ groupId }) => {
             style={styles.submitButton}
             onPress={handleSendInvitation}
           >
-            <Text style={styles.submitButtonText}>Send Invitation</Text>
+          <Text style={styles.submitButtonText}>Send Invitation</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -218,7 +218,7 @@ const MembersDisplay = ({ groupId, navigation }) => {
     };
 
     fetchGroupMembers();
-}, [groupId]);
+  }, [groupId]);
 
 
   const handleManageGroup = () => {

@@ -1,7 +1,6 @@
 // ThemeProvider.js
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
 import themes from './colors';
 import axios from 'axios';
 import { API_URL } from '../config';

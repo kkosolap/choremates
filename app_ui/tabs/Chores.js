@@ -1,8 +1,8 @@
 // Chores.js
 
-import { useEffect, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Text, View, ScrollView, } from 'react-native';
+import { View, ScrollView, } from 'react-native';
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';

@@ -1,9 +1,9 @@
 // Home.js
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert, FlatList } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useState, useCallback } from 'react';
+import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
@@ -98,7 +98,6 @@ const HomeDisplay = () => {
       };
     }
     if (task.task_name) { // only push if task_name is non-null -MH
-      //acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name });
       acc[task.chore_name].tasks.push(task.task_name);
     }
     return acc;

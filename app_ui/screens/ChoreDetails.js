@@ -28,6 +28,7 @@ const ChoreDetailsScreen = ({ navigation }) => {
   );
 };
 
+
 // page content
 const ChoreDetailsDisplay = ({navigation}) => {
   const { theme } = useTheme();
@@ -75,35 +76,27 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const updateTasksInDatabase = async () => {
     try {
       const existingTasks = await getExistingTasks();
-
-      console.log("existing tasks:", existingTasks);
-
+      
       // determine which tasks are new
       const tasksToAdd = tasks.filter(task => 
         !existingTasks.includes(task)
       );
-
-      console.log("tasks to add:", tasksToAdd);
 
       // determine which tasks were deleted
       const tasksToRemove = existingTasks.filter(existingTask => 
         !tasks.includes(existingTask)
       );
 
-      console.log("tasks to remove:", tasksToRemove);
-
       // add new tasks
       await Promise.all(
         tasksToAdd.map(task_name =>
-          axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
-        )
+          axios.post(`${API_URL}add_task`, { chore_name, task_name, username }))
       );
 
       // remove tasks that are no longer in the array
       await Promise.all(
         tasksToRemove.map(task_name =>
-          axios.post(`${API_URL}delete_task`, { chore_name, task_name, username })
-        )
+          axios.post(`${API_URL}delete_task`, { chore_name, task_name, username }))
       );
 
     } catch (error) {
@@ -152,7 +145,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
     try {
       await axios.post(`${API_URL}delete_chore`, { chore_name, username });
       navigation.goBack();   
-
     } catch (error) {
       console.error(error);
     }

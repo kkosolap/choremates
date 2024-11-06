@@ -100,7 +100,7 @@ const createStyles = (theme) => {
     spacer: {
       height: 10,
       width: '100%',
-  },
+    },
 
     // tab icons  -MH
     iconContainer: {
@@ -172,7 +172,7 @@ const createStyles = (theme) => {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
     },
-    choreBlockOverdue: { // - AT
+    choreBlockOverdue: { // -AT
       ...this.choreBlock,           // Inherits base chore block styles
       borderColor: 'red',           // Red border for overdue indication
       borderWidth: 1,
@@ -185,9 +185,9 @@ const createStyles = (theme) => {
     },
     choreCheck: {
       position: 'absolute', // position it absolutely within the header
-      left: 15, // distance from the right edge
-      top: 20, // distance from the top edge
-      zIndex: 1, // ensure it's above other elements
+      left: 15,             // distance from the right edge
+      top: 20,              // distance from the top edge
+      zIndex: 1,            // ensure it's above other elements
     },
     choreTitle: baseChoreTitle,
     choreTitleCompleted: {
@@ -195,7 +195,7 @@ const createStyles = (theme) => {
       color: theme.text3,
       textDecorationLine: 'line-through',  // Adds a strikeout effect
     },
-    choreTitleOverdue: { // - AT
+    choreTitleOverdue: { //- AT
       ...this.choreTitle,           // Inherits base chore title styles
       color: 'red',                 // Red text color for overdue
     },
@@ -215,21 +215,21 @@ const createStyles = (theme) => {
       width: '85%',
       height: 'auto',
     },
-    overdueLabel: { // - AT
+    overdueLabel: { // -AT
       fontSize: 12,
-      color: 'red',                 // Color to match overdue indicator
+      color: 'red',   // Color to match overdue indicator -AT
       marginLeft: 5,
     },
     editChoreButton: {
       position: 'absolute', // position it absolutely within the header
-      right: 15, // distance from the right edge
-      top: 20, // distance from the top edge
-      zIndex: 1, // ensure it's above other elements
+      right: 15,            // distance from the right edge
+      top: 20,              // distance from the top edge
+      zIndex: 1,            // ensure it's above other elements
     },
     choresList: {
       flex: 1,
       width: 390,
-      alignItems: 'center',   // Horizontally center content
+      alignItems: 'center',          // Horizontally center content
       justifyContent: 'flex-start',  // Start content at the top
     },
 
@@ -322,8 +322,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 40,
-      // bottom: 100,
+      bottom: 100,
     },
     logoutButtonText: {
       color: theme.white,
@@ -461,6 +460,7 @@ const createStyles = (theme) => {
 
     // Settings.js styles (for Profile/Settings page) -VA
     // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+    // profile section -KK
     profileContainer:{
       flexGrow: 1,
       width: 350,
@@ -485,25 +485,25 @@ const createStyles = (theme) => {
       marginLeft: 75,         // Profile + name are off center bc names are usually long -VA
       overflow: 'visible',    // Crop any overflow for circular shape
     },
-    profilePicturePhoto: {
-      width: '100%',
-      height: '100%',
-      borderRadius: 100,
-    },
-    // profileTextContainer:{
-    //   scrollEnabled: false,
-    // },
     profileDisplayNameText: {
       fontSize: 30,
       fontWeight: 'bold',
       color: '#5c5c5c',
-      maxWidth: 85,                   // works with this width but cuts name off
-      // textAlign: 'right' ,
-      // scrollEnabled: false,
+      maxWidth: 85,   // works with this width but cuts name off -VA
     },
     profileUsernameText: {
       fontSize: 18,
       color: theme.gray,
+    },
+    settingsPadding: {
+      paddingBottom: 20,
+    },
+
+    // profile pic section -KK
+    profilePicturePhoto: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 100,
     },
     profilePhotoEditButton: {
       position: 'absolute',
@@ -515,20 +515,6 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-    settingsPadding: {
-      paddingBottom: 20,
-    },
-    themeIconContainer: {
-      width: 400,
-      flexDirection: 'row',
-      alignItems: 'left',
-      justifyContent: 'center',
-      paddingRight: 100,
-    },  
-
-
-
-
     setProfileIcon: {
       width: 80, // Width of the button
       height: 80, // Height of the button
@@ -540,12 +526,10 @@ const createStyles = (theme) => {
 
     },
     pfpImage: {
-      width: 80, // Ensures the image covers the button area
-      height: 80, // Ensures the image covers the button area
+      width: 80,           // Ensures the image covers the button area
+      height: 80,          // Ensures the image covers the button area
       resizeMode: 'cover', // Keeps the image aspect ratio
-      
     },
-
     pfpIconContainer: {
       flexDirection: 'row', 
       flexWrap: 'wrap',
@@ -558,7 +542,16 @@ const createStyles = (theme) => {
       alignItems: 'center'
     },
 
+    // theme section -KK
+    themeIconContainer: {
+      width: 400,
+      flexDirection: 'row',
+      alignItems: 'left',
+      justifyContent: 'center',
+      paddingRight: 100,
+    },  
 
+    // notification section -KK
     notificationContainer: {
       flexDirection: 'column',
       alignItems: 'left',
