@@ -315,6 +315,7 @@ const createStyles = (theme) => {
 
     //logout -NN
     logoutButton: {
+      position: "absolute",
       width: '80%',
       height: 50,
       borderRadius: 10,
@@ -322,6 +323,7 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: 40,
+      // bottom: 100,
     },
     logoutButtonText: {
       color: theme.white,
@@ -676,11 +678,12 @@ const createStyles = (theme) => {
     
     // group invitations screen - NN
     invitationItem: {
-      marginVertical: 10,
+      marginVertical: 15,
       padding: 15,
       borderWidth: 1,
       borderColor: theme.gray,
       borderRadius: 8,
+      alignSelf: 'center'
     },
     invitationText: {
       fontSize: 16,
@@ -689,6 +692,7 @@ const createStyles = (theme) => {
     invitationButtonContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
+      width: '85%'
     },
     acceptButton: {
       backgroundColor: '#0b6623',

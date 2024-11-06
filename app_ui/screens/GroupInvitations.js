@@ -1,7 +1,7 @@
 // GroupInvitations.js - NN
 
-import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import Arrow from 'react-native-vector-icons/MaterialIcons';
@@ -12,7 +12,26 @@ import { API_URL } from '../config';
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const invitations = route.params?.invitations || []; // get invitations from route params
+  const [invitations, setInvitations] = useState([]);
+
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      try {
+        const username = route.params?.username;
+        const res = await axios.get(`${API_URL}receivedInvitations`, {
+          params: { username },
+        });
+        if (res.status === 200) {
+          setInvitations(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching invitations:", error);
+        Alert.alert("Failed to load invitations.");
+      }
+    };
+    
+    fetchInvitations();
+  }, []);
 
   const handleResponse = async (invitationId, response) => {
     try {
@@ -44,7 +63,7 @@ const GroupInvitations = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.invitationItem}>
-            <Text style={styles.invitationText}>Group ID: {item.groupId}</Text>
+            <Text style={styles.invitationText}>Group ID: {item.id}</Text>
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 

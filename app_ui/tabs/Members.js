@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Text, View, StyleSheet, TouchableOpacity, Alert, FlatList, TextInput, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
@@ -13,8 +13,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import * as SecureStore from 'expo-secure-store';
 
 
-// members invitation and group creation
-const MembersScreen = ({ groupId, userId }) => {
+// members invitation, group creation, and invitations
+const MembersScreen = ({ groupId }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
@@ -24,7 +24,6 @@ const MembersScreen = ({ groupId, userId }) => {
   const [groupName, setGroupName] = useState('');
   const [inviteeName, setInviteeName] = useState('');
   const [displayGroupName, setDisplayGroupName] = useState('');
-  const [isGroupCreated, setIsGroupCreated] = useState(false);
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
@@ -41,26 +40,28 @@ const MembersScreen = ({ groupId, userId }) => {
   }, []);
 
   // if invitation received, button turns red
-  useEffect(() => {
-    const fetchPendingInvitations = async () => {
-      if (!username) return;
-      try {
-        //console.log(username);
-        const response = await axios.get(`${API_URL}receivedInvitations`, {
-          params: { username: username }
-        });
-        setHasInvitations(response.data.length > 0);
-      } catch (error) {
-        console.error("Error fetching pending invitations:", error);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchPendingInvitations = async () => {
+        if (!username) return;
+        try {
+          //console.log(username);
+          const response = await axios.get(`${API_URL}receivedInvitations`, {
+            params: { username: username }
+          });
+          setHasInvitations(response.data.length > 0);
+        } catch (error) {
+          console.error("Error fetching pending invitations:", error);
+        }
+      };
 
-    fetchPendingInvitations();
-  }, [username]);
+      fetchPendingInvitations();
+    }, [username])
+  )
 
   // invitation button
   const handleMailPress = () => {
-    navigation.navigate('GroupInvitations');
+    navigation.navigate('GroupInvitations', { username });
   };
 
   // creating a group button
@@ -77,7 +78,6 @@ const MembersScreen = ({ groupId, userId }) => {
       });
       Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
       setDisplayGroupName(groupName);
-      setIsGroupCreated(true);
       setIsGroupModalVisible(false);
     } catch (error) {
       console.error("Error creating group:", error);
@@ -208,8 +208,9 @@ const MembersDisplay = ({ groupId, navigation }) => {
     const fetchGroupMembers = async () => {
         try {
           const response = await axios.get(`${API_URL}groupMembers`, {
-            params: { group_id: groupId }
+            params: { group_id: 2 }
           });
+          console.log("Group members response:", response.data);
           setMembers(response.data);
         } catch (error) {
             Alert.alert('Error retrieving group members: ' + error.message);
