@@ -291,7 +291,7 @@ cron.schedule('0 0 * * 1',  () => { resetRecurringChores('Weekly'); });
 
 // Function to handle recurrence and overdue flagging -AT
 async function resetRecurringChores(type) {
-    const query = `SELECT id, last_completed, is_completed, is_overdue FROM chores WHERE recurrence = ?`;
+    const query = `SELECT id, is_completed, is_overdue FROM chores WHERE recurrence = ?`;
     const [chores] = await db.promise().query(query, [type]);
 
     for (const chore of chores) {
@@ -354,7 +354,6 @@ app.post('/get_chores_data', async (req, res) => {
                 chores.is_completed AS chore_is_completed, 
                 chores.recurrence AS chore_recurrence,
                 chores.is_overdue AS is_overdue,
-                chores.last_completed AS last_completed,
                 tasks.task_name, 
                 tasks.is_completed AS task_is_completed
             FROM chores
@@ -386,11 +385,8 @@ app.post('/add_chore', async (req, res) => {
             return res.status(400).send("This chore already exists!");
         }
 
-        // get the timestamp for the chore -KK
-        const timestamp = new Date();
-
-        const query = "INSERT INTO chores (user_id, chore_name, is_completed, last_completed, recurrence) VALUES (?, ?, false, ?, ?)";
-        await db.promise().query(query, [user_id, chore_name, timestamp, recurrence]);
+        const query = "INSERT INTO chores (user_id, chore_name, is_completed, recurrence) VALUES (?, ?, false, ?)";
+        await db.promise().query(query, [user_id, chore_name, recurrence]);
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add_chore: Error:", error.message);
@@ -456,14 +452,9 @@ app.post('/complete_chore', async (req, res) => {
         
         const user_id = await getUserId(username);
         const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
-        const timestamp = is_completed ? new Date() : null; // get timestamp if completed, else null - AT
+        
+        await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
 
-        if(timestamp) { // if the chore got marked completed, set the timestamp -KK
-            await db.promise().query("UPDATE chores SET is_completed = NOT is_completed, last_completed = ? WHERE id = ?", [timestamp, chore_id]);
-        } 
-        else {  // reset the chore -KK
-            await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
-        }
         res.status(200).json({ message: "Chore completion status toggled successfully." });
     } catch (error) {
         console.error("API complete_chore: Error:", error.message);
