@@ -1,7 +1,5 @@
 // index.js
 
-// ALL BACKEND CODE HAPPENS HERE -KK
-
 var express = require("express");
 const cors = require("cors");
 const mysql = require('mysql2');
@@ -98,6 +96,7 @@ async function getTaskId(task_name, chore_id) {
     return results[0].id;
 }
 
+
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
 /********************************************************** */
@@ -166,6 +165,7 @@ app.post('/logout', (req, res) => {
     // Nathan pls handle token invalidation on the client side. -- Ethan
     res.status(200).json({ message: 'Logged out successfully!' });
 });
+
 
 /********************************************************** */
 /*                USER IMPLEMENTATION BELOW:                */
@@ -279,69 +279,41 @@ app.post('/update_profile', async (req, res) => {
     }
 });
 
+
 /********************************************************** */
 /*             RECURRENCE IMPLEMENTATION BELOW:             */
 /********************************************************** */
 // Cron job for daily and weekly resets - AT
 // every minute for test purposes - AT
-cron.schedule('* * * * *', async () => {
-    await resetRecurringChores('Every Minute');
-});
+cron.schedule('* * * * *', () => { resetRecurringChores('Every Minute'); });
+cron.schedule('0 0 * * *',  () => { resetRecurringChores('Daily'); });
+cron.schedule('0 0 * * 1',  () => { resetRecurringChores('Weekly'); });
 
-cron.schedule('0 0 * * *', async () => {
-    await resetRecurringChores('Daily');
-});
-
-cron.schedule('0 0 * * 1', async () => {
-    await resetRecurringChores('Weekly');
-});
-
-// Helper function to determine if a reset is needed - AT
-function checkIfResetNeeded(lastCompleted, type) {
-    const now = new Date();
-    const lastCompletedDate = new Date(lastCompleted);
-    if (type === 'Every Minute') {
-        return (now - lastCompletedDate) >= 60000;
-    } else if (type === 'Daily') {
-        return now.getDate() !== lastCompletedDate.getDate();
-    } else if (type === 'Weekly') {
-        return now.getDate() >= (lastCompletedDate.getDate() + 7);
-    }
-}
-
-// Function to handle recurrence and overdue flagging - AT
+// Function to handle recurrence and overdue flagging -AT
 async function resetRecurringChores(type) {
-    const query = `
-        SELECT id, last_completed, is_completed, is_overdue
-        FROM chores
-        WHERE recurrence = ? 
-    `;
-
+    const query = `SELECT id, last_completed, is_completed, is_overdue FROM chores WHERE recurrence = ?`;
     const [chores] = await db.promise().query(query, [type]);
 
     for (const chore of chores) {
-        const resetNeeded = checkIfResetNeeded(chore.last_completed, type);
-        console.log("API resetRecurringChores: chore " + JSON.stringify(chore) + " needs reset? " + resetNeeded);
+        const [results] = await db.promise().query("SELECT is_completed FROM chores WHERE id = ?", [chore.id]);    
+        const is_completed = results[0].is_completed;
 
-        if (resetNeeded) {
-            await db.promise().query(`
-                UPDATE chores 
-                SET is_completed = false, 
-                    last_completed = NOW(),
-                    is_overdue = false
-                WHERE id = ?
-            `, [chore.id]);
-            console.log(`API resetRecurringChores: Reset chore with ID ${chore.id}`); // Log the reset -AT
-        } else {
-            await db.promise().query(`
-                UPDATE chores
-                SET is_overdue = true
-                WHERE id = ?
-            `, [chore.id]);
-            console.log(`API resetRecurringChores: Marked chore with ID ${chore.id} as overdue`); // Log overdue marking -AT
+        const query = `UPDATE chores SET is_completed = false, is_overdue = ? WHERE id = ?`;
+        try{
+            if(is_completed) {
+                console.log("API resetRecurringChores: reseting chore " + chore.id);
+                await db.promise().query(query, [false, chore.id]);
+            }
+            else {
+                console.log("API resetRecurringChores: marking chore " + chore.id + " as overdue");
+                await db.promise().query(query, [true, chore.id]);
+            }
+        } catch (error) {
+            console.error("Error resetting chore:", error);
         }
     }
 }
+
 
 /********************************************************** */
 /*             CHORE IMPLEMENTATION BELOW:                  */
@@ -792,4 +764,3 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}.`)
     console.log(`Access server at ${process.env.API_URL}`)
 });
-
