@@ -74,11 +74,11 @@ const SettingsScreen = () => {
   );
   
   const handleChangeDisplayName = async () => {
-    console.log("UI Settings.js: Updating display name to:", display_name);
+    // console.log("UI Settings.js: Updating display name to:", display_name);
     try {
         await axios.post(`${API_URL}update_display`, {username, display_name});
     } catch (error) {
-      console.log("UI Settings.js: Error changing display name.");
+      // console.log("UI Settings.js: Error changing display name.");
     }
   };
 
@@ -112,6 +112,11 @@ const SettingsScreen = () => {
                   value={display_name} 
                   onChangeText={setDisplayName} 
                   onSubmitEditing={handleChangeDisplayName}
+                  
+                  // multiline={false}
+                  scrollEnabled={false}
+                  // numberOfLines={1}
+
                 />
                 <Text>User Name</Text>
                 <Text style={styles.profileUsernameText}>{username}</Text>
