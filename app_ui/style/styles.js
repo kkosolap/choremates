@@ -314,15 +314,23 @@ const createStyles = (theme) => {
     },
 
     //logout -NN
+    // logoutButton: {
+    //   position: "absolute",
+    //   width: '80%',
+    //   height: 50,
+    //   borderRadius: 10,
+    //   backgroundColor: theme.red,
+    //   justifyContent: 'center',
+    //   alignItems: 'center',
+    //   bottom: 100,
     logoutButton: {
-      position: "absolute",
       width: '80%',
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      bottom: 100,
+      marginTop: 75,
     },
     logoutButtonText: {
       color: theme.white,
@@ -469,11 +477,17 @@ const createStyles = (theme) => {
       paddingTop: 20,         // Optional: Add some space at the top
       paddingBottom: 100,
     },
-    profileTopSection: {
+    profilePicSection: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: 75,        // Profile + name are off center
+    },
+    profileNameSection: {
+      alignItems: 'flex-start',
+      flexDirection: 'column', 
+      width: '100%',
+      paddingLeft: 25,
+      
     },
     profilePictureArea: {
       width: 100,
@@ -489,11 +503,16 @@ const createStyles = (theme) => {
       fontSize: 30,
       fontWeight: 'bold',
       color: '#5c5c5c',
-      maxWidth: 85,   // works with this width but cuts name off -VA
+      width: '100%',  // Allows the text to use the full available width
+      flexWrap: 'wrap',  // Ensures the text breaks if it's too long
     },
+  
     profileUsernameText: {
-      fontSize: 18,
-      color: theme.gray,
+      fontSize: 20,
+      // color: theme.gray,
+      color: '#5c5c5c',
+      
+
     },
     settingsPadding: {
       paddingBottom: 20,
