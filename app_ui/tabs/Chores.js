@@ -44,7 +44,7 @@ const ChoresDisplay = () => {
     useCallback(() => { 
       const getUsername = async () => {   // get the username from securestore -KK
         const storedUsername = await SecureStore.getItemAsync('username');
-        if (storedUsername) {
+        if (storedUsername){
           setUsername(storedUsername); 
           refresh(storedUsername);
         } else {
@@ -61,7 +61,6 @@ const ChoresDisplay = () => {
     if (!acc[task.chore_name]) {
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
-          is_overdue: task.chore_is_overdue, // track overdue status - AT
           tasks: []
       };
       acc[task.chore_name] = {
@@ -82,13 +81,13 @@ const ChoresDisplay = () => {
       [chore_name]: !prevState[chore_name],
     }));
 
-    // set edit to null when toggling visibility  -MH
+    // set edit to null when toggling visibility -MH
     setEdit(null);
   };
 
   // add task button -KK
   const addTask = (chore_name) => {
-    axios.post(`${API_URL}add_task`, { chore_name, task_name, username}).then((response) => {
+    axios.post(`${API_URL}add-task`, { chore_name, task_name, username}).then((response) => {
       setNewTask('');          // reset the input -KK
       refresh(username);       // refresh ltask list after updating -KK
     })
@@ -97,7 +96,7 @@ const ChoresDisplay = () => {
 
   // delete task button -KK
   const deleteTask = async (chore_name, task_name) => {
-    await axios.post(`${API_URL}delete_task`, { chore_name, task_name, username}).then((response) => {
+    await axios.post(`${API_URL}delete-task`, { chore_name, task_name, username}).then((response) => {
         refresh(username);     // refresh task list after updating -KK
       })
       .catch((error) => console.error(error));
@@ -105,7 +104,7 @@ const ChoresDisplay = () => {
 
   // fetch the task list for display -KK
   const refresh = async (user) => {
-    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
+    await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
@@ -130,7 +129,6 @@ const ChoresDisplay = () => {
           setNewTask={setNewTask}
           onAddTask={addTask}
           refresh={refresh}
-          isOverdue={groupedTasks[chore_name].is_overdue} // pass overdue status - AT
         />
       ))}
 

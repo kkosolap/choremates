@@ -28,7 +28,7 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, isOverdue,
 
   return (
     <TouchableOpacity
-      style={isOverdue ? styles.choreBlockOverdue : completed ? styles.choreBlockCompleted : styles.choreBlock}
+      style={completed ? styles.choreBlockCompleted : styles.choreBlock}
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
@@ -40,8 +40,8 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, isOverdue,
         <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.text3 : theme.text1} />
       </TouchableOpacity>
 
-      {/* Chore Title with overdue indicator */}
-      <Text style={isOverdue ? styles.choreTitleOverdue : completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName} {isOverdue && <Text style={styles.overdueLabel}>Overdue</Text>}</Text>
+      {/* Chore Title */}
+      <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
 
       {/* Conditionally render Edit pencil if tasks visible */}
       {visible && (

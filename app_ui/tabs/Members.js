@@ -46,7 +46,7 @@ const MembersScreen = ({ groupId }) => {
       const fetchPendingInvitations = async () => {
         if (!username) return;
         try {
-          const response = await axios.get(`${API_URL}receivedInvitations`, {
+          const response = await axios.get(`${API_URL}get-received-invite`, {
             params: { username: username }
           });
           setHasInvitations(response.data.length > 0);
@@ -72,7 +72,7 @@ const MembersScreen = ({ groupId }) => {
     }
     try {
       //console.log(groupName, username);
-      const response = await axios.post(`${API_URL}createGroup`, {
+      const response = await axios.post(`${API_URL}create-group`, {
         group_name: groupName,
         username: username,
       });
@@ -93,7 +93,7 @@ const MembersScreen = ({ groupId }) => {
     }
     try {
       //console.log("inviter: ", username, "\n invitee: ", inviteeName);
-      const response = await axios.post(`${API_URL}sendInvitation`, {
+      const response = await axios.post(`${API_URL}send-invite`, {
         inviter_name: username,
         invitee_name: inviteeName,
         group_id: 2, // hardcoded, current only works with group_id = 2
@@ -207,7 +207,7 @@ const MembersDisplay = ({ groupId, navigation }) => {
   useEffect(() => {
     const fetchGroupMembers = async () => {
         try {
-          const response = await axios.get(`${API_URL}groupMembers`, {
+          const response = await axios.get(`${API_URL}get-group-members`, {
             params: { group_id: 2 }
           });
           console.log("Group members response:", response.data);

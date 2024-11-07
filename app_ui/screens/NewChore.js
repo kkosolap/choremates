@@ -56,11 +56,11 @@ const NewChoreDisplay = ({ navigation }) => {
   const addChore = async () => {
     try {
       // add the chore to the database -KK
-      await axios.post(`${API_URL}add_chore`, { chore_name, username, recurrence });
+      await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence });
 
       // loop through tasks and add each one to the db -KK
       await Promise.all(tasks.map(task_name =>
-        axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
+        axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
       ));
 
       // reset everything -KK

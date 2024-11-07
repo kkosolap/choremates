@@ -21,7 +21,7 @@ const GroupInvitations = ({ navigation, route }) => {
     const fetchInvitations = async () => {
       try {
         const username = route.params?.username;
-        const res = await axios.get(`${API_URL}receivedInvitations`, {
+        const res = await axios.get(`${API_URL}get-received-invite`, {
           params: { username },
         });
         if (res.status === 200) {
@@ -38,7 +38,7 @@ const GroupInvitations = ({ navigation, route }) => {
 
   const handleResponse = async (invitationId, response) => {
     try {
-      const res = await axios.post(`${API_URL}respondToInvitation`, {
+      const res = await axios.post(`${API_URL}respond-to-invite`, {
         invitation_id: invitationId,
         response,
       });

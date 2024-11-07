@@ -40,7 +40,7 @@ const ChangeProfilePicScreen = ({ navigation }) => {
   const changePFP = async (username, profile_pic) => {
     console.log("UI NewProfilePicture.js: Updating profile picture to:", profile_pic);
     try {
-        await axios.post(`${API_URL}update_profile`, {username, profile_pic});
+        await axios.post(`${API_URL}update-profile`, {username, profile_pic});
     } catch (error) {
       console.log("UI NewProfilePicture.js: Error changing profile picture.");
     }

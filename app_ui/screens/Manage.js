@@ -32,7 +32,7 @@ const ManageScreen = ({ navigation, route }) => {
           onPress: async () => {
             try {
               // make call to delete member
-              await axios.delete(`${API_URL}groupMembers`, {
+              await axios.delete(`${API_URL}delete-group-member`, {
                 data: { username },
               });
 

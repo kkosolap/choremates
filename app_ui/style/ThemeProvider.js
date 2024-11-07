@@ -22,7 +22,7 @@ export const ThemeProvider = ({ children, username }) => {
   // gets the user's theme from the database -KK
   const getTheme = async (username) => {
     try {
-      const response = await axios.post(`${API_URL}get_theme`, { username });
+      const response = await axios.post(`${API_URL}get-theme`, { username });
       const theme = response.data[0]?.theme;
       if (themes[theme]) {
         setCurrentTheme(themes[theme]);
@@ -38,7 +38,7 @@ export const ThemeProvider = ({ children, username }) => {
   const changeTheme = async (username, theme) => {
     if (themes[theme]) {
       try {
-        await axios.post(`${API_URL}update_theme`, { username, theme });
+        await axios.post(`${API_URL}update-theme`, { username, theme });
         setCurrentTheme(themes[theme]);
       } catch (error) {
         console.error("Error updating theme:", error);

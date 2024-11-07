@@ -37,9 +37,6 @@ const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState({});  // tracks which chores are visible -KK
-  const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
-  const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -105,7 +102,7 @@ const HomeDisplay = () => {
 
   // fetch the task list for display -KK
   const refresh = async (user) => {
-    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
+    await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 
