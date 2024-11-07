@@ -33,7 +33,8 @@ const ChoresScreen = () => {
 const ChoresDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const [data, setData] = useState([]);
+  const [personalData, setPersonalData] = useState([]);
+  const [groupData, setGroupData] = useState([]);
   const [visible, setVisible] = useState({});     // tracks which chores are visible -KK
   const [edit, setEdit] = useState(null);         // tracks which chores are being edited -KK
   const [task_name, setNewTask] = useState('');   // contains the text for the new task -KK
@@ -56,8 +57,8 @@ const ChoresDisplay = () => {
     [])
   );
 
-  // group the tasks by chore -KK
-  const groupedTasks = data.reduce((acc, task) => {
+  // group the personal tasks by chore -KK
+  const groupedPersonalTasks = personalData.reduce((acc, task) => {
     if (!acc[task.chore_name]) {
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
@@ -71,6 +72,12 @@ const ChoresDisplay = () => {
     if (task.task_name) { // only push if task_name is non-null -MH
       acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name, completed: task.task_is_completed });
     }
+    return acc;
+  }, {});
+
+  // group the group tasks by chore and then by group -KK
+  const groupedGroupTasks = groupData.reduce((acc, task) => {
+    // still need to write this lol
     return acc;
   }, {});
 
@@ -103,9 +110,23 @@ const ChoresDisplay = () => {
   };
 
   // fetch the task list for display -KK
-  const refresh = async (user) => {
-    await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setData(response.data))
-      .catch((error) => console.error(error));
+  const refresh = async (username) => {
+    // get all the personal chore data for the user -KK
+    await axios.post(`${API_URL}get-chores-data`, { username }).then((response) => setPersonalData(response.data))
+    .catch((error) => console.error(error)); 
+
+    // get all the group chore ids for the user -KK
+    const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username }).catch((error) => console.error(error));
+
+    // get the group chore data for each group -KK
+    for (const group of response.data) {
+      const group_id = group.group_id; 
+      console.log("UI Chores.js: group_id is " + group_id);
+      await axios.post(`${API_URL}get-group-chores-data-for-user`, { username, group_id })
+          .then((response) => setGroupData(response.data))
+          .catch((error) => console.error(error));
+    }
+    console.log("UI Chores.js: group chore data is " + groupData);
   };
 
 
@@ -113,13 +134,13 @@ const ChoresDisplay = () => {
   return (
     <View style={styles.content}>
 
-      {Object.keys(groupedTasks).map((chore_name) => (
+      {Object.keys(groupedPersonalTasks).map((chore_name) => (
         <ActiveChoreBlock
           user={username}
           key={chore_name}
           choreName={chore_name}
-          tasks={groupedTasks[chore_name].tasks}
-          completed={groupedTasks[chore_name].is_completed}
+          tasks={groupedPersonalTasks[chore_name].tasks}
+          completed={groupedPersonalTasks[chore_name].is_completed}
           visible={visible[chore_name]}
           onToggleVisibility={toggleVisibility}
           onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
