@@ -549,11 +549,16 @@ const createStyles = (theme) => {
       height: 80,          // Ensures the image covers the button area
       resizeMode: 'cover', // Keeps the image aspect ratio
     },
+    
+    // Display Icons in Pop Up Profile Pic Selection
     pfpIconContainer: {
+      flex: 1,
+      marginTop: 20,
       flexDirection: 'row', 
       flexWrap: 'wrap',
       justifyContent: 'space-around', 
       width: '85%',
+      alignItems: 'center',
     },
     pfpContainer: {
       flex: 1, 
