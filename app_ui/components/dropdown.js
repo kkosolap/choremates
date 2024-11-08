@@ -16,14 +16,16 @@ const Dropdown = ({ label, data, onSelect }) => {
   const [selected, setSelected] = useState(undefined);
   const DropdownButton = useRef();
   const [dropdownTop, setDropdownTop] = useState(0);
+  const [dropdownWidth, setDropdownWidth] = useState('100%');
 
   const toggleDropdown = () => {
     visible ? setVisible(false) : openDropdown();
   };
 
   const openDropdown = () => {
-    DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-      setDropdownTop(py + h);
+    DropdownButton.current.measure((_fx, _fy, w, h, _px, py) => {
+      setDropdownTop(py + (h/2));
+      setDropdownWidth(w); // capture the button's width
     });
     setVisible(true);
   };
@@ -35,12 +37,14 @@ const Dropdown = ({ label, data, onSelect }) => {
           style={styles.dropdownOverlay}
           onPress={() => setVisible(false)}
         >
-          <View style={[styles.dropdownOptionsContainer, { top: dropdownTop }]}>
-            <FlatList
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
+          <View style={[styles.dropdownCenteredContainer]}>
+            <View style={[styles.dropdownOptionsContainer, { top: dropdownTop, width: dropdownWidth }]}>
+              <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -50,6 +54,7 @@ const Dropdown = ({ label, data, onSelect }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.dropdownOption}
+      activeOpacity={0.7}
       onPress={() => onItemPress(item)}
     >
       <Text style={styles.dropdownOptionText}>{item.label}</Text>

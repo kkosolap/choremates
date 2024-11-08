@@ -478,27 +478,35 @@ const createStyles = (theme) => {
       color: theme.text1,
       flex: 1,
     },
+    dropdownCenteredContainer: {
+      justifyContent: 'center', // Center vertically
+      alignItems: 'center',     // Center horizontally
+      position: 'absolute',
+    },
     dropdownOptionsContainer: {
-      alignItems: 'center',
       backgroundColor: theme.white,
-      marginTop: 5,
-      //padding: 10,
+      width: '100%',
       borderRadius: 5,
-      elevation: 2, // for shadow on Android
-      shadowColor: theme.gray, // for shadow on iOS
-      //shadowOffset: { width: 0, height: 2 },
-      //shadowOpacity: 1,
-      shadowRadius: 2,
+      elevation: 2,
+      shadowColor: theme.gray,
+      shadowRadius: 4,
+      shadowOffset: { height: 4, width: 0 },
+      shadowOpacity: 0.5,
     },
     dropdownOption: {
-      backgroundColor: theme.red,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderBottomWidth: 1,
+      borderColor: theme.lighter,
     },
     dropdownOptionText: {
       fontSize: 16,
       color: theme.text1,
     },
     dropdownOverlay: {
-      backgroundColor: theme.green,
+      alignItems: 'center',
+      width: '100%',
+      height: '100%',
     },
 
     // Settings.js styles (for Profile/Settings page) -VA
