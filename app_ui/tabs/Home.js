@@ -1,9 +1,11 @@
 // Home.js
 
 import React, { useState, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, } from 'react-native';
+import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, TouchableOpacity, } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Collapsible from 'react-native-collapsible';
+
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
@@ -13,9 +15,9 @@ import { ChoreBlock } from '../components/blocks.js';
 import { DropdownComponent } from '../components/dropdown.js';
 
 
+
 import axios from 'axios';
 import { API_URL } from '../config';
-
 
 // header and page content
 const HomeScreen = () => {
@@ -23,7 +25,9 @@ const HomeScreen = () => {
   const styles = createStyles(theme);
   const navigation = useNavigation();
 
+  
   const [selectedScreen, setSelectedScreen] = useState('Home'); // Track selected screen
+
 
   // Dropdown options for the home screens
   const screenOptions = [
@@ -52,17 +56,13 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.screen}>
-      {/* Dropdown to select between different screens */}
-      <DropdownComponent 
-        data={screenOptions}
-        onChange={handleScreenSelect}
-        placeholder="Home"
-        customStyle={styles.customDropdown}
-      />
+      <TabHeader title="Weekly Chores" />
+      
+      
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <HomeDisplay />
-      </ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <HomeDisplay />
+        </ScrollView>
     </View>
   );
 };
@@ -75,6 +75,10 @@ const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
   const [data, setData] = useState([]);
+  const [isCollapsed, setCollapsed] = useState(true);
+  const [showThreeDots, setShowThreeDots] = useState(false); // State to control visibility of three-dot button
+
+
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -137,9 +141,20 @@ const HomeDisplay = () => {
     }
     return acc;
   }, {});
+  
+  const toggleCollapse = () => {
+    setCollapsed(!isCollapsed);
+  };
+
+  const handleTouchablePress = () => {
+    setShowThreeDots(!showThreeDots); // Toggle visibility of three-dot button
+  };
+
 
   // fetch the task list for display -KK
   const refresh = async (user) => {
+    // console.log('Requesting:'+ API_URL+'get-chores-data');
+
     await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
@@ -170,8 +185,52 @@ const HomeDisplay = () => {
         {/* Horizontal Line */}
         <View style={styles.horizontalLine} />
 
-        {/* Display all Chores */}
-        <View style={styles.choresList}>
+
+      {/* Toggle Button for Collapsible Dropdown */}
+      {/* <TouchableWithoutFeedback onPress={toggleCollapse}>
+        <View style={styles.homeToggleButton}>
+          <Text style={styles.sectionHeading}>
+            {isCollapsed ? 'Personal Chores' : 'Collapse Personal Chores'}
+          </Text>
+
+          <TouchableOpacity onPress={() => console.log("Settings clicked")}>
+            <Icon name="ellipsis-vertical" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
+
+<Collapsible collapsed={isCollapsed}>
+  <View style={styles.choresList}>
+    {Object.keys(groupedTasks).map((chore_name) => (
+      <ChoreBlock
+        key={chore_name}
+        choreName={chore_name}
+        tasks={groupedTasks[chore_name].tasks}
+        onOpenChoreDetails={() => openChoreDetails(
+          chore_name,
+          groupedTasks[chore_name].tasks,
+          groupedTasks[chore_name].recurrence
+        )}
+        recurrence={groupedTasks[chore_name].recurrence}
+      />
+    ))}
+  </View>
+</Collapsible> */}
+
+      <TouchableWithoutFeedback onPress={toggleCollapse}>
+        <View style={styles.homeToggleButton}>
+          <Text style={styles.sectionHeading}>
+            {isCollapsed ? 'Personal Chores' : 'Collapse Personal Chores'}
+          </Text>
+
+          <TouchableOpacity onPress={() => console.log("Settings clicked")}>
+            <Icon name="ellipsis-vertical" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
+
+      <Collapsible collapsed={isCollapsed}>
+        {/* <View style={styles.choresList}> */}
           {Object.keys(groupedTasks).map((chore_name) => (
             <ChoreBlock
               key={chore_name}
@@ -185,7 +244,12 @@ const HomeDisplay = () => {
               recurrence={groupedTasks[chore_name].recurrence}
             />
           ))}
-        </View>
+        {/* </View> */}
+      </Collapsible>
+
+
+
+
       </View>
     </View>
   );

@@ -566,63 +566,109 @@ const createStyles = (theme) => {
 
 
 
-    // Home.js DropDown Styles -VA
-    customDropdown: {
-      marginTop: 20,
+    // // Home.js DropDown Styles -VA
+    // customDropdown: {
+    //   marginTop: 20,
+    // },
+
+    // dropDownContainer: {
+    //   // backgroundColor: 'white',
+    //   paddingTop: HomeTitlePosition,
+    //   padding: 16,
+    // },
+    // // {[styles.dropDown,  && { }]}
+    // dropDownDisplay: {
+    //   width: 300,
+    //   height: 50,
+    //   borderColor: 'gray',
+    //   borderWidth: 0.5,
+    //   borderRadius: 8,
+    //   paddingHorizontal: 8,
+    //   borderColor: theme.main ,
+
+    //   // color: theme.lighter,
+
+    // },
+    // dropDownIcon: {
+    //   marginRight: 5,
+    // },
+    // dropDownLabel: {
+    //   position: 'absolute',
+    //   backgroundColor: theme.main,
+    //   left: 22,
+    //   top: 8,
+    //   zIndex: 999,
+    //   paddingHorizontal: 8,
+    //   fontSize: 14,
+    // },
+    // dropDownPrimaryTextStyle: {
+    //   fontSize: 30,
+    //   fontWeight: 'bold',
+    //   color: theme.text1,
+    //   textAlign: 'center'
+    //         // justifyContent: 'center', 
+
+    // },
+    // dropDownSelectedTextStyle: {
+    //   fontSize: 16,
+    // },
+    // dropDownIconStyle: {
+    //   width: 20,
+    //   height: 20,
+    // },
+    // dropDownInputSearchStyle: {
+    //   height: 40,
+    //   fontSize: 16,
+    // },
+
+
+
+    // Home.js Toggle House View
+    homeToggleButton:{
+      // backgroundColor: theme.lighter, // Button background color
+      // paddingVertical: 12,
+      // paddingHorizontal: 16,
+      // borderRadius: 8,
+      // alignItems: 'center',
+      // justifyContent: 'center',
+      // marginVertical: 10,
+      // shadowColor: '#000',
+      // shadowOffset: { width: 0, height: 1 },
+      // shadowOpacity: 0.1,
+      // shadowRadius: 1,
+      // elevation: 2, // For Android
+      // width: '100%', // Ensure button width takes the full container width
+      // overflow: 'hidden', // Make sure content stays within the button bounds
+      // marginBottom: 10, // Add space at the bottom when content expands
     },
 
-    dropDownContainer: {
-      // backgroundColor: 'white',
-      paddingTop: HomeTitlePosition,
-      padding: 16,
-    },
-    // {[styles.dropDown,  && { }]}
-    dropDownDisplay: {
-      width: 300,
-      height: 50,
-      borderColor: 'gray',
-      borderWidth: 0.5,
+    homeToggleButton: {
+      backgroundColor: theme.lighter, // Button background color
+      paddingVertical: 12,
+      paddingHorizontal: 16,
       borderRadius: 8,
-      paddingHorizontal: 8,
-      borderColor: theme.main ,
-
-      // color: theme.lighter,
-
+      flexDirection: 'row', // Align children (text and icon) horizontally
+      alignItems: 'center', // Center items vertically
+      justifyContent: 'space-between', // Ensure text stays on the left, button on the right
+      marginVertical: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2, // For Android
+      width: '100%', // Make sure it takes up full width
     },
-    dropDownIcon: {
-      marginRight: 5,
+    
+    
+    choresList: {
+      // marginTop: 10,
+      // backgroundColor: '#f9f9f9',
+      // paddingVertical: 10,
+      // paddingHorizontal: 16,
+      // borderTopWidth: 1,
+      // borderTopColor: '#ddd',
     },
-    dropDownLabel: {
-      position: 'absolute',
-      backgroundColor: theme.main,
-      left: 22,
-      top: 8,
-      zIndex: 999,
-      paddingHorizontal: 8,
-      fontSize: 14,
-    },
-    dropDownPrimaryTextStyle: {
-      fontSize: 30,
-      fontWeight: 'bold',
-      color: theme.text1,
-      textAlign: 'center'
-            // justifyContent: 'center', 
-
-    },
-    dropDownSelectedTextStyle: {
-      fontSize: 16,
-    },
-    dropDownIconStyle: {
-      width: 20,
-      height: 20,
-    },
-    dropDownInputSearchStyle: {
-      height: 40,
-      fontSize: 16,
-    },
-
-
-
+    
 
     // theme section -KK
     themeIconContainer: {
@@ -854,6 +900,18 @@ const createStyles = (theme) => {
       right: 20,
       padding: 5,
     },
+
+  choresList: {
+    // marginTop: 10,
+    backgroundColor: '#f9f9f9',
+    // paddingVertical: 10,
+    // paddingHorizontal: 16,
+    // borderTopWidth: 1,
+    // borderTopColor: '#ddd',
+    // flex: 1, // Allow the chores list to expand within its parent container
+  },
+
+
   });
 };
 

@@ -42,11 +42,11 @@ const SettingsScreen = () => {
         if (username) {
           setUsername(username);
           try { // get the user's display name and pfp -KK
-            const displayResponse  = await axios.post(`${API_URL}get_display`, { username });
+            const displayResponse  = await axios.post(`${API_URL}get-display`, { username });
             const display = displayResponse.data[0]?.display_name;
             setDisplayName(display);
             
-            const profilePicResponse = await axios.post(`${API_URL}get_profile`, { username });
+            const profilePicResponse = await axios.post(`${API_URL}get-profile`, { username });
             const pfp = profilePicResponse.data[0]?.profile_pic;
             if (pfp) {
               setProfilePic(pfp); // Set profile picture path -VA
@@ -68,7 +68,7 @@ const SettingsScreen = () => {
       Alert.alert('Character Limit Exceeded', 'Your display name cannot exceed 30 characters.');
     } else {
       try {
-        await axios.post(`${API_URL}update_display`, {username, display_name});
+        await axios.post(`${API_URL}update-display`, {username, display_name});
       } catch (error) {
         console.log("UI Settings.js: Error changing display name.");
       }
