@@ -95,7 +95,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* the chore name bit -KK */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.choreNameInput}
           placeholder="Enter Chore Name . . ."
           placeholderTextColor={theme.text3}
           value={chore_name}
@@ -106,10 +106,10 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* the recurrence bit -KK */}
         <Text style={styles.label}>Recurrence:</Text>
         <TouchableOpacity
-          style={styles.dropdown}
+          style={styles.oldDropdown}
           onPress={() => setIsModalVisible(true)}
         >
-          <Text style={styles.dropdownText}>{recurrence}</Text>
+          <Text style={styles.oldDropdownText}>{recurrence}</Text>
         </TouchableOpacity>
 
         {/* modal is acting as the "drop down" menu for recurence */}
@@ -164,7 +164,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Add Task input and button  -MH */}
         <View style={styles.inputAndButton}>
           <TextInput
-            style={styles.smallerInput}
+            style={styles.taskNameInput}
             placeholder="Add Task . . ."
             placeholderTextColor={theme.text3}
             value={newTask}

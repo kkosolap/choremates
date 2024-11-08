@@ -364,7 +364,7 @@ const createStyles = (theme) => {
       fontWeight: '600', // semi-bold
       marginBottom: 5,
     },
-    input: {
+    choreNameInput: {
       width: '100%',
       padding: 8,
       borderWidth: 1,
@@ -374,7 +374,7 @@ const createStyles = (theme) => {
       fontSize: 16,
       color: theme.text1, // color when typing
     },
-    smallerInput: {
+    taskNameInput: {
       width: '87%',
       padding: 8,
       borderWidth: 1,
@@ -395,7 +395,7 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'flex-end', // align to the right
     },
-    dropdown: {
+    oldDropdown: {
       width: '100%',
       padding: 9,
       borderWidth: 1,
@@ -403,7 +403,7 @@ const createStyles = (theme) => {
       borderRadius: 10,
       marginBottom: 20,
     },
-    dropdownText: {
+    oldDropdownText: {
       fontSize: 16,
       color: theme.text1,
     },
@@ -456,6 +456,49 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+
+    // chore details form dropdown -MH
+    dropdownContainer: {
+      width: '100%',
+      alignSelf: 'center',
+      marginBottom: 20,
+    },
+    dropdownButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      padding: 9,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+    },
+    dropdownButtonText: {
+      fontSize: 16,
+      color: theme.text1,
+      flex: 1,
+    },
+    dropdownOptionsContainer: {
+      alignItems: 'center',
+      backgroundColor: theme.white,
+      marginTop: 5,
+      //padding: 10,
+      borderRadius: 5,
+      elevation: 2, // for shadow on Android
+      shadowColor: theme.gray, // for shadow on iOS
+      //shadowOffset: { width: 0, height: 2 },
+      //shadowOpacity: 1,
+      shadowRadius: 2,
+    },
+    dropdownOption: {
+      backgroundColor: theme.red,
+    },
+    dropdownOptionText: {
+      fontSize: 16,
+      color: theme.text1,
+    },
+    dropdownOverlay: {
+      backgroundColor: theme.green,
     },
 
     // Settings.js styles (for Profile/Settings page) -VA
@@ -585,7 +628,7 @@ const createStyles = (theme) => {
       marginLeft: 20,
     },
 
-    //members page -NN
+    // members page -NN
     manageButton: {
       position: 'absolute',
       width: '80%',
