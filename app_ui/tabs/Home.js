@@ -10,6 +10,8 @@ import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
+import { DropdownComponent } from '../components/dropdown.js';
+
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -19,16 +21,52 @@ import { API_URL } from '../config';
 const HomeScreen = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const navigation = useNavigation();
+
+  const [selectedScreen, setSelectedScreen] = useState('Home'); // Track selected screen
+
+  // Dropdown options for the home screens
+  const screenOptions = [
+    { label: 'My Home Screen', value: 'Home' },
+    { label: 'Another Home Screen', value: 'AnotherHome' },
+    { label: 'Third Home Screen', value: 'ThirdHome' },
+  ];
+
+  const handleScreenSelect = (screen) => {
+    setSelectedScreen(screen);
+    // Navigate based on selected screen
+    switch (screen) {
+      case 'Home':
+        navigation.navigate('Home');
+        break;
+      case 'AnotherHome':
+        navigation.navigate('AnotherHome');
+        break;
+      case 'ThirdHome':
+        navigation.navigate('ThirdHome');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <View style={styles.screen}>
-      <TabHeader title="My Home" />
+      {/* Dropdown to select between different screens */}
+      <DropdownComponent 
+        data={screenOptions}
+        onChange={handleScreenSelect}
+        placeholder="Home"
+        customStyle={styles.customDropdown}
+      />
+
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <HomeDisplay />
       </ScrollView>
     </View>
   );
 };
+
 
 // page content
 const HomeDisplay = () => {

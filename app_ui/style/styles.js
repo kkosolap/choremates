@@ -1,6 +1,10 @@
 // styles.js
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+const { height } = Dimensions.get('window');
+
+const HomeTitlePosition = height * 0.075; // Adjust to desired position
+
 
 // function to create styles based on the theme  -MH
 const createStyles = (theme) => {
@@ -314,15 +318,6 @@ const createStyles = (theme) => {
     },
 
     //logout -NN
-    // logoutButton: {
-    //   position: "absolute",
-    //   width: '80%',
-    //   height: 50,
-    //   borderRadius: 10,
-    //   backgroundColor: theme.red,
-    //   justifyContent: 'center',
-    //   alignItems: 'center',
-    //   bottom: 100,
     logoutButton: {
       width: '80%',
       height: 50,
@@ -468,6 +463,7 @@ const createStyles = (theme) => {
 
     // Settings.js styles (for Profile/Settings page) -VA
     // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+
     // profile section -KK
     profileContainer:{
       flexGrow: 1,
@@ -509,7 +505,6 @@ const createStyles = (theme) => {
   
     profileUsernameText: {
       fontSize: 20,
-      // color: theme.gray,
       color: '#5c5c5c',
       
 
@@ -535,19 +530,19 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     setProfileIcon: {
-      width: 80, // Width of the button
-      height: 80, // Height of the button
-      borderRadius: 40, // Makes the button circular
-      overflow: 'hidden', // Ensures the image is clipped to the button shape
+      width: 80, 
+      height: 80,
+      borderRadius: 40, 
+      overflow: 'hidden',
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 20,
 
     },
     pfpImage: {
-      width: 80,           // Ensures the image covers the button area
-      height: 80,          // Ensures the image covers the button area
-      resizeMode: 'cover', // Keeps the image aspect ratio
+      width: 80,          
+      height: 80,         
+      resizeMode: 'cover',
     },
     
     // Display Icons in Pop Up Profile Pic Selection
@@ -565,6 +560,69 @@ const createStyles = (theme) => {
       justifyContent: 'center', 
       alignItems: 'center'
     },
+
+
+
+
+
+
+    // Home.js DropDown Styles -VA
+    customDropdown: {
+      marginTop: 20,
+    },
+
+    dropDownContainer: {
+      // backgroundColor: 'white',
+      paddingTop: HomeTitlePosition,
+      padding: 16,
+    },
+    // {[styles.dropDown,  && { }]}
+    dropDownDisplay: {
+      width: 300,
+      height: 50,
+      borderColor: 'gray',
+      borderWidth: 0.5,
+      borderRadius: 8,
+      paddingHorizontal: 8,
+      borderColor: theme.main ,
+
+      // color: theme.lighter,
+
+    },
+    dropDownIcon: {
+      marginRight: 5,
+    },
+    dropDownLabel: {
+      position: 'absolute',
+      backgroundColor: theme.main,
+      left: 22,
+      top: 8,
+      zIndex: 999,
+      paddingHorizontal: 8,
+      fontSize: 14,
+    },
+    dropDownPrimaryTextStyle: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: theme.text1,
+      textAlign: 'center'
+            // justifyContent: 'center', 
+
+    },
+    dropDownSelectedTextStyle: {
+      fontSize: 16,
+    },
+    dropDownIconStyle: {
+      width: 20,
+      height: 20,
+    },
+    dropDownInputSearchStyle: {
+      height: 40,
+      fontSize: 16,
+    },
+
+
+
 
     // theme section -KK
     themeIconContainer: {
