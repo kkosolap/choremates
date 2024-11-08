@@ -1,14 +1,12 @@
 // App.js
 
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
-
-import { API_URL } from './config';
 
 import { ThemeProvider, useTheme } from './style/ThemeProvider';
 import { LogoutProvider } from './style/LogOutProvider';

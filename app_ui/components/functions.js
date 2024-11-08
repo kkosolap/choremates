@@ -7,12 +7,12 @@ import { API_URL } from '../config';
 const completeChore = async (user, chore) => {
     try {
         // add the chore to the database -KK
-        await axios.post(`${API_URL}complete_chore`, {
+        await axios.post(`${API_URL}complete-chore`, {
             chore_name: chore,
             username: user,    
         });
 
-        const response = await axios.post(`${API_URL}get_tasks`, {
+        const response = await axios.post(`${API_URL}get-tasks`, {
             chore_name: chore,
             username: user,
         });
@@ -20,7 +20,7 @@ const completeChore = async (user, chore) => {
         
         // iterate through each task for the chore to toggle completed status -KK
         await Promise.all(tasks.map(task =>
-            axios.post(`${API_URL}match_task`, {
+            axios.post(`${API_URL}match-task`, {
                 chore_name: chore,
                 task_name: task.task_name,
                 username: user,
@@ -34,7 +34,7 @@ const completeChore = async (user, chore) => {
 const completeTask = async (user, chore, task) => {
     try {
         // add the chore to the database -KK
-        await axios.post(`${API_URL}complete_task`, {
+        await axios.post(`${API_URL}complete-task`, {
             chore_name: chore,
             task_name: task,
             username: user,    
@@ -43,5 +43,6 @@ const completeTask = async (user, chore, task) => {
         console.error(error);
     }
 };
+
 
 export { completeChore, completeTask };

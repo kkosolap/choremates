@@ -1,9 +1,9 @@
 // Home.js
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, Animated, Alert, FlatList } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useState, useCallback } from 'react';
+import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
@@ -37,9 +37,6 @@ const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState({});  // tracks which chores are visible -KK
-  const [edit, setEdit] = useState(null);       // tracks which chores are being edited -KK
-  const [newTask, setNewTask] = useState('');   // contains the text for the new task -KK
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -98,7 +95,6 @@ const HomeDisplay = () => {
       };
     }
     if (task.task_name) { // only push if task_name is non-null -MH
-      //acc[task.chore_name].tasks.push({ id: task.id, task: task.task_name });
       acc[task.chore_name].tasks.push(task.task_name);
     }
     return acc;
@@ -106,7 +102,7 @@ const HomeDisplay = () => {
 
   // fetch the task list for display -KK
   const refresh = async (user) => {
-    await axios.post(`${API_URL}get_chores_data`, { username: user }).then((response) => setData(response.data))
+    await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setData(response.data))
       .catch((error) => console.error(error));
   };
 

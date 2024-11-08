@@ -1,22 +1,44 @@
 // GroupInvitations.js - NN
 
-import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
+import Arrow from 'react-native-vector-icons/MaterialIcons';
+
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import Arrow from 'react-native-vector-icons/MaterialIcons';
 import { TabHeader } from '../components/headers.js';
+
 import axios from 'axios';
 import { API_URL } from '../config';
+
 
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const invitations = route.params?.invitations || []; // get invitations from route params
+  const [invitations, setInvitations] = useState([]);
+
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      try {
+        const username = route.params?.username;
+        const res = await axios.get(`${API_URL}get-received-invite`, {
+          params: { username },
+        });
+        if (res.status === 200) {
+          setInvitations(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching invitations:", error);
+        Alert.alert("Failed to load invitations.");
+      }
+    };
+    
+    fetchInvitations();
+  }, []);
 
   const handleResponse = async (invitationId, response) => {
     try {
-      const res = await axios.post(`${API_URL}respondToInvitation`, {
+      const res = await axios.post(`${API_URL}respond-to-invite`, {
         invitation_id: invitationId,
         response,
       });
@@ -44,7 +66,7 @@ const GroupInvitations = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.invitationItem}>
-            <Text style={styles.invitationText}>Group ID: {item.groupId}</Text>
+            <Text style={styles.invitationText}>Group ID: {item.id}</Text>
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 

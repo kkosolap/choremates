@@ -1,14 +1,17 @@
 // Manage.js - NN
 
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { useTheme } from '../style/ThemeProvider';
-import createStyles from '../style/styles';
+import { Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Arrow from 'react-native-vector-icons/MaterialIcons';
 import Delete from 'react-native-vector-icons/Ionicons';
+
+import { useTheme } from '../style/ThemeProvider';
+import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
+
 import axios from 'axios';
 import { API_URL } from '../config';
+
 
 const ManageScreen = ({ navigation, route }) => {
   const { theme } = useTheme();
@@ -17,7 +20,7 @@ const ManageScreen = ({ navigation, route }) => {
 
   const [members, setMembers] = useState(initialMembers);
 
-  const handleDeleteMember = async (username) => {
+  /*const handleDeleteMember = async (username) => {
     // confirmation alert
     Alert.alert(
       "Confirm Deletion",
@@ -29,7 +32,7 @@ const ManageScreen = ({ navigation, route }) => {
           onPress: async () => {
             try {
               // make call to delete member
-              await axios.delete(`${API_URL}groupMembers`, {
+              await axios.delete(`${API_URL}delete-group-member`, {
                 data: { username },
               });
 
@@ -44,7 +47,7 @@ const ManageScreen = ({ navigation, route }) => {
         }
       ]
     );
-  };
+  };*/
 
   return (
     <View style={styles.screen}>
@@ -62,7 +65,7 @@ const ManageScreen = ({ navigation, route }) => {
             <Text style={styles.manageMemberName}>{item.username}</Text>
             <TouchableOpacity 
               style={styles.deleteButton} 
-              onPress={() => handleDeleteMember(item.username)}
+              // onPress={() => handleDeleteMember(item.username)}
             >
               <Delete name="close" size={25} color="black" />
             </TouchableOpacity>

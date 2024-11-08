@@ -1,7 +1,7 @@
 // Settings.js
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Image, TextInput, TouchableOpacity, Button, ScrollView} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { Text, View, Image, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons'; // For an edit icon
 import * as SecureStore from 'expo-secure-store';
@@ -15,15 +15,6 @@ import { useLogout } from '../style/LogOutProvider';
 
 import axios from 'axios';
 import { API_URL } from '../config';
-
-const profilePicture = require('../icons/duck.jpg');
-
-// const duck = require('../icons/duck.jpg');
-// const pinkAvatar = require('../icons/pinkAvatar.jpg');
-// const blueAvatar = require('../icons/blueAvatar.jpg');
-// const purpleAvatar = require('../icons/purpleAvatar.jpg');
-// const greenAvatar = require('../icons/greenAvatar.jpg');
-// const yellowAvatar = require('../icons/yellowAvatar.jpg');
 
 // Header and page content
 const SettingsScreen = () => {
@@ -39,7 +30,6 @@ const SettingsScreen = () => {
   const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
   const handleLogout = useLogout();
-  const [isEditing, setIsEditing] = useState(false);
   const [display_name, setDisplayName] = useState('');
   const [profile_pic, setProfilePic] = useState('');
   const [username, setUsername] = useState(null);
@@ -51,17 +41,16 @@ const SettingsScreen = () => {
         const username = await SecureStore.getItemAsync('username');
         if (username) {
           setUsername(username);
-          try {
-            const displayResponse  = await axios.post(`${API_URL}get_display`, { username });
+          try { // get the user's display name and pfp -KK
+            const displayResponse  = await axios.post(`${API_URL}get-display`, { username });
             const display = displayResponse.data[0]?.display_name;
             setDisplayName(display);
             
-            const profilePicResponse = await axios.post(`${API_URL}get_profile`, { username });
+            const profilePicResponse = await axios.post(`${API_URL}get-profile`, { username });
             const pfp = profilePicResponse.data[0]?.profile_pic;
             if (pfp) {
               setProfilePic(pfp); // Set profile picture path -VA
             }
-    
           } catch (error) {
             console.error("Error loading display or profile picture:", error);
           }
@@ -74,9 +63,9 @@ const SettingsScreen = () => {
   );
   
   const handleChangeDisplayName = async () => {
-    console.log("UI Settings.js: Updating display name to:", display_name);
+    // console.log("UI Settings.js: Updating display name to:", display_name);
     try {
-        await axios.post(`${API_URL}update_display`, {username, display_name});
+      await axios.post(`${API_URL}update-display`, {username, display_name});
     } catch (error) {
       console.log("UI Settings.js: Error changing display name.");
     }
@@ -112,6 +101,7 @@ const SettingsScreen = () => {
                   value={display_name} 
                   onChangeText={setDisplayName} 
                   onSubmitEditing={handleChangeDisplayName}
+                  scrollEnabled={false}
                 />
                 <Text>User Name</Text>
                 <Text style={styles.profileUsernameText}>{username}</Text>

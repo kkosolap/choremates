@@ -28,6 +28,7 @@ const ChoreDetailsScreen = ({ navigation }) => {
   );
 };
 
+
 // page content
 const ChoreDetailsDisplay = ({navigation}) => {
   const { theme } = useTheme();
@@ -65,7 +66,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // Get the existing tasks for the chore from the database -MH
   const getExistingTasks = async () => {
-    const response = await axios.post(`${API_URL}get_tasks`, { chore_name, username });
+    const response = await axios.post(`${API_URL}get-tasks`, { chore_name, username });
     
     // get result as array of strings
     return response.data.map(taskObj => taskObj.task_name);
@@ -75,35 +76,27 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const updateTasksInDatabase = async () => {
     try {
       const existingTasks = await getExistingTasks();
-
-      console.log("existing tasks:", existingTasks);
-
+      
       // determine which tasks are new
       const tasksToAdd = tasks.filter(task => 
         !existingTasks.includes(task)
       );
-
-      console.log("tasks to add:", tasksToAdd);
 
       // determine which tasks were deleted
       const tasksToRemove = existingTasks.filter(existingTask => 
         !tasks.includes(existingTask)
       );
 
-      console.log("tasks to remove:", tasksToRemove);
-
       // add new tasks
       await Promise.all(
         tasksToAdd.map(task_name =>
-          axios.post(`${API_URL}add_task`, { chore_name, task_name, username })
-        )
+          axios.post(`${API_URL}add-task`, { chore_name, task_name, username }))
       );
 
       // remove tasks that are no longer in the array
       await Promise.all(
         tasksToRemove.map(task_name =>
-          axios.post(`${API_URL}delete_task`, { chore_name, task_name, username })
-        )
+          axios.post(`${API_URL}delete-task`, { chore_name, task_name, username }))
       );
 
     } catch (error) {
@@ -115,7 +108,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
     try {
-        await axios.post(`${API_URL}update_chore`, {
+        await axios.post(`${API_URL}update-chore`, {
             old_chore_name: routed_chore_name,  // original chore name
             new_chore_name: chore_name,  // updated chore name from input
             username,
@@ -150,9 +143,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Deletes the chore from the database -KK
   const deleteChore = async (chore_name) => {
     try {
-      await axios.post(`${API_URL}delete_chore`, { chore_name, username });
+      await axios.post(`${API_URL}delete-chore`, { chore_name, username });
       navigation.goBack();   
-
     } catch (error) {
       console.error(error);
     }
