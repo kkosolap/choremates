@@ -208,7 +208,7 @@ const MembersDisplay = ({ groupId, navigation }) => {
     const fetchGroupMembers = async () => {
         try {
           const response = await axios.get(`${API_URL}get-group-members`, {
-            params: { group_id: 2 }
+            params: { group_id: 2 } // hardcoded for now
           });
           console.log("Group members response:", response.data);
           setMembers(response.data);
