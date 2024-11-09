@@ -796,7 +796,7 @@ app.post('/respond-to-invite', (req, res) => {
 // check if a user is an admin of a specific group -- EL
 // input: username, group_id
 // output: isadmin : true/false 
-app.get('/isAdmin', (req, res) => {
+app.get('/get-is-admin', (req, res) => {
     const { username, group_id } = req.query;
 
     // query to check if the user is an admin in the specified group
