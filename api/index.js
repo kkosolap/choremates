@@ -809,7 +809,7 @@ app.get('/get-is-admin', (req, res) => {
 
     db.query(checkAdminQuery, [username, group_id], (err, results) => {
         if (err) {
-            console.error("Error checking admin status: ", err.message);
+            console.error("API get-is-admin: Error checking admin status: ", err.message);
             return res.status(500).json({ error: "Failed to check admin status" });
         }
 
@@ -818,6 +818,59 @@ app.get('/get-is-admin', (req, res) => {
             res.status(200).json({ isAdmin: true });
         } else {
             res.status(200).json({ isAdmin: false });
+        }
+    });
+});
+
+// remove a user (must be member) from group (only admin can remove members, but admin cannot remove themselves)
+// input: username (requesting user, the user that's trying to remove someone from the group), 
+//        group_id, 
+//        user_to_remove (this is a username)
+// output: if success, user_to_remove will be removed from the group
+app.delete('/remove-user-from-group', (req, res) => {
+    const { username, group_id, user_to_remove } = req.body;
+
+    // check if the requesting user is an admin
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API remove-user-from-group: Error checking admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to check admin status" });
+        }
+
+        // check if the user is an admin
+        if (results.length > 0 && results[0].role === 'admin') {
+            // an admin can't remove themselves from the group
+            if (username === user_to_remove) {
+                return res.status(400).json({ error: "Admin cannot remove themselves" });
+            }
+
+            // remove the user from the group
+            const removeUserQuery = `
+                DELETE FROM group_members 
+                WHERE group_id = ? AND user_id = (SELECT id FROM users WHERE username = ?)
+            `;
+
+            db.query(removeUserQuery, [group_id, user_to_remove], (err, result) => {
+                if (err) {
+                    console.error("API remove-user-from-group: Error removing user: ", err.message);
+                    return res.status(500).json({ error: "Failed to remove user" });
+                }
+
+                if (result.affectedRows > 0) {
+                    return res.status(200).json({ success: `User ${user_to_remove} removed from the group` });
+                } else {
+                    return res.status(404).json({ error: "User not found in this group" });
+                }
+            });
+        } else {
+            return res.status(403).json({ error: "You must be an admin to remove a user" });
         }
     });
 });
