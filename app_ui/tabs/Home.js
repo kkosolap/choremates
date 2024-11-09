@@ -159,46 +159,6 @@ const HomeDisplay = () => {
           ))}
         </View>
       </View>
-      
-      {/* -- start testing stuff -- */}
-
-      {/* Horizontal Line */}
-      <View style={styles.spacer} />
-      <View style={styles.horizontalLine} />
-
-      <View style={styles.contentSection}>
-
-        <Text>start of section</Text>
-
-        {!!selected && (
-          <Text>
-            Selected: label = {selected.label} and value = {selected.value}
-          </Text>
-        )}
-        <Dropdown label="Select Item" data={dropdownData} onSelect={setSelected} />
-
-        <Text style={styles.subtitle}>Stuff after the dropdown</Text>
-
-        <Text>end of section</Text>
-      </View>
-
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.spacer} />
-      <View style={styles.horizontalLine} />
-
-      {/* -- end testing stuff -- */}
 
     </View>
   );

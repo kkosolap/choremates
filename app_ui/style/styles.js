@@ -370,7 +370,7 @@ const createStyles = (theme) => {
       borderWidth: 1,
       borderColor: theme.lighter,
       borderRadius: 10,
-      marginBottom: 20,
+      marginBottom: 25,
       fontSize: 16,
       color: theme.text1, // color when typing
     },
@@ -388,7 +388,7 @@ const createStyles = (theme) => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      marginBottom: 20,
+      marginBottom: 25,
     },
     inputButtonContainer: {
       width: '13%',
@@ -462,7 +462,7 @@ const createStyles = (theme) => {
     dropdownContainer: {
       width: '100%',
       alignSelf: 'center',
-      marginBottom: 20,
+      marginBottom: 25,
     },
     dropdownButton: {
       flexDirection: 'row',
@@ -495,7 +495,7 @@ const createStyles = (theme) => {
     },
     dropdownOption: {
       paddingHorizontal: 10,
-      paddingVertical: 5,
+      paddingVertical: 10,
       borderBottomWidth: 1,
       borderColor: theme.lighter,
     },

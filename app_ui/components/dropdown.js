@@ -8,12 +8,12 @@ import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 
 
-const Dropdown = ({ label, data, onSelect }) => {
+const Dropdown = ({ label, data, onSelect, initialValue }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(undefined);
+  const [selected, setSelected] = useState(initialValue || undefined);
   const DropdownButton = useRef();
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownWidth, setDropdownWidth] = useState('100%');
@@ -22,12 +22,16 @@ const Dropdown = ({ label, data, onSelect }) => {
     visible ? setVisible(false) : openDropdown();
   };
 
+  //const insets = useSafeAreaInsets();
   const openDropdown = () => {
     DropdownButton.current.measure((_fx, _fy, w, h, _px, py) => {
-      setDropdownTop(py + (h/2));
+
+      //setDropdownTop(py); // looks best on phone
+      setDropdownTop(py + (h/2)); // looks best on emmulator
       setDropdownWidth(w); // capture the button's width
+      
+      setVisible(true); // waits until above calculated to render so it appears in the right place
     });
-    setVisible(true);
   };
 
   const renderDropdown = () => {
