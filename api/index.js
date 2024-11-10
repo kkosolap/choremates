@@ -71,13 +71,35 @@ async function getUserId(username) {
     return results[0].id;
 }
 
+// gets the group id given a group_name -KK
+async function getGroupId(group_name) {
+    const [results] = await db.promise().query("SELECT id FROM group_names WHERE group_name = ?", [group_name]);
+    if (results.length === 0) {
+        console.log(`API getGroupId: Group ${group_name} not found`);
+        throw new Error(`Group ${group_name} not found`);
+    }
+    return results[0].id;
+}
+
 // gets the chore id and completion status given a chore_name -KK
 async function getChoreIdAndCompletionStatus(chore_name, user_id) {
-    const [results] = await db.promise().query("SELECT id, is_completed FROM chores WHERE chore_name = ? AND user_id = ?", [chore_name, user_id]);    if (results.length === 0) {
-        console.log(`API getChoreId: Chore ${chore_name} not found`);
+    const [results] = await db.promise().query("SELECT id, is_completed FROM chores WHERE chore_name = ? AND user_id = ?", [chore_name, user_id]);    
+    if (results.length === 0) {
+        console.log(`API getChoreIdAndCompletionStatus: Chore ${chore_name} not found`);
         throw new Error(`Chore ${chore_name} not found`);
     }
     return { chore_id: results[0].id, is_completed: results[0].is_completed };
+}
+
+// gets the group chore id and completion status given a chore_name -KK
+async function getGroupChoreIdAndCompletionStatus(group_chore_name, group_id) {
+    const query = `SELECT id, is_completed FROM group_chores WHERE group_chore_name = ? AND group_id = ?`
+    const [results] = await db.promise().query(query, [group_chore_name, group_id]);    
+    if (results.length === 0) {
+        console.log(`API getGroupChoreIdAndCompletionStatus: Chore ${group_chore_name} not found`);
+        throw new Error(`Chore ${group_chore_name} not found`);
+    }
+    return { group_chore_id: results[0].id, is_completed: results[0].is_completed };
 }
 
 // gets the task id given a task_name -KK
@@ -86,6 +108,16 @@ async function getTaskId(task_name, chore_id) {
     if (results.length === 0) {
         console.log(`API getTaskId: Task ${task_name} not found`);
         throw new Error(`Task ${task_name} not found`);
+    }
+    return results[0].id;
+}
+
+// gets the task id given a task_name -KK
+async function getGroupTaskId(group_task_name, group_chore_id) {
+    const [results] = await db.promise().query("SELECT id FROM group_tasks WHERE group_task_name = ? AND group_chore_id = ?", [group_task_name, group_chore_id]);
+    if (results.length === 0) {
+        console.log(`API getTaskId: Task ${group_task_name} not found`);
+        throw new Error(`Task ${group_task_name} not found`);
     }
     return results[0].id;
 }
@@ -405,6 +437,7 @@ app.post('/get-chores-data', async (req, res) => {
                 chores.chore_name, 
                 chores.is_completed AS chore_is_completed, 
                 chores.recurrence AS chore_recurrence,
+                tasks.id,
                 tasks.task_name, 
                 tasks.is_completed AS task_is_completed
             FROM chores
@@ -436,11 +469,8 @@ app.post('/add-chore', async (req, res) => {
             return res.status(400).send("This chore already exists!");
         }
 
-        // get the timestamp for the chore -KK
-        const timestamp = new Date();
-
-        const query = "INSERT INTO chores (user_id, chore_name, is_completed, last_completed, recurrence) VALUES (?, ?, false, ?, ?)";
-        await db.promise().query(query, [user_id, chore_name, timestamp, recurrence]);
+        const query = "INSERT INTO chores (user_id, chore_name, recurrence) VALUES (?, ?, ?)";
+        await db.promise().query(query, [user_id, chore_name, recurrence]);
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add-chore: Error:", error.message);
@@ -505,7 +535,7 @@ app.post('/complete-chore', async (req, res) => {
         }
         
         const user_id = await getUserId(username);
-        const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        const { chore_id } = await getChoreIdAndCompletionStatus(chore_name, user_id);
         
         await db.promise().query("UPDATE chores SET is_completed = NOT is_completed WHERE id = ?", [chore_id]);
 
@@ -559,7 +589,7 @@ app.post('/add-task', async (req, res) => {
         }
 
         // add the task to the database -KK
-        await db.promise().query("INSERT INTO tasks (chore_id, task_name, is_completed) VALUES (?, ?, false)", [chore_id, task_name]);  
+        await db.promise().query("INSERT INTO tasks (chore_id, task_name) VALUES (?, ?)", [chore_id, task_name]);  
         
         // mark chore as incomplete -KK
         if(is_completed){
@@ -696,6 +726,33 @@ app.get('/get-group-members', (req, res) => {
     });
 });
 
+// returns the id of all the groups that the user is a member/admin of -KK
+app.post('/get-all-groups-for-user', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get-all-groups-for-user: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+
+        const user_id = await getUserId(username);
+
+        const query =   `SELECT 
+                            group_members.group_id,
+                            group_names.group_name
+                        FROM group_members
+                        JOIN group_names ON group_members.group_id = group_names.id
+                        WHERE group_members.user_id = ?`
+
+        const [results] = await db.promise().query(query, [user_id]);
+
+        res.json(results);
+    } catch (error) {
+        console.error("get-all-groups-for-user: Error:", error.message);
+        res.status(500).send("Error retrieving group names.");
+    }
+});
+
 // send an invitation, only 'admin' can invite -ET
 // input: inviter_name, invitee_name, group_id
 app.post('/send-invite', async (req, res) => {
@@ -798,10 +855,276 @@ app.post('/respond-to-invite', (req, res) => {
     });
 });
 
+/********************************************************** */
+/*              GROUP CHORE IMPLEMENTATION BELOW:           */
+/********************************************************** */
+// get all the chores and associated tasks for a specific user -KK
+app.post('/get-group-chores-data', async (req, res) => {
+    try {
+        const { group_id } = req.body;
+        if (!group_id) {
+            console.log("API get-group-chores-data: Missing group id.");
+            return res.status(400).send("Missing group id.");
+        }
+
+        const query = `
+            SELECT 
+                group_chores.group_id,
+                group_chores.group_chore_name, 
+                group_chores.is_completed AS chore_is_completed, 
+                group_chores.recurrence AS chore_recurrence,
+                group_chores.assigned_to
+                group_tasks.group_task_name, 
+                group_tasks.is_completed AS task_is_completed
+            FROM group_chores
+            LEFT JOIN group_tasks ON group_chores.id = group_tasks.group_chore_id
+            WHERE group_chores.group_id = ?
+        `;
+
+        const [results] = await db.promise().query(query, [group_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API get-group-chores-data: Error:", error.message);
+        res.status(500).send("Error retrieving chores.");
+    }
+});
+
+// get all the chores and associated tasks for a specific user -KK
+app.post('/get-group-chores-data-for-user', async (req, res) => {
+    try {
+        const { group_id, username } = req.body;
+        if (!group_id) {
+            console.log("API get-group-chores-data: Missing group id or username.");
+            return res.status(400).send("Missing group id or username.");
+        }
+
+        const user_id = await getUserId(username);
+
+        const query = `
+            SELECT 
+                group_chores.group_id, 
+                group_chores.group_chore_name,
+                group_chores.is_completed AS chore_is_completed,
+                group_chores.recurrence AS chore_recurrence,
+                group_tasks.id,
+                group_tasks.group_task_name,
+                group_tasks.is_completed AS task_is_completed
+            FROM group_chores
+            LEFT JOIN group_tasks ON group_chores.id = group_tasks.group_chore_id
+            WHERE group_chores.assigned_to = ? AND group_chores.group_id = ?
+        `;
+
+        const [results] = await db.promise().query(query, [user_id, group_id]);
+        res.json(results);
+    } catch (error) {
+        console.error("API get-group-chores-data: Error:", error.message);
+        res.status(500).send("Error retrieving chores.");
+    }
+});
+
+// add a new chore to the group -KK
+app.post('/add-group-chore', async (req, res) => {
+    try {
+        const { group_chore_name, group_id, assign_to, recurrence } = req.body;
+        if (!group_chore_name || !group_id || !assign_to || !recurrence) {
+            console.log("API add-group-chore: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }  
+
+        // TEMPORARY
+        const user_id = await getUserId(assign_to);
+
+        const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
+        if (duplicate.length > 0) {
+            console.log("API add-group-chore: Duplicate chore name.");
+            return res.status(400).send("This chore already exists for this group!");
+        }
+
+        const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to) VALUES (?, ?, ?, ?)";
+        await db.promise().query(query, [group_id, group_chore_name, recurrence, user_id]);
+        res.status(200).json({ message: "Chore added to group successfully." });
+    } catch (error) {
+        console.error("API add-group-chore: Error:", error.message);
+        res.status(500).send("An error occurred while adding the chore to the group.");
+    }
+});
+
+// update the details of a chore -MH
+app.post('/update-group-chore', async (req, res) => {
+    try {
+        const { old_chore_name, new_chore_name, group_id, recurrence, assign_to } = req.body;
+        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assign_to) {
+            console.log("API update-group-chore: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }
+        
+        // Update the chore details in the database
+        const query = `
+            UPDATE group_chores
+            SET group_chore_name = ?, recurrence = ?, assigned_to = ?
+            WHERE group_id = ? AND group_chore_name = ?
+        `;
+        await db.promise().query(query, [new_chore_name, recurrence, assign_to, group_id, old_chore_name]);
+
+        res.status(200).json({ message: "Chore updated successfully." });
+    } catch (error) {
+        console.error("API update-group-chore: Error:", error.message);
+        res.status(500).send("An error occurred while updating the chore.");
+    }
+});
+
+app.post('/delete-group-chore', async (req, res) => {
+    try {
+        const { group_chore_name, group_id } = req.body;
+        if (!group_chore_name || !group_id) {
+            console.log("API delete-group-chore: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }
+
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
+
+        await db.promise().query("DELETE FROM group_chores WHERE id = ?", [group_chore_id]);
+        res.status(200).json({ message: "Chore deleted successfully." });
+    } catch (error) {
+        console.error("API delete-group-chore: Error:", error.message);
+        res.status(500).send("An error occurred while deleting the chore.");
+    }
+});
+
+// toggle the completion status of a group chore, false -> true and true -> false -KK
+app.post('/complete-group-chore', async (req, res) => {
+    try {
+        const { group_chore_name, group_id } = req.body;
+    
+        if (!group_chore_name || !group_id) {
+            console.log("API complete-group-chore: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }
+        
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
+        
+        await db.promise().query("UPDATE group_chores SET is_completed = NOT is_completed WHERE id = ?", [group_chore_id]);
+
+        res.status(200).json({ message: "Chore completion status toggled successfully." });
+    } catch (error) {
+        console.error("API complete-group-chore: Error:", error.message);
+        res.status(500).send("An error occurred while toggling chore completion status.");
+    }
+});
 
 
+/********************************************************** */
+/*               GROUP TASK IMPLEMENTATION BELOW:           */
+/********************************************************** */
+// gets a list of all tasks given a group chore -KK
+app.post('/get-group-tasks', async (req, res) => {
+    try {
+        const { group_chore_name, group_id } = req.body;
+        if(!group_chore_name || !group_id){
+            console.log("API get-group-tasks: Missing group name or chore name.");
+            return res.status(400).send("Missing group name or chore name.");
+        }
 
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
 
+        // get the tasks from the database -KK
+        const [group_tasks] = await db.promise().query("SELECT group_task_name from group_tasks WHERE group_chore_id = ?", [group_chore_id]);
+        res.status(200).json(group_tasks);
+    } catch (error) {
+        console.error("API get-group-tasks: Error:", error.message);
+        res.status(500).send("An error occurred while adding the task.");
+    }
+});
+
+// adds a task for a given group chore to the database -KK
+app.post('/add-group-task', async (req, res) => {
+    try {
+        const { group_chore_name, group_task_name, group_id } = req.body;
+        if(!group_chore_name || !group_task_name || !group_id){
+            console.log("API add-group-task: Missing fields.");
+            return res.status(400).send("Missing fields.");
+        } 
+
+        const { group_chore_id, is_completed } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
+        const [duplicate] = await db.promise().query("SELECT id FROM group_tasks WHERE group_task_name = ? AND group_chore_id = ?", [group_task_name, group_chore_id]);
+        if (duplicate.length > 0) {
+            console.log("API add-group-task: Duplicate task name.");
+            return res.status(400).send("This task already exists!");
+        }
+
+        // add the task to the database -KK
+        await db.promise().query("INSERT INTO group_tasks (group_chore_id, group_task_name) VALUES (?, ?)", [group_chore_id, group_task_name]);  
+        
+        // mark chore as incomplete -KK
+        if(is_completed){
+            await db.promise().query("UPDATE group_chores SET is_completed = NOT is_completed WHERE id = ?", [group_chore_id]);
+        }
+        res.status(200).json({ message: "Changed completion successfully." });
+    } catch (error) {
+        console.error("API add-group-task: Error:", error.message);
+        res.status(500).send("An error occurred while adding the task.");
+    }
+});
+   
+// deletes a task for a given chore from the database -KK
+app.post('/delete-group-task', async (req, res) => {
+    try {
+        const { group_chore_name, group_task_name, group_id } = req.body;
+        if (!group_chore_name || !group_task_name || !group_id) {
+            console.log("API delete-group-task: Missing fields.");
+            return res.status(400).send("Missing fields.");
+        }
+
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
+        const group_task_id = await getGroupTaskId(group_task_name, group_chore_id);
+
+        await db.promise().query("DELETE FROM group_tasks WHERE id = ?", [group_task_id]);
+        res.status(200).json({ message: "Task deleted successfully." });
+    } catch (error) {
+        console.error("API delete-group-task: Error:", error.message);
+        res.status(500).send("An error occurred while deleting the task.");
+    }
+});
+
+// toggles the completion status of the task, false -> true and true -> false -KK
+app.post('/complete-group-task', async (req, res) => {
+    try {
+        const { group_chore_name, group_task_name, group_id } = req.body;
+        if (!group_chore_name || !group_task_name || !group_id) {
+            console.log("API complete-group-task: Missing fields.");
+            return res.status(400).send("Missing fields.");
+        }
+
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
+        const group_task_id = await getGroupTaskId(group_task_name, group_chore_id);
+
+        await db.promise().query("UPDATE group_tasks SET is_completed = NOT is_completed WHERE id = ?", [group_task_id]);
+        res.status(200).json({ message: "Task completion status toggled successfully." });
+    } catch (error) {
+        console.error("API complete-group-task: Error:", error.message);
+        res.status(500).send("An error occurred while toggling task completion status.");
+    }
+});
+
+// matches the completion status of the task to match the completion status of the chore
+app.post('/match-group-task', async (req, res) => {
+    try {
+        const { group_chore_name, group_task_name, group_id } = req.body;
+        if (!group_chore_name || !group_task_name || !group_id) {
+            console.log("API match-group-task: Missing fields.");
+            return res.status(400).send("Missing fields.");
+        }
+
+        const { group_chore_id, is_completed } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
+        const group_task_id = await getGroupTaskId(group_task_name, group_chore_id);
+
+        await db.promise().query("UPDATE group_tasks SET is_completed = ? WHERE id = ?", [is_completed, group_task_id]);
+        res.status(200).json({ message: "Task completion status matched successfully." });
+    } catch (error) {
+        console.error("API match-group-task: Error:", error.message);
+        res.status(500).send("An error occurred while matching task completion status.");
+    }
+});
 
 
 // keep this at the very bottom of the file -KK

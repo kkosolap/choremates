@@ -10,6 +10,7 @@ import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
+import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -37,6 +38,15 @@ const HomeDisplay = () => {
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
   const [data, setData] = useState([]);
+
+  const [selected, setSelected] = useState(undefined);
+  const dropdownData = [
+    { label: 'One', value: '1' },
+    { label: 'Two', value: '2' },
+    { label: 'Three', value: '3' },
+    { label: 'Four', value: '4' },
+    { label: 'Five', value: '5' },
+  ];
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -149,6 +159,7 @@ const HomeDisplay = () => {
           ))}
         </View>
       </View>
+
     </View>
   );
 };
