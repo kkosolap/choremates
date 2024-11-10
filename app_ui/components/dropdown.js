@@ -1,7 +1,7 @@
 // dropdown.js
 
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { Text, View, TouchableOpacity, FlatList, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../style/ThemeProvider';
@@ -22,10 +22,8 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
     visible ? setVisible(false) : openDropdown();
   };
 
-  //const insets = useSafeAreaInsets();
   const openDropdown = () => {
     DropdownButton.current.measure((_fx, _fy, w, h, _px, py) => {
-
       //setDropdownTop(py); // looks best on phone
       setDropdownTop(py + (h/2)); // looks best on emmulator
       setDropdownWidth(w); // capture the button's width
