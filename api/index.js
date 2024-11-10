@@ -279,12 +279,24 @@ app.post('/update-profile', async (req, res) => {
 /********************************************************** */
 // cron job for daily and weekly resets - AT
 // every minute for test purposes - AT
-cron.schedule('* * * * *', () => { resetRecurringChores('Every Minute'); });
-cron.schedule('0 0 * * *',  () => { resetRecurringChores('Daily'); });
-cron.schedule('0 0 * * 1',  () => { resetRecurringChores('Weekly'); });
+cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
+cron.schedule('0 0 * * *',  () => { resetAndRotateChores('Daily'); });
+cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); });
 
-// function to handle recurrence -AT
-async function resetRecurringChores(type) {
+// function to handle single user recurrence -AT
+async function resetAndRotateChores(type) {
+    try {
+        // Handle single-user chores recurrence
+        await resetSingleUserChores(type);
+
+        // Handle group-user chores recurrence and rotation
+        await resetAndRotateGroupUserChores(type);
+    } catch (error) {
+        console.error("Error in resetAndRotateChores:", error);
+    }
+}
+
+async function resetSingleUserChores(type) {
     const query = `SELECT id, is_completed FROM chores WHERE recurrence = ?`;
     const [chores] = await db.promise().query(query, [type]);
 
@@ -294,11 +306,62 @@ async function resetRecurringChores(type) {
 
         const query = `UPDATE chores SET is_completed = false WHERE id = ?`;
         try{
-            console.log("API resetRecurringChores: reseting chore " + chore.id);
+            console.log("API resetSingleUserChores: resetting chore " + chore.id);
             await db.promise().query(query, [false, chore.id]);
         } catch (error) {
             console.error("Error resetting chore:", error);
         }
+    }
+}
+
+async function resetAndRotateGroupUserChores(type) {
+    const query = `SELECT id, group_id, assigned_to, is_completed FROM group_chores WHERE recurrence = ?`;
+    const [groupChores] = await db.promise().query(query, [type]);
+
+    for (const chore of groupChores) {
+        // const { id, group_id, assigned_to } = chore;
+
+        // const [results] = await db.promise().query("SELECT is_completed FROM group_chores WHERE id = ?", [chore.id]);    
+        // const is_completed = results[0].is_completed;
+
+        const query = `UPDATE chores SET is_completed = false WHERE id = ?`;
+        try{
+            console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
+            await db.promise().query(query, [false, chore.id]);
+
+            if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
+                await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
+            }
+
+        } catch (error) {
+            console.error("Error resetting chore:", error);
+        }
+    }
+}
+
+async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
+    try {
+        // retrieve all users in the group (order them for consistent rotation)
+        const [users] = await db.promise().query('SELECT id FROM group_members WHERE group_id = ?', [group_id]);
+        users.sort((a, b) => a.id - b.id); // sort for consistent rotation order
+
+        // find the current user in the sorted user list
+        const currentIndex = users.findIndex(user => user.id === current_assigned_to);
+        if (currentIndex === -1) {
+            console.error(`User with ID ${current_assigned_to} not found in group ${group_id}.`);
+            return;
+        }
+
+        // Rotate to the next user (loop back to the first user if at the end)
+        const nextUser = users[(currentIndex + 1) % users.length];
+
+        // Update the chore with the new user assignment
+        const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
+        await db.promise().query(updateQuery, [nextUser.id, chore_id]);
+
+        console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
+    } catch (error) {
+        console.error("Error rotating group chore to the next user:", error);
     }
 }
 
