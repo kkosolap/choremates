@@ -12,8 +12,6 @@ import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
-import { DropdownComponent } from '../components/dropdown.js';
-
 
 
 import axios from 'axios';
@@ -178,77 +176,44 @@ const HomeDisplay = () => {
 
       {/* All House Chores Heading */}
       <View style={styles.contentSection}>
-        <Text style={styles.sectionHeading}>
-          All House Chores
-        </Text>
+          <Text style={styles.sectionHeading}>
+            All House Chores
+          </Text>
 
         {/* Horizontal Line */}
         <View style={styles.horizontalLine} />
 
+        {/* Toggle Button for Collapsible Dropdown -VA */}
+        <TouchableWithoutFeedback onPress={toggleCollapse}>
+          <View style={styles.homeToggleButton}>
+            <Text style={styles.sectionHeading}>
+              {isCollapsed ? 'Personal Chores' : 'Collapse Personal Chores'}
+            </Text>
 
-      {/* Toggle Button for Collapsible Dropdown */}
-      {/* <TouchableWithoutFeedback onPress={toggleCollapse}>
-        <View style={styles.homeToggleButton}>
-          <Text style={styles.sectionHeading}>
-            {isCollapsed ? 'Personal Chores' : 'Collapse Personal Chores'}
-          </Text>
+            <TouchableOpacity onPress={() => console.log("Settings clicked")}>
+              <Icon name="ellipsis-vertical" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </TouchableWithoutFeedback>
 
-          <TouchableOpacity onPress={() => console.log("Settings clicked")}>
-            <Icon name="ellipsis-vertical" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      </TouchableWithoutFeedback>
-
-<Collapsible collapsed={isCollapsed}>
-  <View style={styles.choresList}>
-    {Object.keys(groupedTasks).map((chore_name) => (
-      <ChoreBlock
-        key={chore_name}
-        choreName={chore_name}
-        tasks={groupedTasks[chore_name].tasks}
-        onOpenChoreDetails={() => openChoreDetails(
-          chore_name,
-          groupedTasks[chore_name].tasks,
-          groupedTasks[chore_name].recurrence
-        )}
-        recurrence={groupedTasks[chore_name].recurrence}
-      />
-    ))}
-  </View>
-</Collapsible> */}
-
-      <TouchableWithoutFeedback onPress={toggleCollapse}>
-        <View style={styles.homeToggleButton}>
-          <Text style={styles.sectionHeading}>
-            {isCollapsed ? 'Personal Chores' : 'Collapse Personal Chores'}
-          </Text>
-
-          <TouchableOpacity onPress={() => console.log("Settings clicked")}>
-            <Icon name="ellipsis-vertical" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      </TouchableWithoutFeedback>
-
-      <Collapsible collapsed={isCollapsed}>
-        {/* <View style={styles.choresList}> */}
-          {Object.keys(groupedTasks).map((chore_name) => (
-            <ChoreBlock
-              key={chore_name}
-              choreName={chore_name}
-              tasks={groupedTasks[chore_name].tasks}
-              onOpenChoreDetails={() => openChoreDetails(
-                chore_name,
-                groupedTasks[chore_name].tasks,
-                groupedTasks[chore_name].recurrence
-              )}
-              recurrence={groupedTasks[chore_name].recurrence}
-            />
-          ))}
-        {/* </View> */}
-      </Collapsible>
-
-
-
+        {/* View When Collapsible View Toggled -VA */}
+        <Collapsible collapsed={isCollapsed}>
+          <View style={styles.choresList}>
+            {Object.keys(groupedTasks).map((chore_name) => (
+              <ChoreBlock
+                key={chore_name}
+                choreName={chore_name}
+                tasks={groupedTasks[chore_name].tasks}
+                onOpenChoreDetails={() => openChoreDetails(
+                  chore_name,
+                  groupedTasks[chore_name].tasks,
+                  groupedTasks[chore_name].recurrence
+                )}
+                recurrence={groupedTasks[chore_name].recurrence}
+              />
+            ))}
+          </View>
+        </Collapsible>
 
       </View>
     </View>

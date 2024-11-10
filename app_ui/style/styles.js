@@ -1,9 +1,8 @@
 // styles.js
 
 import { StyleSheet, Dimensions } from 'react-native';
-const { height } = Dimensions.get('window');
-
-const HomeTitlePosition = height * 0.075; // Adjust to desired position
+// Added for future reference -VA
+// const { height } = Dimensions.get('window');
 
 
 // function to create styles based on the theme  -MH
@@ -229,12 +228,6 @@ const createStyles = (theme) => {
       right: 15,            // distance from the right edge
       top: 20,              // distance from the top edge
       zIndex: 1,            // ensure it's above other elements
-    },
-    choresList: {
-      flex: 1,
-      width: 390,
-      alignItems: 'center',          // Horizontally center content
-      justifyContent: 'flex-start',  // Start content at the top
     },
 
     // tasks  -MH
@@ -462,7 +455,7 @@ const createStyles = (theme) => {
     },
 
     // Settings.js styles (for Profile/Settings page) -VA
-    // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+    //      Width/heights/margins may need to be changes to be device reliant so it will suit all devices
 
     // profile section -KK
     profileContainer:{
@@ -506,8 +499,6 @@ const createStyles = (theme) => {
     profileUsernameText: {
       fontSize: 20,
       color: '#5c5c5c',
-      
-
     },
     settingsPadding: {
       paddingBottom: 20,
@@ -561,86 +552,7 @@ const createStyles = (theme) => {
       alignItems: 'center'
     },
 
-
-
-
-
-
-    // // Home.js DropDown Styles -VA
-    // customDropdown: {
-    //   marginTop: 20,
-    // },
-
-    // dropDownContainer: {
-    //   // backgroundColor: 'white',
-    //   paddingTop: HomeTitlePosition,
-    //   padding: 16,
-    // },
-    // // {[styles.dropDown,  && { }]}
-    // dropDownDisplay: {
-    //   width: 300,
-    //   height: 50,
-    //   borderColor: 'gray',
-    //   borderWidth: 0.5,
-    //   borderRadius: 8,
-    //   paddingHorizontal: 8,
-    //   borderColor: theme.main ,
-
-    //   // color: theme.lighter,
-
-    // },
-    // dropDownIcon: {
-    //   marginRight: 5,
-    // },
-    // dropDownLabel: {
-    //   position: 'absolute',
-    //   backgroundColor: theme.main,
-    //   left: 22,
-    //   top: 8,
-    //   zIndex: 999,
-    //   paddingHorizontal: 8,
-    //   fontSize: 14,
-    // },
-    // dropDownPrimaryTextStyle: {
-    //   fontSize: 30,
-    //   fontWeight: 'bold',
-    //   color: theme.text1,
-    //   textAlign: 'center'
-    //         // justifyContent: 'center', 
-
-    // },
-    // dropDownSelectedTextStyle: {
-    //   fontSize: 16,
-    // },
-    // dropDownIconStyle: {
-    //   width: 20,
-    //   height: 20,
-    // },
-    // dropDownInputSearchStyle: {
-    //   height: 40,
-    //   fontSize: 16,
-    // },
-
-
-
     // Home.js Toggle House View
-    homeToggleButton:{
-      // backgroundColor: theme.lighter, // Button background color
-      // paddingVertical: 12,
-      // paddingHorizontal: 16,
-      // borderRadius: 8,
-      // alignItems: 'center',
-      // justifyContent: 'center',
-      // marginVertical: 10,
-      // shadowColor: '#000',
-      // shadowOffset: { width: 0, height: 1 },
-      // shadowOpacity: 0.1,
-      // shadowRadius: 1,
-      // elevation: 2, // For Android
-      // width: '100%', // Ensure button width takes the full container width
-      // overflow: 'hidden', // Make sure content stays within the button bounds
-      // marginBottom: 10, // Add space at the bottom when content expands
-    },
 
     homeToggleButton: {
       backgroundColor: theme.lighter, // Button background color
@@ -659,17 +571,18 @@ const createStyles = (theme) => {
       width: '100%', // Make sure it takes up full width
     },
     
-    
+    // Moved for clarity/relative -VA
     choresList: {
-      // marginTop: 10,
-      // backgroundColor: '#f9f9f9',
-      // paddingVertical: 10,
-      // paddingHorizontal: 16,
-      // borderTopWidth: 1,
-      // borderTopColor: '#ddd',
+      flex: 1,
+      marginTop: 10,
+      // backgroundColor: '#999999',            // Makes chore container more visible, for debugging if height issues reoccur
+      // paddingVertical: 10,                   // Add more space between toggle view button and chore list
+      paddingHorizontal: 20,
+      width: 390,
+      alignItems: 'center',          // Horizontally center content
+      justifyContent: 'flex-start',  // Start content at the top
     },
     
-
     // theme section -KK
     themeIconContainer: {
       width: 400,
@@ -900,17 +813,6 @@ const createStyles = (theme) => {
       right: 20,
       padding: 5,
     },
-
-  choresList: {
-    // marginTop: 10,
-    backgroundColor: '#f9f9f9',
-    // paddingVertical: 10,
-    // paddingHorizontal: 16,
-    // borderTopWidth: 1,
-    // borderTopColor: '#ddd',
-    // flex: 1, // Allow the chores list to expand within its parent container
-  },
-
 
   });
 };
