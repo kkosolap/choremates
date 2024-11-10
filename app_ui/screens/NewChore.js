@@ -42,7 +42,6 @@ const NewChoreDisplay = ({ navigation }) => {
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
 
   const [isGroupModalVisible, setIsGroupModalVisible] = useState(false);
-  const [isRecurrenceModalVisible, setIsRecurrenceModalVisible] = useState(false);
 
 
   // recurrence dropdown
@@ -81,7 +80,7 @@ const NewChoreDisplay = ({ navigation }) => {
       console.log("UI NewChore: userGroups is " + JSON.stringify(userGroups));
       // add the chore to the database -KK
       if(group == 'Personal'){
-        await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence });
+        await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence: selectedRec.value });
         // loop through tasks and add each one to the db -KK
         await Promise.all(tasks.map(task_name =>
           axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
@@ -96,8 +95,8 @@ const NewChoreDisplay = ({ navigation }) => {
         await axios.post(`${API_URL}add-group-chore`, { 
           group_chore_name: chore_name,
           assign_to: username,
-          group_id,
-          recurrence
+          recurrence: selectedRec.value,
+          group_id
         });
 
         await Promise.all(tasks.map(group_task_name =>
@@ -142,7 +141,7 @@ const NewChoreDisplay = ({ navigation }) => {
   return (
     <View style={styles.content}>
 
-      <View style={styles.formContainer}>
+        <View style={styles.formContainer}>
         {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
@@ -154,13 +153,15 @@ const NewChoreDisplay = ({ navigation }) => {
           onChangeText={setChoreName}
         />
 
+        {/********************* FIX BELOW *********************/}
+
         {/* the chore group bit -KK */}
         <Text style={styles.label}>Group:</Text>
         <TouchableOpacity
           style={styles.dropdown}
           onPress={() => setIsGroupModalVisible(true)}
         >
-          <Text style={styles.dropdownText}>{group}</Text>
+          <Text style={oldStyles.dropdownText}>{group}</Text>
         </TouchableOpacity>
 
         <Modal
@@ -186,6 +187,8 @@ const NewChoreDisplay = ({ navigation }) => {
           </View>
         </Modal>
 
+        {/********************* FIX ABOVE *********************/}
+
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
         <Dropdown
@@ -194,38 +197,6 @@ const NewChoreDisplay = ({ navigation }) => {
           onSelect={setSelectedRec}
           initialValue = {initialRec}
         />
-        <TouchableOpacity
-          style={styles.dropdown}
-          onPress={() => setIsRecurrenceModalVisible(true)}
-        >
-          <Text style={styles.dropdownText}>{recurrence}</Text>
-        </TouchableOpacity>
-
-        {/* modal is acting as the "drop down" menu for recurence */}
-        {/* this will be changed as recurrence is further implemented -KK */}
-        <Modal
-          visible={isRecurrenceModalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setIsRecurrenceModalVisible(false)}
-        >
-          <View style={oldStyles.modalOverlay}>
-            <View style={oldStyles.modalContainer}>
-              <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Just Once</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Every Minute'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Every Minute</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Daily'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Daily</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Weekly</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
 
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
@@ -285,5 +256,33 @@ const NewChoreDisplay = ({ navigation }) => {
     </View>
   );
 };
+
+// temporary styles for this screen -KK
+const oldStyles = StyleSheet.create({
+  
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalItem: {
+    fontSize: 18,
+    padding: 10,
+    width: '100%',
+    textAlign: 'center',
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: theme.text1,
+  },
+});
 
 export default NewChoreScreen;
