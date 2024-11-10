@@ -329,6 +329,7 @@ async function resetAndRotateGroupUserChores(type) {
             console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
             await db.promise().query(query, [false, chore.id]);
 
+            // should only be calling rotate when the chores are reset each week
             if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
                 await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
             }
