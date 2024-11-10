@@ -1,13 +1,14 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -31,15 +32,28 @@ const NewChoreScreen = ({ navigation }) => {
 const NewChoreDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
+  const [username, setUsername] = useState(null);
   const [userGroups, setUserGroups] = useState([]);
+
   const [group, setGroup] = useState('Personal');
   const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
-  const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
-  const [newTask, setNewTask] = useState('');          // block for the new task to add to the list -KK
+  const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
+  const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
+  const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
+
   const [isGroupModalVisible, setIsGroupModalVisible] = useState(false);
   const [isRecurrenceModalVisible, setIsRecurrenceModalVisible] = useState(false);
-  const [username, setUsername] = useState(null);
+
+
+  // recurrence dropdown
+  const initialRec = { label: 'Just Once', value: 'Just Once' };
+  const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db
+  const recDropdownData = [
+    { label: 'Just Once', value: 'Just Once' },
+    { label: 'Every Minute', value: 'Every Minute' },
+    { label: 'Daily', value: 'Daily' },
+    { label: 'Weekly', value: 'Weekly' },
+  ];
 
   // Get user
   useEffect(() => {
@@ -96,9 +110,9 @@ const NewChoreDisplay = ({ navigation }) => {
       setUserGroups([]);
       setNewTask('');
       setGroup('Personal');
-      setRecurrence('Just Once');
+      setSelectedRec(initialRec);
       setTasks([]);
-      navigation.goBack();    // exit and go back to home -KK
+      navigation.goBack();  // exit and go back to home -KK
     } catch (error) {
       console.error("Error adding chore:", error);
     }
@@ -127,11 +141,12 @@ const NewChoreDisplay = ({ navigation }) => {
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
+
       <View style={styles.formContainer}>
-        {/* the chore name bit -KK */}
+        {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.choreNameInput}
           placeholder="Enter Chore Name . . ."
           placeholderTextColor={theme.text3}
           value={chore_name}
@@ -171,8 +186,14 @@ const NewChoreDisplay = ({ navigation }) => {
           </View>
         </Modal>
 
-        {/* the recurrence bit -KK */}
+        {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
+        <Dropdown
+          label="Select Item"
+          data={recDropdownData}
+          onSelect={setSelectedRec}
+          initialValue = {initialRec}
+        />
         <TouchableOpacity
           style={styles.dropdown}
           onPress={() => setIsRecurrenceModalVisible(true)}
@@ -232,7 +253,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Add Task input and button  -MH */}
         <View style={styles.inputAndButton}>
           <TextInput
-            style={styles.smallerInput}
+            style={styles.taskNameInput}
             placeholder="Add Task . . ."
             placeholderTextColor={theme.text3}
             value={newTask}
@@ -248,45 +269,21 @@ const NewChoreDisplay = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.centeredContent}>
-          <TouchableOpacity
-            style={styles.addChoreButton}
-            onPress={addChore}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.addChoreButtonText}>Add Chore</Text>
-          </TouchableOpacity>
-        </View>
       </View>
+            
+      {/* ADD CHORE Button */}
+      <View style={styles.centeredContent}>
+        <TouchableOpacity
+          style={styles.addChoreButton}
+          onPress={addChore}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addChoreButtonText}>Add Chore</Text>
+        </TouchableOpacity>
+      </View>
+      
     </View>
   );
 };
-
-
-// temporary styles for this screen -KK
-const oldStyles = StyleSheet.create({
-  
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  modalItem: {
-    fontSize: 18,
-    padding: 10,
-    width: '100%',
-    textAlign: 'center',
-  },
-});
-
 
 export default NewChoreScreen;
