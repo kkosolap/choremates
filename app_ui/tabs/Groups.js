@@ -100,7 +100,7 @@ const GroupsDisplay = ({ groupId }) => {
         const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
           username: username,
         });
-        console.log("Group members response:", response.data);
+        console.log("Group response:", response.data);
         setGroups(response.data);
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -117,7 +117,12 @@ const GroupsDisplay = ({ groupId }) => {
         data={groups}
         keyExtractor={(item) => item.group_id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.groupItem}>
+          <TouchableOpacity 
+            style={styles.groupItem}
+            onPress={() => {
+              navigation.navigate('Members', { groupName: item.group_name });
+            }}
+          >
             <Text style={styles.groupName}>{item.group_name}</Text>
           </TouchableOpacity>
         )}
