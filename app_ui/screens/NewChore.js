@@ -32,25 +32,28 @@ const NewChoreScreen = ({ navigation }) => {
 const NewChoreDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+
   const [username, setUsername] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
 
-  // dropdowns
-  const initialRec = { label: 'Just Once', value: 'Just Once' };
-  const initialGroup = { label: 'Personal', value: -1 };
-  const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db
-  const [selectedGroup, setSelectedGroup] = useState(initialGroup);
+  // recurrence dropdown
   const recDropdownData = [
     { label: 'Just Once', value: 'Just Once' },
     { label: 'Every Minute', value: 'Every Minute' },
     { label: 'Daily', value: 'Daily' },
     { label: 'Weekly', value: 'Weekly' },
   ];
-  const [groupDropdownData, setGroupDropdownData] = useState([{ label: 'Personal', value: -1 }]);
+  const initialRec = { label: 'Just Once', value: 'Just Once' };
+  const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
 
-  // Get user
+  // group dropdown
+  const [groupDropdownData, setGroupDropdownData] = useState([{ label: 'Personal', value: -1 }]);
+  const initialGroup = { label: 'Personal', value: -1 };
+  const [selectedGroup, setSelectedGroup] = useState(initialGroup);
+
+  // Get user and groups
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
       const storedUsername = await SecureStore.getItemAsync('username');
@@ -59,6 +62,7 @@ const NewChoreDisplay = ({ navigation }) => {
       } else {
         console.error("UI NewChore.js: Username not found in SecureStore.");
       }
+      
       // get all groups for the user -KK
       const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
 

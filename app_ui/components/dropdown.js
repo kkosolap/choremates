@@ -1,6 +1,6 @@
 // dropdown.js
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, TouchableOpacity, FlatList, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -17,6 +17,12 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
   const DropdownButton = useRef();
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownWidth, setDropdownWidth] = useState('100%');
+
+  useEffect(() => {
+    if (initialValue) {
+      setSelected(initialValue);
+    }
+  }, [initialValue]);
 
   const toggleDropdown = () => {
     visible ? setVisible(false) : openDropdown();
@@ -77,6 +83,7 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
         onPress={toggleDropdown}
         ref={DropdownButton}
       >
+        
         <Text style={styles.dropdownButtonText}>
           {(selected && selected.label) || label}
         </Text>
