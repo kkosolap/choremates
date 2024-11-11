@@ -33,20 +33,15 @@ const HomeScreen = () => {
 
 // page content
 const HomeDisplay = () => {
+  const [username, setUsername] = useState(null);
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
+  
+  const [personalData, setPersonalData] = useState([]);
+  const [groupData, setGroupData] = useState([]);
 
-  const [selected, setSelected] = useState(undefined);
-  const dropdownData = [
-    { label: 'One', value: '1' },
-    { label: 'Two', value: '2' },
-    { label: 'Three', value: '3' },
-    { label: 'Four', value: '4' },
-    { label: 'Five', value: '5' },
-  ];
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -54,6 +49,7 @@ const HomeDisplay = () => {
       const getUsername = async () => {   // get the username from securestore -KK
         const storedUsername = await SecureStore.getItemAsync('username');
         if (storedUsername) { 
+          setUsername(storedUsername); 
           refresh(storedUsername); 
         } else {
           console.error("UI Home.js: Username not found in SecureStore.");
@@ -87,16 +83,17 @@ const HomeDisplay = () => {
   };
 
   // open ChoreDetails page above current page
-  const openChoreDetails = (chore_name, grouped_tasks, recurrence) => {
+  const openChoreDetails = (chore_name, grouped_tasks, recurrence, group_id) => {
     navigation.navigate('ChoreDetails', {
       routed_chore_name: chore_name,
       routed_tasks: grouped_tasks,
       routed_recurrence: recurrence,
+      routed_group_id: group_id
     });
   };
 
   // group the tasks by chore -KK
-  const groupedTasks = data.reduce((acc, task) => {
+  const groupedPersonalTasks = personalData.reduce((acc, task) => {
     if (!acc[task.chore_name]) {
       acc[task.chore_name] = {
           is_completed: task.chore_is_completed,
@@ -110,10 +107,45 @@ const HomeDisplay = () => {
     return acc;
   }, {});
 
+  // group the group tasks by chore and then by group -KK
+  const groupedGroupTasks = groupData.reduce((acc, group_task) => {
+    if(group_task && group_task.group_chore_name){
+      if (!acc[group_task.group_chore_name]) {
+        acc[group_task.group_chore_name] = {
+            group_id: group_task.group_id,
+            is_completed: group_task.chore_is_completed,
+            recurrence: group_task.chore_recurrence,
+            group_tasks: []
+        };
+      }
+      if (group_task.group_task_name) { // only push if task_name is non-null -MH
+        acc[group_task.group_chore_name].group_tasks.push(group_task.group_task_name);
+      }
+      return acc;
+    }
+  }, {});
+
   // fetch the task list for display -KK
   const refresh = async (user) => {
-    await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setData(response.data))
+    await axios.post(`${API_URL}get-chores-data`, { username: user }).then((response) => setPersonalData(response.data))
       .catch((error) => console.error(error));
+
+    // get all the group chore ids for the user -KK
+    const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: user }).catch((error) => console.error(error));
+
+    let allGroupData = []; 
+
+    // get the group chore data for each group
+    for (const group of response.data) {
+      const group_id = group.group_id; 
+      await axios.post(`${API_URL}get-group-chores-data-for-user`, { username: user, group_id })
+        .then((response) => {
+          allGroupData = [...allGroupData, ...response.data]; 
+        })
+        .catch((error) => console.error(error));
+    }
+
+    setGroupData(allGroupData); 
   };
 
   return (
@@ -144,20 +176,39 @@ const HomeDisplay = () => {
 
         {/* Display all Chores */}
         <View style={styles.choresList}>
-          {Object.keys(groupedTasks).map((chore_name) => (
+          {/* personal chores */}
+          {Object.keys(groupedPersonalTasks).map((chore_name) => (
             <ChoreBlock
               key={chore_name}
               choreName={chore_name}
-              tasks={groupedTasks[chore_name].tasks}
+              tasks={groupedPersonalTasks[chore_name].tasks}
               onOpenChoreDetails={() => openChoreDetails(
                 chore_name,
-                groupedTasks[chore_name].tasks,
-                groupedTasks[chore_name].recurrence
+                groupedPersonalTasks[chore_name].tasks,
+                groupedPersonalTasks[chore_name].recurrence,
+                -1
               )}
-              recurrence={groupedTasks[chore_name].recurrence}
+              recurrence={groupedPersonalTasks[chore_name].recurrence}
+            />
+          ))}
+
+          {/* group chores */}
+          {Object.keys(groupedGroupTasks).map((group_chore_name) => (
+            <ChoreBlock
+              key={group_chore_name}
+              choreName={group_chore_name}
+              tasks={groupedGroupTasks[group_chore_name].group_tasks}
+              onOpenChoreDetails={() => openChoreDetails(
+                group_chore_name,
+                groupedGroupTasks[group_chore_name].group_tasks,
+                groupedGroupTasks[group_chore_name].recurrence,
+                groupedGroupTasks[group_chore_name].group_id 
+              )}
+              recurrence={groupedGroupTasks[group_chore_name].recurrence}
             />
           ))}
         </View>
+
       </View>
 
     </View>

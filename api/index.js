@@ -888,19 +888,25 @@ app.post('/add-group-chore', async (req, res) => {
 // update the details of a chore -MH
 app.post('/update-group-chore', async (req, res) => {
     try {
-        const { old_chore_name, new_chore_name, group_id, recurrence, assign_to } = req.body;
-        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assign_to) {
+        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to } = req.body;
+        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to) {
             console.log("API update-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
         }
         
+        // NEED TO CHANGE LATER
+        const assign_to = await getUserId(assigned_to);
+        // NEED TO CHANGE ABOVE LATER
+
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(old_chore_name, group_id);
+
         // Update the chore details in the database
         const query = `
             UPDATE group_chores
             SET group_chore_name = ?, recurrence = ?, assigned_to = ?
-            WHERE group_id = ? AND group_chore_name = ?
+            WHERE id = ?
         `;
-        await db.promise().query(query, [new_chore_name, recurrence, assign_to, group_id, old_chore_name]);
+        await db.promise().query(query, [new_chore_name, recurrence, assign_to, group_chore_id ]);
 
         res.status(200).json({ message: "Chore updated successfully." });
     } catch (error) {

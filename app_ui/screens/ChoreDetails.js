@@ -37,9 +37,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // get current chore details from parameters -MH
   const route = useRoute();
-  const { routed_chore_name, routed_tasks, routed_recurrence } = route.params;
+  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id } = route.params;
 
   const [username, setUsername] = useState(null);
+  const [group_id, setGroup] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
@@ -71,14 +72,19 @@ const ChoreDetailsDisplay = ({navigation}) => {
   useEffect(() => {
     setChoreName(routed_chore_name);
     setTasks(routed_tasks);
+    setGroup(routed_group_id);
   }, [routed_chore_name, routed_tasks]);
 
   // Get the existing tasks for the chore from the database -MH
   const getExistingTasks = async () => {
-    const response = await axios.post(`${API_URL}get-tasks`, { chore_name, username });
-    
-    // get result as array of strings
-    return response.data.map(taskObj => taskObj.task_name);
+    let response = null;
+    if(group_id == -1){
+      response = await axios.post(`${API_URL}get-tasks`, { chore_name, username });
+      return response.data.map(taskObj => taskObj.task_name);
+    } else {
+      response = await axios.post(`${API_URL}get-group-tasks`, { group_chore_name: chore_name, group_id });
+      return response.data.map(taskObj => taskObj.group_task_name);
+    }
   };
 
   // Compare 'tasks' list with the database and add/remove tasks from the database to match 'tasks' -MH
@@ -96,17 +102,29 @@ const ChoreDetailsDisplay = ({navigation}) => {
         !tasks.includes(existingTask)
       );
 
-      // add new tasks
-      await Promise.all(
-        tasksToAdd.map(task_name =>
-          axios.post(`${API_URL}add-task`, { chore_name, task_name, username }))
-      );
+      if(group_id == -1){
+        // add new tasks
+        await Promise.all(
+          tasksToAdd.map(task_name =>
+            axios.post(`${API_URL}add-task`, { chore_name, task_name, username }))
+        );
 
-      // remove tasks that are no longer in the array
-      await Promise.all(
-        tasksToRemove.map(task_name =>
-          axios.post(`${API_URL}delete-task`, { chore_name, task_name, username }))
-      );
+        // remove tasks that are no longer in the array
+        await Promise.all(
+          tasksToRemove.map(task_name =>
+            axios.post(`${API_URL}delete-task`, { chore_name, task_name, username }))
+        );
+      } else { 
+        await Promise.all(
+          tasksToAdd.map(group_task_name =>
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id }))
+        );
+
+        await Promise.all(
+          tasksToRemove.map(group_task_name =>
+            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id }))
+        );
+      }
 
     } catch (error) {
       console.error("Error updating tasks in database:", error);
@@ -117,12 +135,22 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
     try {
-        await axios.post(`${API_URL}update-chore`, {
+        if(group_id == -1) {
+          await axios.post(`${API_URL}update-chore`, {
             old_chore_name: routed_chore_name,  // original chore name
             new_chore_name: chore_name,  // updated chore name from input
             username,
             recurrence: selectedRec.value,
-        });
+          });
+        } else {
+          await axios.post(`${API_URL}update-group-chore`, {
+            old_chore_name: routed_chore_name,  // original chore name
+            new_chore_name: chore_name,  // updated chore name from input
+            group_id,
+            recurrence: selectedRec.value,
+            assigned_to: username
+          });
+        }
 
         // add/remove tasks in database to match list in edit details window
         await updateTasksInDatabase();
@@ -152,7 +180,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Deletes the chore from the database -KK
   const deleteChore = async (chore_name) => {
     try {
-      await axios.post(`${API_URL}delete-chore`, { chore_name, username });
+      if (group_id == -1){
+        await axios.post(`${API_URL}delete-chore`, { chore_name, username });
+      } else {
+        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id });
+      }
       navigation.goBack();   
     } catch (error) {
       console.error(error);
