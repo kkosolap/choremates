@@ -15,13 +15,14 @@ import Signin from './screens/Signin';
 import Register from './screens/Register';
 import HomeScreen from './tabs/Home';
 import ChoresScreen from './tabs/Chores';
-import MembersScreen from './tabs/Members';
+import GroupsScreen from './tabs/Groups';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 import ChoreDetailsScreen from './screens/ChoreDetails';
 import ChangeProfilePicScreen from './screens/NewProfilePicture';
 import GroupInvitations from './screens/GroupInvitations';
-import ManageScreen from './screens/Manage';
+import ManageScreen from './screens/ManageGroup';
+import CreateGroupScreen from './screens/CreateGroup.js';
 
 
 
@@ -62,8 +63,9 @@ const ChoresStack = () => {
 const MembersStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MembersMain" component={MembersScreen} />
-      <Stack.Screen name="Manage" component={ManageScreen} />
+      <Stack.Screen name="GroupsMain" component={GroupsScreen} />
+      <Stack.Screen name="CreateGroup" component={CreateGroupScreen} />
+      <Stack.Screen name="ManageGroup" component={ManageScreen} />
       <Stack.Screen name="GroupInvitations" component={GroupInvitations} />
     </Stack.Navigator>
   );

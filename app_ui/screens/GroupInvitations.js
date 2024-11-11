@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
-import Arrow from 'react-native-vector-icons/MaterialIcons';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
-import { TabHeader } from '../components/headers.js';
+import { ScreenHeader } from '../components/headers.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -55,11 +54,8 @@ const GroupInvitations = ({ navigation, route }) => {
 
   return (
     <View style={styles.screen}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backPageButton}>
-        <Arrow name="arrow-back" size={25} color="black" />
-      </TouchableOpacity>
 
-      <TabHeader title="Group Invitations" />
+      <ScreenHeader title="Group Invitations" navigation={navigation}/>
 
       <FlatList
         data={invitations}

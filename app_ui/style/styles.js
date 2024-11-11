@@ -614,7 +614,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.gray,
       borderRadius: 20,
       padding: 8,
-      top: 63,
+      top: 72,
       right: 20
     },
     
@@ -703,15 +703,13 @@ const createStyles = (theme) => {
 
     // create/invite button & pop-up - NN
     createButton: {
-      position: 'absolute',
-      width: '35%',
-      bottom: 170,
+      marginTop:20,
+      width: '80%',
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
-      left: 50,
     },
     inviteButton: {
       position: 'absolute',
@@ -724,26 +722,7 @@ const createStyles = (theme) => {
       alignItems: 'center',
       right: 50,
     },
-    modalView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.white,
-    },
-    modalContainer: {
-      width: '80%',
-      padding: 20,
-      borderRadius: 10,
-      backgroundColor: theme.white,
-      alignItems: 'center',
-    },
-    modalTitle: {
-      fontSize: 25,
-      fontWeight: 'bold',
-      color: theme.black,
-      marginBottom: 15,
-    },
-    input: {
+    groupNameInput: {
       width: '85%',
       height: 40,
       paddingHorizontal: 10,
@@ -771,6 +750,26 @@ const createStyles = (theme) => {
       top: 20,
       right: 20,
       padding: 5,
+    },
+
+    // groups display -NN
+    groupItem: {
+      width: '100%',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      paddingLeft: 95,
+      paddingRight: 95,
+      marginVertical: 15,
+      borderColor: theme.gray,
+      borderWidth: 1,
+      borderRadius: 20,
+      alignSelf: 'center',
+      backgroundColor: theme.lighter,
+    },
+    groupName: {
+      fontSize: 25,
+      fontWeight: 'bold',
     },
   });
 };

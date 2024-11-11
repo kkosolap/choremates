@@ -1,4 +1,5 @@
 // Members.js
+// Copied from previous members, just left here for now does not do anything yet.
 
 import React, { useEffect, useState } from 'react';
 import { Text, View, TouchableOpacity, Alert, FlatList, TextInput, Modal } from 'react-native';
@@ -7,12 +8,12 @@ import Mail from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Ionicons'
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider';
-import createStyles from '../style/styles';
+import { useTheme } from '../style/ThemeProvider.js';
+import createStyles from '../style/styles.js';
 import { TabHeader } from '../components/headers.js';
 
 import axios from 'axios';
-import { API_URL } from '../config';
+import { API_URL } from '../config.js';
 
 
 // members invitation, group creation, and invitations
