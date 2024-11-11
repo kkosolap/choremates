@@ -911,6 +911,21 @@ app.post('/get-group-chores-data-for-user', async (req, res) => {
     }
 });
 
+// get group_name by group_id -MH
+app.post('/get-group-name', async (req, res) => {
+    const { group_id } = req.body;
+    try {
+        const [results] = await db.promise().query("SELECT group_name FROM group_names WHERE id = ?", [group_id]);
+        if (results.length === 0) {
+        return res.status(404).json({ error: 'Group not found' });
+        }
+        res.json({ group_name: results[0].group_name });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // add a new chore to the group -KK
 app.post('/add-group-chore', async (req, res) => {
     try {

@@ -43,6 +43,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
+  const [choreGroup, setChoreGroup] = useState({});
 
   // recurrence dropdown -MH
   const recDropdownData = [
@@ -54,11 +55,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
 
-  // group dropdown -MH
-  const [groupDropdownData, setGroupDropdownData] = useState([{ label: 'Personal', value: -1 }]);
-  const [initialGroup, setInitialGroup] = useState({});
-  const [selectedGroup, setSelectedGroup] = useState({});
-
   // Get user and groups
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
@@ -68,23 +64,27 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else {
         console.error("UI ChoreDetails.js: Username not found in SecureStore.");
       }
-
-      // get all groups for the user -KK
-      const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
-
-      if (response && response.data) {
-        const transformedData = response.data.map(group => ({
-          label: group.group_name,
-          value: group.group_id,
-        }));
-        setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedData]);
-        const foundInitialGroup = transformedData.find(item => item.value === routed_group_id) || { label: '', value: '' };
-        setInitialGroup(foundInitialGroup);
-        setSelectedGroup(foundInitialGroup);
-      }
     };
+
     getUsername();
   }, []);
+
+  useEffect(() => {
+    const getGroupName = async () => {
+      try {
+        const response = await axios.post(`${API_URL}get-group-name`, { group_id: routed_group_id });
+        if (response && response.data) {
+          setChoreGroup({ label: response.data.group_name, value: routed_group_id });
+        } else {
+          console.error("Group name not found for the provided group_id.");
+        }
+      } catch (error) {
+        console.error("Error fetching group name:", error);
+      }
+    };
+  
+    getGroupName();
+  }, [routed_group_id]);
 
   // Set form starting values to the saved details of the chore -MH
   useEffect(() => {
@@ -95,11 +95,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Get the existing tasks for the chore from the database -MH
   const getExistingTasks = async () => {
     let response = null;
-    if(selectedGroup.label == 'Personal'){
+    if(choreGroup.label == 'Personal'){
       response = await axios.post(`${API_URL}get-tasks`, { chore_name, username });
       return response.data.map(taskObj => taskObj.task_name);
     } else {
-      response = await axios.post(`${API_URL}get-group-tasks`, { group_chore_name: chore_name, group_id: selectedGroup.value });
+      response = await axios.post(`${API_URL}get-group-tasks`, { group_chore_name: chore_name, group_id: choreGroup.value });
       return response.data.map(taskObj => taskObj.group_task_name);
     }
   };
@@ -119,7 +119,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
         !tasks.includes(existingTask)
       );
 
-      if(selectedGroup.label == 'Personal'){
+      if(choreGroup.label == 'Personal'){
         // add new tasks
         await Promise.all(
           tasksToAdd.map(task_name =>
@@ -134,12 +134,12 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else { 
         await Promise.all(
           tasksToAdd.map(group_task_name =>
-            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value }))
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
         );
 
         await Promise.all(
           tasksToRemove.map(group_task_name =>
-            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value }))
+            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
         );
       }
 
@@ -152,7 +152,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
     try {
-        if(selectedGroup.label == 'Personal') {
+        if(choreGroup.label == 'Personal') {
           await axios.post(`${API_URL}update-chore`, {
             old_chore_name: routed_chore_name,  // original chore name
             new_chore_name: chore_name,  // updated chore name from input
@@ -163,7 +163,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           await axios.post(`${API_URL}update-group-chore`, {
             old_chore_name: routed_chore_name,  // original chore name
             new_chore_name: chore_name,  // updated chore name from input
-            group_id: selectedGroup.value,
+            group_id: choreGroup.value,
             recurrence: selectedRec.value,
             assigned_to: username
           });
@@ -197,10 +197,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Deletes the chore from the database -KK
   const deleteChore = async (chore_name) => {
     try {
-      if (selectedGroup.label == 'Personal'){
+      if (choreGroup.label == 'Personal'){
         await axios.post(`${API_URL}delete-chore`, { chore_name, username });
       } else {
-        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: selectedGroup.value });
+        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value });
       }
       navigation.goBack();   
     } catch (error) {
@@ -223,14 +223,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
           onChangeText={setChoreName}
         />
 
-        {/* Group Dropdown */}
-        <Text style={styles.label}>Group:</Text>
-        <Dropdown
-          label=""
-          data={groupDropdownData}
-          onSelect={setSelectedGroup}
-          initialValue={initialGroup}
-        />
+        {/* Show Group */}
+        <Text style={styles.label}>Group: {choreGroup.label}</Text>
+        <View style={styles.spacer}></View>
+        <View style={styles.spacer}></View>
 
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
