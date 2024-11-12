@@ -79,7 +79,6 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
       >
         
         <Text style={styles.dropdownButtonText}>
-          {console.log("selected=", selected)}
           {(selected && selected.label) || label}
         </Text>
         <Icon type='font-awesome' name={visible ? 'chevron-up' : 'chevron-down'} />
