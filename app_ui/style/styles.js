@@ -169,6 +169,35 @@ const createStyles = (theme) => {
       marginTop: 8
     },
 
+    // home page chore sections
+    groupContentSection: {
+      marginTop: 20,
+      width: '90%',
+      alignItems: 'center',
+    },
+    groupChoreSectionLabel: {
+      flexDirection: 'row', // Align children (text and icon) horizontally
+      alignItems: 'center', // Center items vertically
+      justifyContent: 'space-between', // Ensure text stays on the left, button on the right
+      width: '100%',
+      paddingLeft: 30,
+      margin: 0,
+    },
+    groupLabelChevron: {
+      position: 'absolute',
+      left: 2,
+    },
+    choresList: {
+      flex: 1,
+      width: '100%',
+      alignItems: 'center', // Horizontally center content
+      justifyContent: 'flex-start', // Start content at the top
+    },
+    fullWidth: {
+      width: '100%',
+      margin: 0,
+    },
+
     // chore block  -MH
     choreBlock: baseChoreBlock,
     choreBlockCompleted: {
@@ -185,6 +214,8 @@ const createStyles = (theme) => {
       backgroundColor: theme.lightest,
       borderColor: theme.lighter,
       borderWidth: 3,
+      margin: 5,
+      paddingVertical: 5,
     },
     choreCheck: {
       position: 'absolute', // position it absolutely within the header
@@ -318,7 +349,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 75,
+      marginTop: 20,
     },
     logoutButtonText: {
       color: theme.white,
@@ -546,7 +577,6 @@ const createStyles = (theme) => {
       width: '100%',  // Allows the text to use the full available width
       flexWrap: 'wrap',  // Ensures the text breaks if it's too long
     },
-  
     profileUsernameText: {
       fontSize: 20,
       color: '#5c5c5c',
@@ -601,37 +631,6 @@ const createStyles = (theme) => {
       flex: 1, 
       justifyContent: 'center', 
       alignItems: 'center'
-    },
-
-    // Home.js Toggle House View
-
-    homeToggleButton: {
-      backgroundColor: theme.lighter, // Button background color
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 8,
-      flexDirection: 'row', // Align children (text and icon) horizontally
-      alignItems: 'center', // Center items vertically
-      justifyContent: 'space-between', // Ensure text stays on the left, button on the right
-      marginVertical: 10,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 2, // For Android
-      width: '100%', // Make sure it takes up full width
-    },
-    
-    // Moved for clarity/relative -VA
-    choresList: {
-      flex: 1,
-      marginTop: 10,
-      // backgroundColor: '#999999',            // Makes chore container more visible, for debugging if height issues reoccur
-      // paddingVertical: 10,                   // Add more space between toggle view button and chore list
-      paddingHorizontal: 20,
-      width: 390,
-      alignItems: 'center',          // Horizontally center content
-      justifyContent: 'flex-start',  // Start content at the top
     },
     
     // theme section -KK
