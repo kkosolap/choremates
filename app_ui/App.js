@@ -15,13 +15,15 @@ import Signin from './screens/Signin';
 import Register from './screens/Register';
 import HomeScreen from './tabs/Home';
 import ChoresScreen from './tabs/Chores';
-import MembersScreen from './tabs/Members';
+import GroupsScreen from './tabs/Groups';
 import SettingsScreen from './tabs/Settings';
 import NewChoreScreen from './screens/NewChore';
 import ChoreDetailsScreen from './screens/ChoreDetails';
 import ChangeProfilePicScreen from './screens/NewProfilePicture';
 import GroupInvitations from './screens/GroupInvitations';
-import ManageScreen from './screens/Manage';
+import ManageScreen from './screens/ManageGroup';
+import CreateGroupScreen from './screens/CreateGroup.js';
+import MembersScreen from './screens/Members.js';
 
 
 
@@ -58,13 +60,15 @@ const ChoresStack = () => {
   );
 };
 
-// ---------- MEMBERS ----------
-const MembersStack = () => {
+// ---------- GROUPS ----------
+const GroupsStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MembersMain" component={MembersScreen} />
-      <Stack.Screen name="Manage" component={ManageScreen} />
+      <Stack.Screen name="GroupsMain" component={GroupsScreen} />
+      <Stack.Screen name="CreateGroup" component={CreateGroupScreen} />
+      <Stack.Screen name="ManageGroup" component={ManageScreen} />
       <Stack.Screen name="GroupInvitations" component={GroupInvitations} />
+      <Stack.Screen name="Members" component={MembersScreen} />
     </Stack.Navigator>
   );
 };
@@ -139,7 +143,7 @@ const AppContent = ({ isLoggedIn, handleSignin }) => {
                 iconName = focused ? 'home' : 'home-outline';
               } else if (route.name === 'Chores') {
                 iconName = focused ? 'calendar' : 'calendar-outline';
-              } else if (route.name === 'Members') {
+              } else if (route.name === 'Groups') {
                 iconName = focused ? 'people' : 'people-outline';
               } else if (route.name === 'Settings') {
                 iconName = focused ? 'settings' : 'settings-outline';
@@ -172,7 +176,7 @@ const AppContent = ({ isLoggedIn, handleSignin }) => {
           })}>
           <Tab.Screen name="Home" component={HomeStack} />
           <Tab.Screen name="Chores" component={ChoresStack} />
-          <Tab.Screen name="Members" component={MembersStack} />
+          <Tab.Screen name="Groups" component={GroupsStack} />
           <Tab.Screen name="Settings" component={SettingsStack} />
         </Tab.Navigator>
       ) : (

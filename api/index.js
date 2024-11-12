@@ -25,7 +25,7 @@ const db = mysql.createConnection({
     database: "choremates",   
     user: process.env.DB_USER,
     // put "DB_PASSWORD=yourpassword" in your local .env file, 
-    // replace yourpassword with your mysql root password --Ethan
+    // replace yourpassword with your mysql root password -EL
     password: process.env.DB_PASSWORD, 
 });
 
@@ -126,7 +126,7 @@ async function getGroupTaskId(group_task_name, group_chore_id) {
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
 /********************************************************** */
-// user registration -ET
+// user registration -EL
 app.post('/register', async (req, res) => {
     console.log("API register: Registration request received");
     console.log(req.body);
@@ -169,7 +169,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// user login -ET
+// user login -EL
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -186,7 +186,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-// user logout -ET
+// user logout -EL
 app.post('/logout', (req, res) => {
     // Nathan pls handle token invalidation on the client side. -- Ethan
     res.status(200).json({ message: 'Logged out successfully!' });
@@ -658,7 +658,7 @@ app.post('/match-task', async (req, res) => {
 /********************************************************** */
 /*              GROUP IMPLEMENTATION BELOW:                 */
 /********************************************************** */
-// create a new group -ET
+// create a new group -EL
 // input: group_name, username (the person who wants to create the group)
 app.post('/create-group', async (req, res) => {
     const { group_name, username } = req.body;
@@ -692,7 +692,7 @@ app.post('/create-group', async (req, res) => {
     });
 });
 
-// get all members and their roles of a specific group -ET
+// get all members and their roles of a specific group -EL
 // input: group_id
 // output: member name, role
 app.get('/get-group-members', (req, res) => {
@@ -715,7 +715,9 @@ app.get('/get-group-members', (req, res) => {
     });
 });
 
-// returns the id of all the groups that the user is a member/admin of -KK
+// returns the id and name of all the groups that the user is a member/admin of -KK
+// input: username
+// output: group_id, group_name 
 app.post('/get-all-groups-for-user', async (req, res) => {
     try {
         const { username } = req.body;
@@ -742,7 +744,7 @@ app.post('/get-all-groups-for-user', async (req, res) => {
     }
 });
 
-// send an invitation, only 'admin' can invite -ET
+// send an invitation, only 'admin' can invite -EL
 // input: inviter_name, invitee_name, group_id
 app.post('/send-invite', async (req, res) => {
     const { inviter_name, invitee_name, group_id } = req.body;
@@ -780,7 +782,7 @@ app.post('/send-invite', async (req, res) => {
     });
 });
 
-// get received pending invitations for a specific user -ET
+// get received pending invitations for a specific user -EL
 // input: username (want to retrieve this person's pending invitations)
 // output: pending invitations for that user
 app.get('/get-received-invite', async (req, res) => {
@@ -798,7 +800,7 @@ app.get('/get-received-invite', async (req, res) => {
     });
 });
 
-// respond to invitation based on user's response (accepted / rejected) -ET
+// respond to invitation based on user's response (accepted / rejected) -EL
 // input: invitation_id, response (either "accepted" or "rejected")
 app.post('/respond-to-invite', (req, res) => {
     const { invitation_id, response } = req.body;
@@ -843,6 +845,89 @@ app.post('/respond-to-invite', (req, res) => {
         }
     });
 });
+
+// check if a user is an admin of a specific group -- EL
+// input: username, group_id
+// output: isadmin : true/false 
+app.get('/get-is-admin', (req, res) => {
+    const { username, group_id } = req.query;
+
+    // query to check if the user is an admin in the specified group
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API get-is-admin: Error checking admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to check admin status" });
+        }
+
+        // Check if role is 'admin'
+        if (results.length > 0 && results[0].role === 'admin') {
+            res.status(200).json({ isAdmin: true });
+        } else {
+            res.status(200).json({ isAdmin: false });
+        }
+    });
+});
+
+// remove a user (must be member) from group (only admin can remove members, but admin cannot remove themselves)
+// input: username (requesting user, the user that's trying to remove someone from the group), 
+//        group_id, 
+//        user_to_remove (this is a username)
+// output: if success, user_to_remove will be removed from the group
+app.delete('/remove-user-from-group', (req, res) => {
+    const { username, group_id, user_to_remove } = req.body;
+
+    // check if the requesting user is an admin
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API remove-user-from-group: Error checking admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to check admin status" });
+        }
+
+        // check if the user is an admin
+        if (results.length > 0 && results[0].role === 'admin') {
+            // an admin can't remove themselves from the group
+            if (username === user_to_remove) {
+                return res.status(400).json({ error: "Admin cannot remove themselves" });
+            }
+
+            // remove the user from the group
+            const removeUserQuery = `
+                DELETE FROM group_members 
+                WHERE group_id = ? AND user_id = (SELECT id FROM users WHERE username = ?)
+            `;
+
+            db.query(removeUserQuery, [group_id, user_to_remove], (err, result) => {
+                if (err) {
+                    console.error("API remove-user-from-group: Error removing user: ", err.message);
+                    return res.status(500).json({ error: "Failed to remove user" });
+                }
+
+                if (result.affectedRows > 0) {
+                    return res.status(200).json({ success: `User ${user_to_remove} removed from the group` });
+                } else {
+                    return res.status(404).json({ error: "User not found in this group" });
+                }
+            });
+        } else {
+            return res.status(403).json({ error: "You must be an admin to remove a user" });
+        }
+    });
+});
+
 
 /********************************************************** */
 /*              GROUP CHORE IMPLEMENTATION BELOW:           */

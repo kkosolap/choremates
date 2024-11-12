@@ -1,16 +1,16 @@
-// Manage.js - NN
+// ManageGroup.js - NN
 
 import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Arrow from 'react-native-vector-icons/MaterialIcons';
 import Delete from 'react-native-vector-icons/Ionicons';
 
-import { useTheme } from '../style/ThemeProvider';
-import createStyles from '../style/styles';
-import { TabHeader } from '../components/headers.js';
+import { useTheme } from '../style/ThemeProvider.js';
+import createStyles from '../style/styles.js';
+import { ScreenHeader } from '../components/headers.js';
 
 import axios from 'axios';
-import { API_URL } from '../config';
+import { API_URL } from '../config.js';
 
 
 const ManageScreen = ({ navigation, route }) => {
@@ -51,11 +51,11 @@ const ManageScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.screen}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backPageButton}>
+      {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backPageButton}>
           <Arrow name="arrow-back" size={25} color="black" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
-      <TabHeader title="Manage Group" />
+      <ScreenHeader title="Manage Group" navigation={navigation}/>
       
       <FlatList
         data={members}
