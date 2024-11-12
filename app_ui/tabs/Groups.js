@@ -1,6 +1,6 @@
 // Groups.js
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Mail from 'react-native-vector-icons/Ionicons';
@@ -83,33 +83,41 @@ const GroupsDisplay = ({ groupId }) => {
   const [username, setUsername] = useState(null);
   const [groups, setGroups] = useState([]);
 
+  const fetchGroups = async (username) => {
+    try {
+      const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
+        username: username,
+      });
+      console.log("Group response:", response.data);
+      setGroups(response.data);
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+      Alert.alert("Failed to load groups.");
+    }
+  };
+
+  // fetch username and group
   useEffect(() => {
     const getUsername = async () => {
       const storedUsername = await SecureStore.getItemAsync('username');
       if (storedUsername) {
         setUsername(storedUsername);
-        fetchGroups(storedUsername); // call fetch group -NN
+        fetchGroups(storedUsername);
       } else {
         console.error("GroupsDisplay: Username not found in SecureStore.");
       }
     };
-
-    //get all groups the user is a part of -NN
-    const fetchGroups = async (username) => {
-      try {
-        const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
-          username: username,
-        });
-        console.log("Group response:", response.data);
-        setGroups(response.data);
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-        Alert.alert("Failed to load groups.");
-      }
-    };
-
     getUsername();
   }, []);
+
+  // update when focused
+  useFocusEffect(
+    useCallback(() => {
+      if (username) {
+        fetchGroups(username);
+      }
+    }, [username])
+  );
 
   return (
     <View style={styles.content}>
