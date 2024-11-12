@@ -48,7 +48,7 @@ const ChangeProfilePicScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.pfpContainer}>
+    <View style={styles.screen}>
       <ScreenHeader title="Set a Profile Picture" navigation={navigation} />
       <View style={styles.pfpIconContainer}>
         {/* Add more icons as options for profile pictures */}

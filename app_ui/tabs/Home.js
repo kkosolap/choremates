@@ -1,9 +1,11 @@
 // Home.js
 
 import React, { useState, useCallback } from 'react';
-import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, } from 'react-native';
+import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, TouchableOpacity, } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Collapsible from 'react-native-collapsible';
+
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
@@ -15,7 +17,6 @@ import Dropdown from '../components/dropdown.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
-
 // header and page content
 const HomeScreen = () => {
   const { theme } = useTheme();
@@ -24,9 +25,9 @@ const HomeScreen = () => {
   return (
     <View style={styles.screen}>
       <TabHeader title="My Home" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <HomeDisplay />
-      </ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <HomeDisplay />
+        </ScrollView>
     </View>
   );
 };
@@ -41,6 +42,10 @@ const HomeDisplay = () => {
   
   const [personalData, setPersonalData] = useState([]);
   const [groupData, setGroupData] = useState([]);
+
+  const [isCollapsed, setCollapsed] = useState(true);
+  const [showThreeDots, setShowThreeDots] = useState(false); // State to control visibility of three-dot button
+
 
 
   // calls refresh whenever the screen is in focus -KK
@@ -124,6 +129,15 @@ const HomeDisplay = () => {
       return acc;
     }
   }, {});
+  
+  const toggleCollapse = () => {
+    setCollapsed(!isCollapsed);
+  };
+
+  const handleTouchablePress = () => {
+    setShowThreeDots(!showThreeDots); // Toggle visibility of three-dot button
+  };
+
 
   // fetch the task list for display -KK
   const refresh = async (user) => {
@@ -167,29 +181,43 @@ const HomeDisplay = () => {
 
       {/* All House Chores Heading */}
       <View style={styles.contentSection}>
-        <Text style={styles.sectionHeading}>
-          All House Chores
-        </Text>
+          <Text style={styles.sectionHeading}>
+            All House Chores
+          </Text>
 
         {/* Horizontal Line */}
         <View style={styles.horizontalLine} />
 
-        {/* Display all Chores */}
-        <View style={styles.choresList}>
-          {/* personal chores */}
+        {/* Toggle Button for Collapsible Dropdown -VA */}
+        <TouchableWithoutFeedback onPress={toggleCollapse}>
+          <View style={styles.homeToggleButton}>
+            <Text style={styles.sectionHeading}>
+              {isCollapsed ? 'Personal Chores' : 'Collapse Personal Chores'}
+            </Text>
+
+            <TouchableOpacity onPress={() => console.log("Settings clicked")}>
+              <Icon name="ellipsis-vertical" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </TouchableWithoutFeedback>
+
+        {/* View When Collapsible View Toggled -VA */}
+        <Collapsible collapsed={isCollapsed}>
+          <View style={styles.choresList}>
+            {/* personal chores */}
           {Object.keys(groupedPersonalTasks).map((chore_name) => (
-            <ChoreBlock
-              key={chore_name}
-              choreName={chore_name}
-              tasks={groupedPersonalTasks[chore_name].tasks}
-              onOpenChoreDetails={() => openChoreDetails(
-                chore_name,
-                groupedPersonalTasks[chore_name].tasks,
-                groupedPersonalTasks[chore_name].recurrence,
+              <ChoreBlock
+                key={chore_name}
+                choreName={chore_name}
+                tasks={groupedPersonalTasks[chore_name].tasks}
+                onOpenChoreDetails={() => openChoreDetails(
+                  chore_name,
+                  groupedPersonalTasks[chore_name].tasks,
+                  groupedPersonalTasks[chore_name].recurrence,
                 -1
-              )}
-              recurrence={groupedPersonalTasks[chore_name].recurrence}
-            />
+                )}
+                recurrence={groupedPersonalTasks[chore_name].recurrence}
+              />
           ))}
 
           {/* group chores */}
@@ -206,8 +234,10 @@ const HomeDisplay = () => {
               )}
               recurrence={groupedGroupTasks[group_chore_name].recurrence}
             />
-          ))}
-        </View>
+            ))}
+          </View>
+        </Collapsible>
+
 
       </View>
 

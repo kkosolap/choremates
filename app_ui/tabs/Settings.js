@@ -64,11 +64,16 @@ const SettingsScreen = () => {
   
   const handleChangeDisplayName = async () => {
     // console.log("UI Settings.js: Updating display name to:", display_name);
-    try {
-      await axios.post(`${API_URL}update-display`, {username, display_name});
-    } catch (error) {
-      console.log("UI Settings.js: Error changing display name.");
+    if (text.length > 30) {
+      Alert.alert('Character Limit Exceeded', 'Your display name cannot exceed 30 characters.');
+    } else {
+      try {
+        await axios.post(`${API_URL}update-display`, {username, display_name});
+      } catch (error) {
+        console.log("UI Settings.js: Error changing display name.");
+      }
     }
+
   };
 
   const openChangeProfilePic = () => {
@@ -82,9 +87,14 @@ const SettingsScreen = () => {
 
           {/* Profile Section of Settings*/}
           <Text style={styles.sectionHeading}>Profile</Text>
+
           <View style={styles.horizontalLine}></View>
-            <View style={styles.profileTopSection}>
-              <View style={styles.profilePictureArea}>
+
+          {/* Profile Picture */}
+          <View style={styles.profileTopSection}>
+
+
+            <View style={styles.profilePictureArea}>
               <Image 
                 source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.duck} 
                 style={styles.profilePicturePhoto} 
@@ -93,20 +103,34 @@ const SettingsScreen = () => {
                 onPress={openChangeProfilePic}>  
                 <Ionicons name="images" size={24} color="white" />
               </TouchableOpacity>
-              </View>
-              <View style={styles.profileTextContainer}>
-                <Text>Display Name</Text>
-                <TextInput 
-                  style={styles.profileDisplayNameText} 
-                  value={display_name} 
-                  onChangeText={setDisplayName} 
-                  onSubmitEditing={handleChangeDisplayName}
-                  scrollEnabled={false}
-                />
-                <Text>User Name</Text>
-                <Text style={styles.profileUsernameText}>{username}</Text>
-              </View>
             </View>
+          </View>
+
+          {/* Display Name and User Name */}
+          <View style={styles.profileNameSection}>
+            <View >
+              <Text style={{ color: '#858585' }}>Display Name</Text>
+              {/* <TextInput 
+                style={styles.profileDisplayNameText} 
+                value={display_name} 
+                onChangeText={setDisplayName} 
+                onSubmitEditing={handleChangeDisplayName}
+                scrollEnabled={false}
+              /> */}
+              <TextInput 
+                style={styles.profileDisplayNameText} 
+                value={display_name} 
+                onChangeText={setDisplayName} 
+                onSubmitEditing={handleChangeDisplayName} 
+                maxLength={16} 
+                scrollEnabled={false}
+              />
+              {/* <Text style = {size=8}> {display_name.length}/16</Text> */}
+
+              <Text style={{ color: '#858585' }}>User Name</Text>
+              <Text style={styles.profileUsernameText}> @{username}</Text>
+            </View>
+          </View>
 
             {/* Extra space between profile and themes */}
             <View style={styles.settingsPadding}></View>

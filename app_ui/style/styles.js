@@ -1,6 +1,9 @@
 // styles.js
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+// Added for future reference -VA
+// const { height } = Dimensions.get('window');
+
 
 // function to create styles based on the theme  -MH
 const createStyles = (theme) => {
@@ -226,12 +229,6 @@ const createStyles = (theme) => {
       top: 20,              // distance from the top edge
       zIndex: 1,            // ensure it's above other elements
     },
-    choresList: {
-      flex: 1,
-      width: 390,
-      alignItems: 'center',          // Horizontally center content
-      justifyContent: 'flex-start',  // Start content at the top
-    },
 
     // tasks  -MH
     taskContainer: {
@@ -315,14 +312,13 @@ const createStyles = (theme) => {
 
     //logout -NN
     logoutButton: {
-      position: "absolute",
       width: '80%',
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      bottom: 100,
+      marginTop: 75,
     },
     logoutButtonText: {
       color: theme.white,
@@ -510,7 +506,8 @@ const createStyles = (theme) => {
     },
 
     // Settings.js styles (for Profile/Settings page) -VA
-    // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+    //      Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+
     // profile section -KK
     profileContainer:{
       flexGrow: 1,
@@ -520,11 +517,17 @@ const createStyles = (theme) => {
       paddingTop: 20,         // Optional: Add some space at the top
       paddingBottom: 100,
     },
-    profileTopSection: {
+    profilePicSection: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: 75,        // Profile + name are off center
+    },
+    profileNameSection: {
+      alignItems: 'flex-start',
+      flexDirection: 'column', 
+      width: '100%',
+      paddingLeft: 25,
+      
     },
     profilePictureArea: {
       width: 100,
@@ -540,11 +543,13 @@ const createStyles = (theme) => {
       fontSize: 30,
       fontWeight: 'bold',
       color: '#5c5c5c',
-      maxWidth: 85,   // works with this width but cuts name off -VA
+      width: '100%',  // Allows the text to use the full available width
+      flexWrap: 'wrap',  // Ensures the text breaks if it's too long
     },
+  
     profileUsernameText: {
-      fontSize: 18,
-      color: theme.gray,
+      fontSize: 20,
+      color: '#5c5c5c',
     },
     settingsPadding: {
       paddingBottom: 20,
@@ -567,25 +572,30 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     setProfileIcon: {
-      width: 80, // Width of the button
-      height: 80, // Height of the button
-      borderRadius: 40, // Makes the button circular
-      overflow: 'hidden', // Ensures the image is clipped to the button shape
+      width: 80, 
+      height: 80,
+      borderRadius: 40, 
+      overflow: 'hidden',
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 20,
 
     },
     pfpImage: {
-      width: 80,           // Ensures the image covers the button area
-      height: 80,          // Ensures the image covers the button area
-      resizeMode: 'cover', // Keeps the image aspect ratio
+      width: 80,          
+      height: 80,         
+      resizeMode: 'cover',
     },
+    
+    // Display Icons in Pop Up Profile Pic Selection
     pfpIconContainer: {
+      flex: 1,
+      marginTop: 20,
       flexDirection: 'row', 
       flexWrap: 'wrap',
       justifyContent: 'space-around', 
       width: '85%',
+      alignItems: 'center',
     },
     pfpContainer: {
       flex: 1, 
@@ -593,6 +603,37 @@ const createStyles = (theme) => {
       alignItems: 'center'
     },
 
+    // Home.js Toggle House View
+
+    homeToggleButton: {
+      backgroundColor: theme.lighter, // Button background color
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      flexDirection: 'row', // Align children (text and icon) horizontally
+      alignItems: 'center', // Center items vertically
+      justifyContent: 'space-between', // Ensure text stays on the left, button on the right
+      marginVertical: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2, // For Android
+      width: '100%', // Make sure it takes up full width
+    },
+    
+    // Moved for clarity/relative -VA
+    choresList: {
+      flex: 1,
+      marginTop: 10,
+      // backgroundColor: '#999999',            // Makes chore container more visible, for debugging if height issues reoccur
+      // paddingVertical: 10,                   // Add more space between toggle view button and chore list
+      paddingHorizontal: 20,
+      width: 390,
+      alignItems: 'center',          // Horizontally center content
+      justifyContent: 'flex-start',  // Start content at the top
+    },
+    
     // theme section -KK
     themeIconContainer: {
       width: 400,
@@ -823,6 +864,7 @@ const createStyles = (theme) => {
       right: 20,
       padding: 5,
     },
+
   });
 };
 
