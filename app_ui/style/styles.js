@@ -197,6 +197,14 @@ const createStyles = (theme) => {
       width: '100%',
       margin: 0,
     },
+    emptySectionText: {
+      fontSize: 18,
+      fontWeight: '400',
+      color: theme.text2,
+    },
+    emptySectionSection: {
+      marginHorizontal: 30,
+    },
 
     // chore block  -MH
     choreBlock: baseChoreBlock,
