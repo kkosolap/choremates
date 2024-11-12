@@ -16,16 +16,29 @@ const MembersScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const route = useRoute();
-  const { groupName, groupId } = route.params;
+  const { groupName } = route.params;
 
+  return (
+    <View style={styles.screen}>
+      <ScreenHeader title={`${groupName}'s Members`} navigation={navigation} />
+      <MembersDisplay navigation={navigation} />
+    </View>
+  );
+};
+
+const MembersDisplay = ({ navigation }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  const route = useRoute();
+  const { groupId } = route.params;
   const [members, setMembers] = useState([]);
 
-  // Fetch members of the group
+  // fetch members of the group
   useEffect(() => {
     const fetchGroupMembers = async () => {
       try {
         const response = await axios.get(`${API_URL}get-group-members`, {
-          params: { group_id: groupId } // Use dynamic group ID
+          params: { group_id: groupId }
         });
         console.log("Group members response:", response.data);
         setMembers(response.data);
@@ -38,8 +51,7 @@ const MembersScreen = ({ navigation }) => {
   }, [groupId]);
 
   return (
-    <View style={styles.screen}>
-      <ScreenHeader title={`${groupName}'s Members`} navigation={navigation} />
+    <View style={styles.content}>
       <FlatList
           data={members}
           keyExtractor={(item) => item.username}

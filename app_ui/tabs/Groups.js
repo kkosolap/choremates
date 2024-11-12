@@ -120,7 +120,12 @@ const GroupsDisplay = ({ groupId }) => {
           <TouchableOpacity 
             style={styles.groupItem}
             onPress={() => {
-              navigation.navigate('Members', { groupName: item.group_name });
+              console.log("Selected Group ID:", item.group_id); // log group ID and name
+              console.log("Selected Group Name:", item.group_name); 
+              navigation.navigate('Members', { 
+                groupName: item.group_name,
+                groupId: item.group_id 
+              });
             }}
           >
             <Text style={styles.groupName}>{item.group_name}</Text>
