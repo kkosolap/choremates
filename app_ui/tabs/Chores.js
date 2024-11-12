@@ -21,7 +21,7 @@ const ChoresScreen = () => {
 
   return (
     <View style={styles.screen}>
-      <TabHeader title="Weekly Chores" />
+      <TabHeader title="Chores" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ChoresDisplay />
       </ScrollView>
