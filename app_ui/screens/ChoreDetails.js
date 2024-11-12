@@ -71,15 +71,19 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   useEffect(() => {
     const getGroupName = async () => {
-      try {
-        const response = await axios.post(`${API_URL}get-group-name`, { group_id: routed_group_id });
-        if (response && response.data) {
-          setChoreGroup({ label: response.data.group_name, value: routed_group_id });
-        } else {
-          console.error("Group name not found for the provided group_id.");
-        }
-      } catch (error) {
-        console.error("Error fetching group name:", error);
+      if (routed_group_id == -1) {
+        setChoreGroup({ label: "Personal Chores", value: routed_group_id });
+      } else {
+          try {
+            const response = await axios.post(`${API_URL}get-group-name`, { group_id: routed_group_id });
+            if (response && response.data) {
+              setChoreGroup({ label: response.data.group_name, value: routed_group_id });
+            } else {
+              console.error("Group name not found for the provided group_id.");
+            }
+          } catch (error) {
+            console.error("Error fetching group name:", error);
+          }
       }
     };
   
