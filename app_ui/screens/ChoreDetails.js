@@ -72,7 +72,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   useEffect(() => {
     const getGroupName = async () => {
       if (routed_group_id == -1) {
-        setChoreGroup({ label: "Personal Chores", value: routed_group_id });
+        setChoreGroup({ label: "Personal", value: routed_group_id });
       } else {
           try {
             const response = await axios.post(`${API_URL}get-group-name`, { group_id: routed_group_id });
