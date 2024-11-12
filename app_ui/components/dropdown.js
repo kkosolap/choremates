@@ -18,12 +18,6 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownWidth, setDropdownWidth] = useState('100%');
 
-  useEffect(() => {
-    if (initialValue) {
-      setSelected(initialValue);
-    }
-  }, [initialValue]);
-
   const toggleDropdown = () => {
     visible ? setVisible(false) : openDropdown();
   };
@@ -85,6 +79,7 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
       >
         
         <Text style={styles.dropdownButtonText}>
+          {console.log("selected=", selected)}
           {(selected && selected.label) || label}
         </Text>
         <Icon type='font-awesome' name={visible ? 'chevron-up' : 'chevron-down'} />
