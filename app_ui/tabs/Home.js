@@ -12,7 +12,6 @@ import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
-import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -34,12 +33,13 @@ const HomeScreen = () => {
 
 // page content
 const HomeDisplay = () => {
-  const [username, setUsername] = useState(null);
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
   
+  const [username, setUsername] = useState(null);
   const [personalData, setPersonalData] = useState([]);
   const [groupData, setGroupData] = useState([]);
 

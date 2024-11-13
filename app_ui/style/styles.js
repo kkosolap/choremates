@@ -55,6 +55,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.background,
       justifyContent: 'center',
       alignItems: 'center',
+      width: '100%',
     },
 
     // main content of a page  -MH
@@ -72,8 +73,8 @@ const createStyles = (theme) => {
 
     // page sections -MH
     contentSection: {
-      marginTop: 40,
-      width: '90%',
+      marginBottom: 25,
+      width: '95%',
       alignItems: 'center',
     },
     sectionHeading: {
@@ -83,6 +84,7 @@ const createStyles = (theme) => {
       marginBottom: 5,
       textAlign: 'left',
       alignSelf: 'flex-start',
+      paddingLeft: 5,
     },
     horizontalLine: {
       borderTopColor: theme.lighter,
@@ -172,7 +174,7 @@ const createStyles = (theme) => {
     // home page chore sections
     groupContentSection: {
       marginTop: 20,
-      width: '90%',
+      width: '95%',
       alignItems: 'center',
     },
     groupChoreSectionLabel: {
@@ -352,17 +354,16 @@ const createStyles = (theme) => {
     //logout -NN
     logoutButton: {
       width: '80%',
-      height: 50,
+      height: 45,
       borderRadius: 10,
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 20,
     },
     logoutButtonText: {
       color: theme.white,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 18,
     },
 
     //register -NN
@@ -545,7 +546,7 @@ const createStyles = (theme) => {
     },
 
     // Settings.js styles (for Profile/Settings page) -VA
-    //      Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+    // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
 
     // profile section -KK
     profileContainer:{
@@ -565,29 +566,36 @@ const createStyles = (theme) => {
       alignItems: 'flex-start',
       flexDirection: 'column', 
       width: '100%',
-      paddingLeft: 25,
-      
+      paddingLeft: 20,
+      paddingRight: 20,
     },
-    profilePictureArea: {
+    profilePictureCircle: {
       width: 100,
       height: 100,
-      borderRadius: 50,
-      borderWidth: 3,
-      borderColor: theme.lighter,
-      marginRight: 70,
-      marginLeft: 75,         // Profile + name are off center bc names are usually long -VA
       overflow: 'visible',    // Crop any overflow for circular shape
     },
+    profileNameLabel: {
+      fontSize: 12,
+      color: theme.text3,
+      marginTop: 10,
+      marginBottom: 5,
+    },
     profileDisplayNameText: {
+      width: '100%',
+      paddingVertical: 4,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      marginBottom: 10,
       fontSize: 30,
-      fontWeight: 'bold',
-      color: '#5c5c5c',
-      width: '100%',  // Allows the text to use the full available width
-      flexWrap: 'wrap',  // Ensures the text breaks if it's too long
+      fontWeight: '500',
+      color: theme.text2,
     },
     profileUsernameText: {
       fontSize: 20,
-      color: '#5c5c5c',
+      color: theme.text3,
+      marginTop: -5,
     },
     settingsPadding: {
       paddingBottom: 20,
@@ -643,11 +651,11 @@ const createStyles = (theme) => {
     
     // theme section -KK
     themeIconContainer: {
-      width: 400,
+      width: '100%',
       flexDirection: 'row',
       alignItems: 'left',
-      justifyContent: 'center',
-      paddingRight: 100,
+      justifyContent: 'flex-start',
+      paddingLeft: 10,
     },  
 
     // notification section -KK

@@ -34,8 +34,8 @@ const ChoresDisplay = () => {
   const [username, setUsername] = useState(null);
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const [visible, setVisible] = useState({});     // tracks which chores are visible -KK
-  const [edit, setEdit] = useState(null);         // tracks which chores are being edited -KK
+  const [visibleTasks, setVisibleTasks] = useState({}); // tracks which chores have visible tasks -MH
+  const [editing, setEditing] = useState(null); // tracks which chores are being edited -KK
 
   const [personalData, setPersonalData] = useState([]);
   const [groupData, setGroupData] = useState([]);
@@ -100,13 +100,13 @@ const ChoresDisplay = () => {
 
   // toggle the visibility of tasks for a chore -KK
   const toggleVisibility = (chore_name) => {
-    setVisible((prevState) => ({
+    setVisibleTasks((prevState) => ({
       ...prevState,
       [chore_name]: !prevState[chore_name],
     }));
 
     // set edit to null when toggling visibility -MH
-    setEdit(null);
+    setEditing(null);
   };
 
   // add task button -KK
@@ -183,11 +183,11 @@ const ChoresDisplay = () => {
           choreName={chore_name}
           tasks={groupedPersonalTasks[chore_name].tasks}
           completed={groupedPersonalTasks[chore_name].is_completed}
-          visible={visible[chore_name]}
+          visible={visibleTasks[chore_name]}
           onToggleVisibility={toggleVisibility}
-          onEdit={() => setEdit(edit === chore_name ? null : chore_name)}
+          onEdit={() => setEditing(editing === chore_name ? null : chore_name)}
           onDelete={deleteTask}
-          isEditing={edit === chore_name}
+          isEditing={editing === chore_name}
           newTask={task_name}
           setNewTask={setNewTask}
           onAddTask={addTask}
@@ -204,11 +204,11 @@ const ChoresDisplay = () => {
           choreName={group_chore_name}
           tasks={groupedGroupTasks[group_chore_name].group_tasks}
           completed={groupedGroupTasks[group_chore_name].is_completed}
-          visible={visible[group_chore_name]}
+          visible={visibleTasks[group_chore_name]}
           onToggleVisibility={toggleVisibility}
-          onEdit={() => setEdit(edit === group_chore_name ? null : group_chore_name)}
+          onEdit={() => setEditing(editing === group_chore_name ? null : group_chore_name)}
           onDelete={deleteGroupTask}
-          isEditing={edit === group_chore_name}
+          isEditing={editing === group_chore_name}
           newTask={task_name}
           setNewTask={setNewTask}
           onAddTask={addGroupTask}

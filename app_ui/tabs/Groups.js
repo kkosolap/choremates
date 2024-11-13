@@ -18,6 +18,7 @@ import { API_URL } from '../config.js';
 const GroupsScreen = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  
   const [hasInvitations, setHasInvitations] = useState(false);
   const navigation = useNavigation();
   const [username, setUsername] = useState(null);
@@ -100,7 +101,7 @@ const GroupsDisplay = ({ groupId }) => {
         const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
           username: username,
         });
-        console.log("Group response:", response.data);
+        //console.log("Group response:", response.data);
         setGroups(response.data);
       } catch (error) {
         console.error("Error fetching groups:", error);
