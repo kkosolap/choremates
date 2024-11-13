@@ -12,10 +12,14 @@ import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
+import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import Popover from 'react-native-popover-view';
+
 import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
+import themes from '../style/colors.js';
 
 // header and page content
 const HomeScreen = () => {
@@ -42,6 +46,8 @@ const HomeDisplay = () => {
   
   const [personalData, setPersonalData] = useState([]);
   const [groupData, setGroupData] = useState([]);
+  const [groupColor, setGroupColor] = useState(themes.green.main);        // need to change default color method once secure
+  const [popoverVisible, setPopoverVisible] = useState(false);
 
   // state to control visibility of three-dot button -VA
   const [showThreeDots, setShowThreeDots] = useState(false);
@@ -161,48 +167,99 @@ const HomeDisplay = () => {
     return acc;
   }, {});
 
-  const refresh = async (user) => {
-    // Fetch personal data
-    await axios.post(`${API_URL}get-chores-data`, { username: user })
-      .then((response) => setPersonalData(response.data))
-      .catch((error) => console.error(error));
-  
-    // Get all groups for the user
-    const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: user })
-      .catch((error) => console.error(error));
-  
-    let allGroupData = [];
-    const groupNameMap = {};
-  
-    // Fetch group data for each group and also get group names
-    for (const group of response.data) {
-      const group_id = group.group_id;
-      
-      // Fetch group tasks
-      await axios.post(`${API_URL}get-group-chores-data-for-user`, { username: user, group_id })
-        .then((response) => {
-          allGroupData = [...allGroupData, ...response.data];
-        })
-        .catch((error) => console.error(error));
-      
-      // Fetch group name
-      if (!groupNameMap[group_id]) {
-        await axios.post(`${API_URL}get-group-name`, { group_id })
-          .then((response) => {
-            groupNameMap[group_id] = response.data.group_name;
-          })
-          .catch((error) => console.error(error));
+
+  // Trying to get User ID here -VA
+
+
+  const fetchUserId = async () => {
+    try {
+      const username = await SecureStore.getItemAsync('username');
+      console.log("Username = " + username);
+
+      if (username) {
+        // console.log(`Making request to: ${API_URL}get-id`);
+
+        const response = await axios.post(`${API_URL}get-id`, { username });
+        const user_id = response.data.user_id;
+        console.log("User ID = " + user_id);
+        if (user_id) {
+          return user_id;
+        } else {
+          console.error('User ID not found');
+        }
+      } else {
+        console.error('Username not found in SecureStore');
       }
+    } catch (error) {
+      console.error('Error fetching user ID:', error);
     }
-  
-    // Attach group names to group data
-    const enrichedGroupData = allGroupData.map((group_task) => ({
-      ...group_task,
-      group_name: groupNameMap[group_task.group_id] || 'Unknown Group'
-    }));
-  
-    setGroupData(enrichedGroupData);
   };
+  
+  const fetchGroupColor = async (group_id) => {
+    try {
+      const user_id = await fetchUserId();
+      if (user_id) {
+        const response = await axios.post(`${API_URL}get-group-color`, { user_id, group_id });
+        const groupColor = response.data[0]?.group_color;
+        if (groupColor) {
+          setGroupColor(groupColor);
+        } else {
+          console.warn('No group color found for this group.');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching group color:', error);
+    }
+  };
+  
+
+  
+  const handleOptionSelect = (option) => {
+    console.log("Selected option: " + option);
+    setPopoverVisible(false); // Close popover after selection
+  };
+
+  const refresh = async (user) => {
+    try {
+      // Fetch personal data
+      const personalResponse = await axios.post(`${API_URL}get-chores-data`, { username: user });
+      setPersonalData(personalResponse.data);
+  
+      // Fetch groups for the user
+      const groupsResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: user });
+      let allGroupData = [];
+      const groupNameMap = {};
+      const groupColorMap = {};
+  
+      for (const group of groupsResponse.data) {
+        const groupId = group.group_id;
+  
+        // Fetch group tasks
+        const tasksResponse = await axios.post(`${API_URL}get-group-chores-data-for-user`, { username: user, group_id: groupId });
+        allGroupData = [...allGroupData, ...tasksResponse.data];
+  
+        // Fetch group name
+        if (!groupNameMap[groupId]) {
+          const nameResponse = await axios.post(`${API_URL}get-group-name`, { group_id: groupId });
+          groupNameMap[groupId] = nameResponse.data.group_name;
+        }
+  
+        // Fetch group color
+        // if (!groupColorMap[groupId]) {
+        //   await fetchGroupColor(user.id, groupId);
+        // }
+      }
+  
+      const enrichedGroupData = allGroupData.map((groupTask) => ({
+        ...groupTask,
+        group_name: groupNameMap[groupTask.group_id] || 'Unknown Group'
+      }));
+      setGroupData(enrichedGroupData);
+    } catch (error) {
+      console.error('Error during refresh:', error);
+    }
+  };
+  
 
 
   // page content -MH
@@ -233,14 +290,36 @@ const HomeDisplay = () => {
       </View>
       */}
       
+      <View style={styles.content}>
       {/* Personal Chores */}
       <View style={styles.contentSection}>
-        {/* Heading */}
         <TouchableWithoutFeedback onPress={togglePersonalCollapse}>
           <View style={styles.homeToggleButton}>
-            <Text style={styles.sectionHeading}>
-              Personal Chores
-            </Text>
+            <Text style={styles.sectionHeading}>Personal Chores</Text>
+
+            {/* Menu for color options */}
+                {/* The button that triggers the menu */}
+                  <TouchableOpacity onPress={() => setPopoverVisible(true)} style={styles.button}>
+                    <Icon name="ellipsis-vertical" size={24} color="#fff" />
+                  </TouchableOpacity>
+
+                  <Popover
+          isVisible={popoverVisible}
+          onRequestClose={() => setPopoverVisible(false)} // Close on tap outside
+          fromView={this.popoverButton}
+          popoverStyle={styles.popover}
+        >
+          <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
+            <Text style={styles.menuItem}>Option 1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleOptionSelect('Option 2')}>
+            <Text style={styles.menuItem}>Option 2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleOptionSelect('Option 3')}>
+            <Text style={styles.menuItem}>Option 3</Text>
+          </TouchableOpacity>
+        </Popover>
+                  {/* Add more color options as needed */}
           </View>
         </TouchableWithoutFeedback>
 
@@ -264,6 +343,7 @@ const HomeDisplay = () => {
           </View>
         </Collapsible>
       </View>
+    </View>
 
       {/* Group Chores */}
       {Object.keys(groupedGroupTasks).map((group_id) => (
@@ -274,6 +354,9 @@ const HomeDisplay = () => {
               <Text style={styles.sectionHeading}>
                 {groupedGroupTasks[group_id].group_name}
               </Text>
+              <TouchableOpacity onPress={() => console.log("Settings clicked")}>
+                <Icon name="ellipsis-vertical" size={24} color="#fff" />
+            </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
 

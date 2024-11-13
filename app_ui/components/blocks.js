@@ -111,6 +111,10 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
 export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
   const { theme } = useTheme();
   // const styles = createStyles(themes.groupTheme);  
+
+
+
+  
   const styles = createStyles(themes.yellow);
   
   const handleToggleChoreCompletion = (group_id, chore_name) => {

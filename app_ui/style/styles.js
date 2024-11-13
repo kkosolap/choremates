@@ -633,6 +633,15 @@ const createStyles = (theme) => {
       alignItems: 'center',          // Horizontally center content
       justifyContent: 'flex-start',  // Start content at the top
     },
+
+    homeGroupColorButton: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      // width: 60,
+      // height: 60,
+      // borderRadius: 30, // circular button
+      backgroundColor: theme.main,
+    },
     
     // theme section -KK
     themeIconContainer: {

@@ -305,6 +305,22 @@ app.post('/update-profile', async (req, res) => {
     }
 });
 
+// Get id (user's id) -VA
+app.post('/get-id', async (req, res) => {
+    console.log('index.js   Received request for /get-id');
+
+    const { username } = req.body;
+    try {
+      const user_id = await getUserId(username);  
+      
+      res.json({ id: user_id });  
+    } catch (error) {
+      console.error('Error fetching user ID:', error);
+      res.status(500).json({ error: 'Database error' });
+    }
+  });
+  
+
 
 /********************************************************** */
 /*             RECURRENCE IMPLEMENTATION BELOW:             */
@@ -1135,6 +1151,22 @@ app.post('/match-group-task', async (req, res) => {
         res.status(500).send("An error occurred while matching task completion status.");
     }
 });
+
+app.get('/get-group-color', async (req, res) => {
+    const { user_id, group_id } = req.query;
+    const query = `
+      SELECT group_color 
+      FROM group_members 
+      WHERE user_id = ? AND group_id = ?
+    `;
+    const [rows] = await db.execute(query, [user_id, group_id]);
+    if (rows.length > 0) {
+      res.json({ group_color: rows[0].group_color });
+    } else {
+      res.status(404).json({ error: 'Group color not found' });
+    }
+  });
+  
 
 
 // keep this at the very bottom of the file -KK
