@@ -34,6 +34,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const [username, setUsername] = useState(null);
+  const [user_id, setUserID] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
@@ -53,6 +54,11 @@ const NewChoreDisplay = ({ navigation }) => {
   const initialGroup = { label: 'Personal', value: -1 };
   const [selectedGroup, setSelectedGroup] = useState(initialGroup);
 
+  // assignment dropdown
+  const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
+  const initialAssignment = { label: username, value: user_id };
+  const [assign_to, setAssignment] = useState(null);
+
   // Get user and groups
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
@@ -62,17 +68,43 @@ const NewChoreDisplay = ({ navigation }) => {
       } else {
         console.error("UI NewChore.js: Username not found in SecureStore.");
       }
-      
-      // get all groups for the user -KK
-      const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
+      // get the user's user_id -KK
+      const userResponse = await axios.post(`${API_URL}get-user-id`, { username: storedUsername }).catch((error) => console.error(error));
+      setUserID(userResponse.data);
 
-      if (response && response.data) {
-        const transformedData = response.data.map(group => ({
+      console.log("username ", storedUsername, "has user id", JSON.stringify(userResponse.data));
+
+      // get all groups for the user -KK
+      const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
+
+      if (groupResponse && groupResponse.data) {
+        const transformedGroupData = groupResponse.data.map(group => ({
           label: group.group_name,
           value: group.group_id,
         }));
-        setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedData]);
+        setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
       }
+
+      // get all members for each group -KK
+      const memberPromises = groupResponse.data.map(async (group) => {
+        const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+          params: { group_id: group.group_id },
+        });
+        if (memberResponse.data) {
+          return {
+            group_id: group.group_id,
+            members: memberResponse.data.map(member => ({
+              label: member.username,
+              value: member.user_id,
+            })),
+          };
+        }
+        else return null;
+      });
+
+      const allGroupMembers = await Promise.all(memberPromises);
+
+      setAssignmentDropdownData(allGroupMembers);
     };
     getUsername();
   }, []);
@@ -81,6 +113,7 @@ const NewChoreDisplay = ({ navigation }) => {
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
     console.log("UI NewChore: adding chore " + chore_name + " to " + selectedGroup.label);
+    console.log("assignment is ", JSON.stringify(assign_to));
     try {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
@@ -91,12 +124,11 @@ const NewChoreDisplay = ({ navigation }) => {
         ));
       }else{
         // add the group chore to the database -KK
-        // assign_to is hardcoded as of now
         await axios.post(`${API_URL}add-group-chore`, { 
           group_chore_name: chore_name,
-          assign_to: username,
           recurrence: selectedRec.value,
           group_id: selectedGroup.value,
+          assign_to: assign_to.value
         });
 
         await Promise.all(tasks.map(group_task_name =>
@@ -151,9 +183,25 @@ const NewChoreDisplay = ({ navigation }) => {
         <Dropdown
           label="Select Group"
           data={groupDropdownData}
-          onSelect={setSelectedGroup}
+          onSelect={(group) => {
+            setSelectedGroup(group);
+            setAssignment(initialAssignment);
+          }}
           initialValue={initialGroup}
         />
+
+        {/* Assignment Dropdown */}
+        {selectedGroup.value !== -1 && (
+          <>
+            <Text style={styles.label}>Assignment:</Text>
+            <Dropdown
+              label="Assign to Member"
+              data={assignmentDropdownData[selectedGroup.value] || []} 
+              onSelect={setAssignment}
+              initialValue={initialAssignment}
+            />
+          </>
+        )}
 
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>

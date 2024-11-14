@@ -37,7 +37,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // get current chore details from parameters -MH
   const route = useRoute();
-  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id } = route.params;
+  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id, routed_assignment } = route.params;
 
   const [username, setUsername] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
@@ -55,6 +55,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
 
+  // assignment dropdown data
+  const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
+  const [initialAssignment, setInitialAssignment] = useState(null);
+  const [assign_to, setAssignment] = useState(null);
+
   // Get user and groups
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
@@ -64,8 +69,23 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else {
         console.error("UI ChoreDetails.js: Username not found in SecureStore.");
       }
-    };
 
+      if(routed_group_id != -1){
+        // get the initial assignment -KK
+        console.log("user id is ", routed_assignment);
+
+        const userResponse = await axios.post(`${API_URL}get-username`, { user_id: routed_assignment }).catch((error) => console.error(error));
+        setInitialAssignment({ label: userResponse.data, value: routed_assignment });
+
+        console.log(" username is ", JSON.stringify(userResponse.data));
+
+        // get all members for the group -KK
+        const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+          params: { group_id: routed_group_id },
+        });
+        setAssignmentDropdownData(memberResponse);
+      }
+    };
     getUsername();
   }, []);
 
@@ -169,7 +189,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
             new_chore_name: chore_name,  // updated chore name from input
             group_id: choreGroup.value,
             recurrence: selectedRec.value,
-            assigned_to: username
+            assign_to: assign_to.value
           });
         }
 
@@ -231,6 +251,19 @@ const ChoreDetailsDisplay = ({navigation}) => {
         <Text style={styles.label}>Group: {choreGroup.label}</Text>
         <View style={styles.spacer}></View>
         <View style={styles.spacer}></View>
+
+        {/* Assignment Dropdown */}
+        {routed_group_id !== -1 && (
+          <>
+            <Text style={styles.label}>Assignment:</Text>
+            <Dropdown
+              label="Assign to Member"
+              data={assignmentDropdownData || []}
+              onSelect={setAssignment}
+              initialValue={initialAssignment}
+            />
+          </>
+        )}
 
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
