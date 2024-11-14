@@ -12,7 +12,6 @@ import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock } from '../components/blocks.js';
-import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -297,7 +296,7 @@ const HomeDisplay = () => {
           >
             <Icon name="ellipsis-vertical" size={24} color={theme.main} />
           </TouchableOpacity> */}
-          
+
         </TouchableOpacity>
 
         {/* Horizontal Line */}
