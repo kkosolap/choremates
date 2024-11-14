@@ -1263,18 +1263,31 @@ app.post('/match-group-task', async (req, res) => {
 
 app.get('/get-group-color', async (req, res) => {
     const { user_id, group_id } = req.query;
+    console.log("User ID:", user_id);
+console.log("Group ID:", group_id);
+
     const query = `
       SELECT group_color 
       FROM group_members 
       WHERE user_id = ? AND group_id = ?
     `;
-    const [rows] = await db.execute(query, [user_id, group_id]);
-    if (rows.length > 0) {
-      res.json({ group_color: rows[0].group_color });
-    } else {
-      res.status(404).json({ error: 'Group color not found' });
+  
+    try {
+      // Make sure db.execute is correctly destructured
+      const [rows, fields] = await db.execute(query, [user_id, group_id]);
+  
+      // Check if any rows were returned
+      if (rows.length > 0) {
+        res.json({ group_color: rows[0].group_color });
+      } else {
+        res.status(404).json({ error: 'Group color not found' });
+      }
+    } catch (error) {
+      console.error("Error fetching group color:", error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
+  
   
 
 

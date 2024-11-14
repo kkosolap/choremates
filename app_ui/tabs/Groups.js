@@ -256,14 +256,43 @@ const GroupsDisplay = ({ groupId }) => {
     console.log(`Ellipsis pressed for group: ${group.group_name}`);
   };
 
-  const getUserId = async (username) => {
+  // const getUserId = async (username) => {
+  //   try {
+  //     const response = await axios.post(`${API_URL}get-id`, { username });
+  //     console.log("Received User ID:", response.data.id); // Log the user ID received from the backend
+  //   } catch (error) {
+  //     console.error("Error fetching user ID:", error);
+  //   }
+  // };
+
+  const getUserId = async (username, groupname) => {
     try {
+      
+      // Fetch the user ID based on the username
       const response = await axios.post(`${API_URL}get-id`, { username });
-      console.log("Received User ID:", response.data.id); // Log the user ID received from the backend
+      const userId = response.data.id;
+      // console.log("User ID:", userId); // Log the user ID
+      // console.log("Group ID:", groupname.group_id); // Log the group ID
+  
+      // Check if either userId or groupId is undefined
+      if (userId === undefined || groupname.group_id === undefined) {
+        console.log(userId);
+        console.error("userId or groupId is undefined");
+        return;
+      }
+  
+      // Now call /get-group-color with the fetched userId and groupId
+      const colorResponse = await axios.get(`${API_URL}get-group-color`, {
+        params: { user_id: userId, group_id: groupname.group_id },
+      });
+  
+      console.log("Group Color:", colorResponse.data.group_color); // Log the group color
     } catch (error) {
-      console.error("Error fetching user ID:", error);
+      console.error("Error fetching user ID or group color:", error);
     }
   };
+  
+  
   
   
 
@@ -323,7 +352,7 @@ const GroupsDisplay = ({ groupId }) => {
                       <TouchableOpacity
                         key={index}
                         // onPress={() => handleColorChange(iconColor)}
-                        onPress={() => getUserId(username)}
+                        onPress={() => getUserId(username, selectedGroup)}
 
                         style={styles.menuItem}
                       >
