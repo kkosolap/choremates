@@ -10,6 +10,7 @@ import colors from '../style/colors';
 import createStyles from '../style/styles';
 import LogoutButton from '../components/logout'; 
 import { TabHeader } from '../components/headers.js';
+import { SettingsButton, ThemeButton } from '../components/buttons.js';
 import { useTheme } from '../style/ThemeProvider';
 import { useLogout } from '../style/LogOutProvider';
 
@@ -135,21 +136,11 @@ const SettingsDisplay = () => {
 
         {/* Color Options */}
         <View style={styles.themeIconContainer}>
-          <TouchableOpacity onPress={() => changeTheme(username, 'blue')}>
-            <Ionicons name="color-palette" size={48} color={colors.blue.main} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => changeTheme(username, 'pink')}>
-            <Ionicons name="color-palette" size={48} color={colors.pink.main} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => changeTheme(username, 'purple')}>
-            <Ionicons name="color-palette" size={48} color={colors.purple.main} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => changeTheme(username, 'green')}>
-            <Ionicons name="color-palette" size={48} color={colors.green.main} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => changeTheme(username, 'yellow')}>
-            <Ionicons name="color-palette" size={48} color={colors.yellow.main} />
-          </TouchableOpacity>
+          <ThemeButton color='pink' user={username}/>
+          <ThemeButton color='yellow' user={username}/>
+          <ThemeButton color='green' user={username}/>
+          <ThemeButton color='blue' user={username}/>
+          <ThemeButton color='purple' user={username}/>
         </View>
       </View>
 
@@ -160,35 +151,23 @@ const SettingsDisplay = () => {
 
         <View style={styles.notificationContainer}>
           {/* Currently doesn't account for any onPress actions needed */}
+          <SettingsButton
+            label="Notification Setting 1"
+            iconName="notifications"
+            onClick={() => console.log("button 1 clicked")}
+          />
 
-          <TouchableOpacity style={styles.buttonSection}>
-            <View style={styles.buttonArea}>
-              <View style={styles.iconArea}>
-                <Ionicons name="notifications" size={48} color={theme.main} />
-              </View>
-                <Text style={styles.buttonName}> Notification Setting 1 </Text>
-              </View>
-          </TouchableOpacity>
+          <SettingsButton
+            label="Notification Setting 2"
+            iconName="calendar"
+            onClick={() => console.log("button 2 clicked")}
+          />
 
-          <TouchableOpacity style={styles.buttonSection}>
-            <View style={styles.buttonArea}>
-              <View style={styles.iconArea}>
-                <Ionicons name="calendar" size={48} color={theme.main} />
-              </View>
-                <Text style={styles.buttonName}> Notification Setting 2 </Text>
-              </View>
-            <View style={styles.sp}></View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.buttonSection}>
-            <View style={styles.buttonArea}>
-              <View style={styles.iconArea}>
-                <Ionicons name="alarm" size={48} color={theme.main} />
-              </View>
-                <Text style={styles.buttonName}> Notification Setting 3 </Text>
-              </View>
-            <View style={styles.sp}></View>
-          </TouchableOpacity>
+          <SettingsButton
+            label="Notification Setting 3"
+            iconName="alarm"
+            onClick={() => console.log("button 3 clicked")}
+          />
         </View>
       </View>
 

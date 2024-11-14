@@ -663,33 +663,28 @@ const createStyles = (theme) => {
       flexDirection: 'column',
       alignItems: 'left',
       justifyContent: 'center',
-      paddingLeft: 15,
+      width: '100%',
     },
-    buttonSection: {
-      padding: 5,
-      paddingLeft: 25,
-      paddingRight: 25,
+
+    // settings button style -MH
+    settingsButton: {
+      width: '100%',
+      height: 45,
+      //borderRadius: 10,
+      //backgroundColor: theme.lighter,
+      margin: 2,
+      justifyContent: 'center',
     },
-    buttonArea: {
-      flexDirection: 'row', 
-      justifyContent: 'center', 
-      alignItems: 'center'
-    },
-    iconArea: {
-      width: 50, 
-      height: 50, 
+    settingsButtonIcon: {
       justifyContent: 'center', 
       alignItems: 'center',
+      position: 'absolute',
+      left: 8,
     },
-    iconStyle: {
-      width: 30, 
-      height: 30,
-    },
-    buttonName:  { 
-      width: 300, 
+    settingsButtonText:  {
       fontSize: 20, 
-      color: 'black', 
-      marginLeft: 20,
+      color: theme.text1, 
+      paddingLeft: 65,
     },
 
     // members page -NN
