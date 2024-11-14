@@ -63,17 +63,11 @@ const SettingsScreen = () => {
   );
   
   const handleChangeDisplayName = async () => {
-    // console.log("UI Settings.js: Updating display name to:", display_name);
-    if (text.length > 30) {
-      Alert.alert('Character Limit Exceeded', 'Your display name cannot exceed 30 characters.');
-    } else {
       try {
         await axios.post(`${API_URL}update-display`, {username, display_name});
       } catch (error) {
         console.log("UI Settings.js: Error changing display name.");
       }
-    }
-
   };
 
   const openChangeProfilePic = () => {

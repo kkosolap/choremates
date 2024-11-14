@@ -1,6 +1,7 @@
 // styles.js
 
 import { StyleSheet, Dimensions } from 'react-native';
+import themes from './colors';
 // Added for future reference -VA
 // const { height } = Dimensions.get('window');
 
@@ -850,26 +851,50 @@ const createStyles = (theme) => {
       right: 20,
       padding: 5,
     },
-
+    
     // groups display -NN
     groupItem: {
-      width: '100%',
-      justifyContent: 'space-between',
+      width: '95%',
+      flexDirection: 'row',
       alignItems: 'center',
-      padding: 20,
-      paddingLeft: 95,
-      paddingRight: 95,
+      justifyContent: 'space-between',
+      paddingVertical: 20,
+      paddingHorizontal: 20,
       marginVertical: 15,
-      borderColor: theme.gray,
-      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderWidth: 3,
       borderRadius: 20,
-      alignSelf: 'center',
-      backgroundColor: theme.lighter,
+      backgroundColor: theme.lightest,
     },
+
     groupName: {
       fontSize: 25,
       fontWeight: 'bold',
+      flexShrink: 1,
     },
+
+    groupColorPicker: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+
+    popover: {
+      padding: 10,
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 5,
+      elevation: 5,
+    },
+
+    menuItem: {
+      padding: 10,
+      fontSize: 18,
+    },
+
+    
   });
 };
 

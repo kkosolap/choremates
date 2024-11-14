@@ -291,12 +291,13 @@ const HomeDisplay = () => {
           </Text>
 
           {/* settings button */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => console.log("Settings clicked")}
             activeOpacity={0.7}
           >
             <Icon name="ellipsis-vertical" size={24} color={theme.main} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+          
         </TouchableOpacity>
 
         {/* Horizontal Line */}
@@ -362,13 +363,14 @@ const HomeDisplay = () => {
               {groupedGroupTasks[group_id].group_name}
             </Text>
 
-            {/* settings button */}
+            {/* settings button
             <TouchableOpacity
               onPress={() => console.log("Settings clicked")}
               activeOpacity={0.7}
             >
               <Icon name="ellipsis-vertical" size={24} color={theme.main} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
           </TouchableOpacity>
 
           {/* Horizontal Line */}

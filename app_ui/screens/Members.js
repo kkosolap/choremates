@@ -40,7 +40,7 @@ const MembersDisplay = ({ navigation }) => {
         const response = await axios.get(`${API_URL}get-group-members`, {
           params: { group_id: groupId }
         });
-        console.log("Group members response:", response.data);
+        // console.log("Group members response:", response.data);
         setMembers(response.data);
       } catch (error) {
         Alert.alert('Error retrieving group members: ' + error.message);

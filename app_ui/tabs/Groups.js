@@ -1,9 +1,11 @@
 // Groups.js
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import Mail from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Popover from 'react-native-popover-view';
+
 import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../style/ThemeProvider.js';
@@ -12,6 +14,7 @@ import { TabHeader } from '../components/headers.js';
 
 import axios from 'axios';
 import { API_URL } from '../config.js';
+import themes from '../style/colors.js';
 
 
 // groups screen & invite button - NN
@@ -66,7 +69,7 @@ const GroupsScreen = () => {
           hasInvitations && { backgroundColor: theme.red }
         ]}
       >
-      <Mail name="mail" size={25} color="#fff" />
+      <Icon name="mail" size={25} color="#fff" />
       </TouchableOpacity>
 
         <GroupsDisplay />
@@ -82,6 +85,8 @@ const GroupsDisplay = ({ groupId }) => {
   const navigation = useNavigation();
   const [username, setUsername] = useState(null);
   const [groups, setGroups] = useState([]);
+  const [popoverVisible, setPopoverVisible] = useState(false);
+  const popoverButtonRef = useRef(null);
 
   useEffect(() => {
     const getUsername = async () => {
@@ -108,39 +113,67 @@ const GroupsDisplay = ({ groupId }) => {
       }
     };
 
+
+    const handleOptionSelect = (option) => {
+      console.log(`Selected: ${option}`);
+      setPopoverVisible(false);
+    };
+
     getUsername();
   }, []);
 
   return (
-    <View style={styles.content}>
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item.group_id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={styles.groupItem}
-            onPress={() => {
-              console.log("Selected Group ID:", item.group_id); // log group ID and name
-              console.log("Selected Group Name:", item.group_name); 
-              navigation.navigate('Members', { 
-                groupName: item.group_name,
-                groupId: item.group_id 
-              });
-            }}
+    <FlatList
+      data={groups}
+      keyExtractor={(item) => item.group_id.toString()}
+      renderItem={({ item }) => (
+        <View style={styles.groupItem}>
+          {/* Touchable for navigation */}
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={() => navigation.navigate('Members', { 
+              groupName: item.group_name, 
+              groupId: item.group_id 
+            })}
           >
+            {/* Left-aligned Group Name */}
             <Text style={styles.groupName}>{item.group_name}</Text>
           </TouchableOpacity>
-        )}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
 
-      <TouchableOpacity 
-        style={styles.createButton} 
-        onPress={() => navigation.navigate('CreateGroup')}
-      >
-        <Text style={styles.managecreateButtonText}>+ Create Group</Text>
-      </TouchableOpacity>
-    </View>
+          {/* Right-aligned Icon with Popover */}
+          <View ref={popoverButtonRef}>
+            <TouchableOpacity
+              onPress={(event) => {
+                event.stopPropagation(); // Prevents navigation from being triggered
+                setPopoverVisible(true);
+              }}
+              style={styles.groupColorPicker}
+            >
+              <Icon name="ellipsis-vertical" size={24} color="#000" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Popover Menu */}
+          <Popover
+            isVisible={popoverVisible}
+            onRequestClose={() => setPopoverVisible(false)}
+            from={() => popoverButtonRef.current}
+            popoverStyle={styles.popover}
+          >
+            <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
+              <Text style={styles.menuItem}>Option 1</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleOptionSelect('Option 2')}>
+              <Text style={styles.menuItem}>Option 2</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleOptionSelect('Option 3')}>
+              <Text style={styles.menuItem}>Option 3</Text>
+            </TouchableOpacity>
+          </Popover>
+        </View>
+      )}
+      contentContainerStyle={{ paddingBottom: 20 }}
+    />
   );
 };
 
