@@ -306,41 +306,42 @@ app.post('/update-profile', async (req, res) => {
 });
 
 // Get id (user's id) -VA
-// app.post('/get-id', async (req, res) => {
-//     console.log('index.js   Received request for /get-id');
+app.post('/get-id', async (req, res) => {
+    console.log('index.js   Received request for /get-id');
 
-//     const { username } = req.body;
-//     try {
-//       const user_id = await getUserId(username);  
-      
-//       res.json({ id: user_id });  
-//     } catch (error) {
-//       console.error('Error fetching user ID:', error);
-//       res.status(500).json({ error: 'Database error' });
-//     }
-//   });
-app.get('/get-user-id', async (req, res) => {
-    const { username } = req.query;
-    console.log('Received username:', username);
-
-    if (!username) {
-        return res.status(400).json({ success: false, message: 'Username is required' });
-    }
-
-    const query = `SELECT id FROM users WHERE username = ?`;
-  
+    const { username } = req.body;
     try {
-        const [rows] = await db.execute(query, [username]);
-        if (rows.length > 0) {
-            res.json({ success: true, id: rows[0].id });
-        } else {
-            res.status(404).json({ success: false, message: 'User not found' });
-        }
+      const user_id = await getUserId(username);  
+      
+      res.json({ id: user_id });  
     } catch (error) {
-        console.error('Error fetching user ID:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+      console.error('Error fetching user ID:', error);
+      res.status(500).json({ error: 'Database error' });
     }
-});
+  });
+  
+// app.get('/get-user-id', async (req, res) => {
+//     const { username } = req.query;
+//     console.log('Received username:', username);
+
+//     if (!username) {
+//         return res.status(400).json({ success: false, message: 'Username is required' });
+//     }
+
+//     const query = `SELECT id FROM users WHERE username = ?`;
+  
+//     try {
+//         const [rows] = await db.execute(query, [username]);
+//         if (rows.length > 0) {
+//             res.json({ success: true, id: rows[0].id });
+//         } else {
+//             res.status(404).json({ success: false, message: 'User not found' });
+//         }
+//     } catch (error) {
+//         console.error('Error fetching user ID:', error);
+//         res.status(500).json({ success: false, message: 'Server error' });
+//     }
+// });
 
   
 

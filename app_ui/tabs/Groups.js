@@ -217,7 +217,6 @@ const GroupsDisplay = ({ groupId }) => {
       if (storedUsername) {
         setUsername(storedUsername);
         fetchGroups(storedUsername);
-        fetchUserData();
       } else {
         console.error("GroupsDisplay: Username not found in SecureStore.");
       }
@@ -256,31 +255,17 @@ const GroupsDisplay = ({ groupId }) => {
     setPopoverVisible(true);
     console.log(`Ellipsis pressed for group: ${group.group_name}`);
   };
-  const fetchUserData = async () => {
-    console.log('fetchUserData entered')
+
+  const getUserId = async (username) => {
     try {
-      const token = await SecureStore.getItemAsync('token');
-      const storedUsername = await SecureStore.getItemAsync('username');
-
-      if (token && storedUsername) {
-        console.log('token and user');
-        // Fetch user_id from the backend using the stored username
-        const response = await fetch(`${API_URL}get-user-id?username=${storedUsername}`);
-        console.log('returned');
-        
-        // Log the actual response content
-        const data = await response.json();
-        console.log('Response data:', data);
-        
-
-        if (data.success) {
-          setUserId(data.user_id);
-        }
-      }
+      const response = await axios.post(`${API_URL}get-id`, { username });
+      console.log("Received User ID:", response.data.id); // Log the user ID received from the backend
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user ID:", error);
     }
   };
+  
+  
 
   return (
     <FlatList
@@ -337,7 +322,9 @@ const GroupsDisplay = ({ groupId }) => {
                     return (
                       <TouchableOpacity
                         key={index}
-                        onPress={() => handleColorChange(iconColor)}
+                        // onPress={() => handleColorChange(iconColor)}
+                        onPress={() => getUserId(username)}
+
                         style={styles.menuItem}
                       >
                         <Icon name="brush" size={24} color={iconColor} style={styles.groupColorIcon} />
