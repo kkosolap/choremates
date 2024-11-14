@@ -853,9 +853,60 @@ const createStyles = (theme) => {
     },
     
     // groups display -NN
+    // groupItem: {
+    //   width: '95%',
+    //   flexDirection: 'row',
+    //   alignItems: 'center',
+    //   justifyContent: 'space-between',
+    //   paddingVertical: 20,
+    //   paddingHorizontal: 20,
+    //   marginVertical: 15,
+    //   borderColor: theme.lighter,
+    //   borderWidth: 3,
+    //   borderRadius: 20,
+    //   backgroundColor: theme.lightest,
+    // },
+
+    // groupName: {
+    //   fontSize: 25,
+    //   fontWeight: 'bold',
+    //   flexShrink: 1,
+    // },
+
+    // groupColorPicker: {
+    //   justifyContent: 'center',
+    //   alignItems: 'center',
+    // },
+
+    // popover: {
+    //   padding: 10,
+    //   backgroundColor: '#fff',
+    //   borderRadius: 8,
+    //   shadowColor: '#000',
+    //   shadowOffset: { width: 0, height: 2 },
+    //   shadowOpacity: 0.3,
+    //   shadowRadius: 5,
+    //   elevation: 5,
+    // },
+
+    // menuContainer: {
+    //   paddingVertical: 10, // Space around the entire menu
+    //   paddingHorizontal: 20,
+    // },
+    
+    // menuItem: {
+    //   paddingVertical: 15, // Space above and below each item
+    //   paddingHorizontal: 10,
+    //   marginVertical: 8,    // Space between items
+    //   fontSize: 18,
+    //   textAlign: 'center',
+    //   backgroundColor: '#f5f5f5',
+    //   borderRadius: 8,
+      
+    // },
     groupItem: {
       width: '95%',
-      flexDirection: 'row',
+      flexDirection: 'row',  // Align text and icon in a row
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingVertical: 20,
@@ -866,18 +917,18 @@ const createStyles = (theme) => {
       borderRadius: 20,
       backgroundColor: theme.lightest,
     },
-
+    
     groupName: {
       fontSize: 25,
       fontWeight: 'bold',
       flexShrink: 1,
     },
-
+    
     groupColorPicker: {
       justifyContent: 'center',
       alignItems: 'center',
     },
-
+    
     popover: {
       padding: 10,
       backgroundColor: '#fff',
@@ -888,11 +939,31 @@ const createStyles = (theme) => {
       shadowRadius: 5,
       elevation: 5,
     },
-
-    menuItem: {
-      padding: 10,
-      fontSize: 18,
+    
+    menuContainer: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
     },
+    
+    iconGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',  // Allow wrapping of icons to next line
+      justifyContent: 'space-between',  // Spread out the items
+      marginTop: 10,
+    },
+    
+    menuItem: {
+      width: '25%',  // 4 items per row (3 columns)
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: 10,
+      padding: 10,
+    },
+    
+    groupColorIcon: {
+      alignSelf: 'center',
+    }
+    
 
     
   });

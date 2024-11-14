@@ -14,7 +14,7 @@ import { TabHeader } from '../components/headers.js';
 
 import axios from 'axios';
 import { API_URL } from '../config.js';
-import themes from '../style/colors.js';
+import colors from '../style/colors';
 
 
 // groups screen & invite button - NN
@@ -123,57 +123,152 @@ const GroupsDisplay = ({ groupId }) => {
   }, []);
 
   return (
-    <FlatList
-      data={groups}
-      keyExtractor={(item) => item.group_id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.groupItem}>
-          {/* Touchable for navigation */}
-          <TouchableOpacity
-            style={{ flex: 1 }}
-            onPress={() => navigation.navigate('Members', { 
-              groupName: item.group_name, 
-              groupId: item.group_id 
-            })}
-          >
-            {/* Left-aligned Group Name */}
-            <Text style={styles.groupName}>{item.group_name}</Text>
-          </TouchableOpacity>
+    // <FlatList
+    //   data={groups}
+    //   keyExtractor={(item) => item.group_id.toString()}
+    //   renderItem={({ item }) => (
+    //     <View style={styles.groupItem}>
+    //       {/* Touchable for navigation */}
+    //       <TouchableOpacity
+    //         style={{ flex: 1 }}
+    //         onPress={() => navigation.navigate('Members', { 
+    //           groupName: item.group_name, 
+    //           groupId: item.group_id 
+    //         })}
+    //       >
+    //         {/* Left-aligned Group Name */}
+    //         <Text style={styles.groupName}>{item.group_name}</Text>
+    //       </TouchableOpacity>
 
-          {/* Right-aligned Icon with Popover */}
-          <View ref={popoverButtonRef}>
-            <TouchableOpacity
-              onPress={(event) => {
-                event.stopPropagation(); // Prevents navigation from being triggered
-                setPopoverVisible(true);
-              }}
-              style={styles.groupColorPicker}
-            >
-              <Icon name="ellipsis-vertical" size={24} color="#000" />
-            </TouchableOpacity>
+    //       {/* Right-aligned Icon with Popover */}
+    //       <View ref={popoverButtonRef}>
+    //         <TouchableOpacity
+    //           onPress={(event) => {
+    //             event.stopPropagation();                                        // Prevents navigate to group -VA
+    //             setPopoverVisible(true);
+    //           }}
+    //           style={styles.groupColorPicker}
+    //         >
+    //           <Icon name="ellipsis-vertical" size={24} color="#000" />
+    //         </TouchableOpacity>
+    //       </View>
+
+    //       {/* Popover Menu */}
+    //       <Popover
+    //         isVisible={popoverVisible}
+    //         onRequestClose={() => setPopoverVisible(false)}
+    //         from={() => popoverButtonRef.current}
+    //         popoverStyle={styles.popover}
+    //       >
+    //       <View style={styles.menuContainer}>
+    //         <Text style={styles.groupName}>Change Group Color</Text>
+
+
+            
+    //         {/* <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
+    //           <Icon name="brush" size={24} color="#000"> option 1</Icon>
+
+    //         </TouchableOpacity> */}
+    //         <TouchableOpacity onPress={() => handleOptionSelect('Option 1')} style={styles.menuItem}>
+    //           <View style={styles.iconTextContainer}>
+    //             <Icon name="brush" size={24} color="#000" style={styles.groupColorIcon} />
+    //           </View>
+    //         </TouchableOpacity>
+
+    //         <TouchableOpacity onPress={() => handleOptionSelect('Option 2')} style={styles.menuItem}>
+    //           <View style={styles.iconTextContainer}>
+    //             <Icon name="brush" size={24} color="#000" style={styles.groupColorIcon} />
+    //           </View>
+    //         </TouchableOpacity>
+
+    //         <TouchableOpacity onPress={() => handleOptionSelect('Option 3')} style={styles.menuItem}>
+    //           <View style={styles.iconTextContainer}>
+    //             <Icon name="brush" size={24} color="#000" style={styles.groupColorIcon} />
+    //           </View>
+    //         </TouchableOpacity>
+    //       </View>
+
+    //       </Popover>
+    //     </View>
+    //   )}
+    //   contentContainerStyle={{ paddingBottom: 20 }}
+    // />
+
+<FlatList
+  data={groups}
+  keyExtractor={(item) => item.group_id.toString()}
+  renderItem={({ item }) => (
+    <View style={styles.groupItem}>
+      <TouchableOpacity
+        style={styles.groupItemTouchable}
+        onPress={() => navigation.navigate('Members', { 
+          groupName: item.group_name, 
+          groupId: item.group_id 
+        })}
+      >
+        <Text style={styles.groupName}>{item.group_name}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={(event) => {
+          event.stopPropagation(); // Prevent navigation
+          setPopoverVisible(true);
+        }}
+        style={styles.groupColorPicker}
+      >
+        <Icon name="ellipsis-vertical" size={24} color="#000" />
+      </TouchableOpacity>
+
+      {/* Popover Menu */}
+      {/* I think it currently works for last group rendered
+      if method not worked out, maybe adding a dropdown to pick the group and color ?    -VA  */}
+      <Popover
+        isVisible={popoverVisible}
+        onRequestClose={() => setPopoverVisible(false)}
+        from={() => popoverButtonRef.current}
+        popoverStyle={styles.popover}
+      >
+        <View style={styles.menuContainer}>
+          <Text style={styles.groupName}>Change Group Color</Text>
+
+          {/* Icon Grid */}
+          <View style={styles.iconGrid}>
+            {[...Array(8).keys()].map((_, index) => {
+              // Ensure that the color is correctly assigned from theme
+              const iconColors = [
+                colors.blue.main,    // Blue
+                colors.green.main,   // Green
+                colors.pink.main,    // Pink
+                colors.yellow.main,  // Yellow
+                colors.purple.main,  // Purple
+                '#A1A1A1',      // Placeholder colors
+                '#A1A1A1',      
+                '#A1A1A1',      
+              ];
+
+              const iconColor = iconColors[index];
+
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleOptionSelect(`Option ${index + 1}`)}
+                  style={styles.menuItem}
+                >
+                  <Icon name="brush" size={24} color={iconColor} style={styles.groupColorIcon} />
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
-          {/* Popover Menu */}
-          <Popover
-            isVisible={popoverVisible}
-            onRequestClose={() => setPopoverVisible(false)}
-            from={() => popoverButtonRef.current}
-            popoverStyle={styles.popover}
-          >
-            <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
-              <Text style={styles.menuItem}>Option 1</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleOptionSelect('Option 2')}>
-              <Text style={styles.menuItem}>Option 2</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleOptionSelect('Option 3')}>
-              <Text style={styles.menuItem}>Option 3</Text>
-            </TouchableOpacity>
-          </Popover>
+
         </View>
-      )}
-      contentContainerStyle={{ paddingBottom: 20 }}
-    />
+      </Popover>
+    </View>
+  )}
+  contentContainerStyle={{ paddingBottom: 20 }}
+/>
+
+
   );
 };
 
