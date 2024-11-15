@@ -971,6 +971,48 @@ app.delete('/leave-group', (req, res) => {
     });
 });
 
+// let an admin disband a group
+// input: username 
+//        group_id
+// output: if success, group with id = group_id will be disbanded
+app.delete('/disband-group', (req, res) => {
+    const { username, group_id } = req.body;
+
+    // query to verify if the user is the admin of the specified group
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API disband-group: Error verifying admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to verify admin status" });
+        }
+
+        // check if the user is an admin
+        if (results.length > 0 && results[0].role === 'admin') {
+            // query to delete the group
+            const deleteGroupQuery = `
+                DELETE FROM group_names 
+                WHERE id = ?
+            `;
+
+            db.query(deleteGroupQuery, [group_id], (err, result) => {
+                if (err) {
+                    console.error("API disband-group: Error disbanding group: ", err.message);
+                    return res.status(500).json({ error: "Failed to disband group" });
+                }
+                res.status(200).json({ message: "Group successfully disbanded" });
+            });
+        } else {
+            res.status(403).json({ error: "Only group admins can disband the group" });
+        }
+    });
+});
+
 
 
 /********************************************************** */
