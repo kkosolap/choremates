@@ -97,6 +97,7 @@ const NewChoreDisplay = ({ navigation }) => {
           assign_to: username,
           recurrence: selectedRec.value,
           group_id: selectedGroup.value,
+          username: username
         });
 
         await Promise.all(tasks.map(group_task_name =>

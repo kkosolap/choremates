@@ -169,7 +169,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
             new_chore_name: chore_name,  // updated chore name from input
             group_id: choreGroup.value,
             recurrence: selectedRec.value,
-            assigned_to: username
+            assigned_to: username,
+            username: username
           });
         }
 
@@ -204,7 +205,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
       if (choreGroup.label == 'Personal'){
         await axios.post(`${API_URL}delete-chore`, { chore_name, username });
       } else {
-        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value });
+        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value, username: username });
       }
       navigation.goBack();   
     } catch (error) {

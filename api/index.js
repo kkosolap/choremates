@@ -122,6 +122,22 @@ async function getGroupTaskId(group_task_name, group_chore_id) {
     return results[0].id;
 }
 
+// check the user's group chore modification permission
+const canModifyChore = async (username, group_id) => {
+    const query = `
+        SELECT can_modify_chore
+        FROM group_members
+        JOIN users ON group_members.user_id = users.id
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+    const [rows] = await db.promise().query(query, [username, group_id]);
+    if (rows.length === 0) {
+        throw new Error("User is not a member of the group.");
+    }
+    return rows[0].can_modify_chore;
+};
+
+
 
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
@@ -875,7 +891,7 @@ app.get('/get-is-admin', (req, res) => {
     });
 });
 
-// remove a user (must be member) from group (only admin can remove members, but admin cannot remove themselves)
+// remove a user (must be member) from group (only admin can remove members, but admin cannot remove themselves) --EL
 // input: username (requesting user, the user that's trying to remove someone from the group), 
 //        group_id, 
 //        user_to_remove (this is a username)
@@ -928,7 +944,7 @@ app.delete('/remove-user-from-group', (req, res) => {
     });
 });
 
-// let a non-admin member leave a group
+// let a non-admin member leave a group --EL
 // input: username 
 //        group_id
 // output: if success, user with username will leave group with id = group_id
@@ -971,7 +987,7 @@ app.delete('/leave-group', (req, res) => {
     });
 });
 
-// let an admin disband a group
+// let an admin disband a group --EL
 // input: username 
 //        group_id
 // output: if success, group with id = group_id will be disbanded
@@ -1012,6 +1028,54 @@ app.delete('/disband-group', (req, res) => {
         }
     });
 });
+
+// let an admin update a group member's permission to modify (add, update, delete) group chores --EL
+// input: username (the admin)
+//        group_id 
+//        user_to_update (update this member's permission)
+//        can_modify_chore (True / False, update permission to the corresponding boolean)
+// output: if success, group with id = group_id will be disbanded
+app.put('/update-chore-permission', (req, res) => {
+    const { username, group_id, user_to_update, can_modify_chore } = req.body;
+
+    // query to check if the requester is an admin of the group
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API update-chore-permission: Error verifying admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to verify admin status" });
+        }
+
+        // verify if the requester is an admin
+        if (results.length > 0 && results[0].role === 'admin') {
+            // query to update chore modification permission for the member
+            const updatePermissionQuery = `
+                UPDATE group_members 
+                JOIN users ON group_members.user_id = users.id 
+                SET can_modify_chore = ? 
+                WHERE users.username = ? AND group_members.group_id = ?
+            `;
+
+            db.query(updatePermissionQuery, [can_modify_chore, user_to_update, group_id], (err, result) => {
+                if (err) {
+                    console.error("API update-chore-permission: Error updating group chore permission: ", err.message);
+                    return res.status(500).json({ error: "Failed to update group chore permission" });
+                }
+
+                res.status(200).json({ message: "Group chore modification permission updated successfully" });
+            });
+        } else {
+            res.status(403).json({ error: "Only admins can update group chore permissions" });
+        }
+    });
+});
+
 
 
 
@@ -1100,11 +1164,19 @@ app.post('/get-group-name', async (req, res) => {
 // add a new chore to the group -KK
 app.post('/add-group-chore', async (req, res) => {
     try {
-        const { group_chore_name, group_id, assign_to, recurrence } = req.body;
-        if (!group_chore_name || !group_id || !assign_to || !recurrence) {
+        // username (user who's trying to add this group chore) --EL
+        const { group_chore_name, group_id, assign_to, recurrence, username } = req.body;
+        if (!group_chore_name || !group_id || !assign_to || !recurrence || !username) {
             console.log("API add-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
         }  
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API add-group-chore: No permission to modify chores in this group.");
+            return res.status(403).send("You do not have permission to modify chores in this group.");
+        }
 
         // TEMPORARY
         const user_id = await getUserId(assign_to);
@@ -1127,10 +1199,18 @@ app.post('/add-group-chore', async (req, res) => {
 // update the details of a chore -MH
 app.post('/update-group-chore', async (req, res) => {
     try {
-        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to } = req.body;
-        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to) {
+        // username (user who's trying to update this group chore) --EL
+        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to, username } = req.body;
+        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to || !username) {
             console.log("API update-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
+        }
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API update-group-chore: No permission to modify chores in this group.");
+            return res.status(403).send("You do not have permission to modify chores in this group.");
         }
         
         // NEED TO CHANGE LATER
@@ -1156,10 +1236,17 @@ app.post('/update-group-chore', async (req, res) => {
 
 app.post('/delete-group-chore', async (req, res) => {
     try {
-        const { group_chore_name, group_id } = req.body;
-        if (!group_chore_name || !group_id) {
+        const { group_chore_name, group_id, username } = req.body;
+        if (!group_chore_name || !group_id || !username) {
             console.log("API delete-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
+        }
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API delete-group-chore: No permission to modify chores in this group.");
+            return res.status(403).send("You do not have permission to modify chores in this group.");
         }
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
