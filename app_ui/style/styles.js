@@ -912,10 +912,8 @@ const createStyles = (theme) => {
       paddingVertical: 20,
       paddingHorizontal: 20,
       marginVertical: 15,
-      borderColor: theme.lighter,
       borderWidth: 3,
       borderRadius: 20,
-      backgroundColor: theme.lightest,
     },
     
     groupName: {
