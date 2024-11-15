@@ -1,13 +1,14 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -31,17 +32,28 @@ const NewChoreScreen = ({ navigation }) => {
 const NewChoreDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const [chore_name, setChoreName] = useState('');     // the name of the chore to be added to the db -KK
-  const [userGroups, setUserGroups] = useState([]);
-  const [group, setGroup] = useState('Personal');
-  const [recurrence, setRecurrence] = useState('Just Once');    // how often the chore recurrs, added to the db -KK
-  const [tasks, setTasks] = useState([]);              // the new task list to be added to the array -KK
-  const [newTask, setNewTask] = useState('');          // block for the new task to add to the list -KK
-  const [isGroupModalVisible, setIsGroupModalVisible] = useState(false);
-  const [isRecurrenceModalVisible, setIsRecurrenceModalVisible] = useState(false);
-  const [username, setUsername] = useState(null);
 
-  // Get user
+  const [username, setUsername] = useState(null);
+  const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
+  const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
+  const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
+
+  // recurrence dropdown
+  const recDropdownData = [
+    { label: 'Just Once', value: 'Just Once' },
+    { label: 'Every Minute', value: 'Every Minute' },
+    { label: 'Daily', value: 'Daily' },
+    { label: 'Weekly', value: 'Weekly' },
+  ];
+  const initialRec = { label: 'Just Once', value: 'Just Once' };
+  const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
+
+  // group dropdown
+  const [groupDropdownData, setGroupDropdownData] = useState([{ label: 'Personal', value: -1 }]);
+  const initialGroup = { label: 'Personal', value: -1 };
+  const [selectedGroup, setSelectedGroup] = useState(initialGroup);
+
+  // Get user and groups
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
       const storedUsername = await SecureStore.getItemAsync('username');
@@ -50,11 +62,17 @@ const NewChoreDisplay = ({ navigation }) => {
       } else {
         console.error("UI NewChore.js: Username not found in SecureStore.");
       }
+      
       // get all groups for the user -KK
-      await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).then((response) => setUserGroups(response.data))
-      .catch((error) => console.error(error)); 
-      console.log("UI NewChore: userGroups is " + userGroups);
-      refresh();
+      const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
+
+      if (response && response.data) {
+        const transformedData = response.data.map(group => ({
+          label: group.group_name,
+          value: group.group_id,
+        }));
+        setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedData]);
+      }
     };
     getUsername();
   }, []);
@@ -62,12 +80,11 @@ const NewChoreDisplay = ({ navigation }) => {
   // Add the chore to the database
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
-    console.log("UI NewChore: adding chore " + chore_name + " to " + group);
+    console.log("UI NewChore: adding chore " + chore_name + " to " + selectedGroup.label);
     try {
-      console.log("UI NewChore: userGroups is " + JSON.stringify(userGroups));
       // add the chore to the database -KK
-      if(group == 'Personal'){
-        await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence });
+      if(selectedGroup.label == 'Personal'){
+        await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence: selectedRec.value });
         // loop through tasks and add each one to the db -KK
         await Promise.all(tasks.map(task_name =>
           axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
@@ -75,30 +92,25 @@ const NewChoreDisplay = ({ navigation }) => {
       }else{
         // add the group chore to the database -KK
         // assign_to is hardcoded as of now
-
-        const groupEntry = userGroups.find(entry => entry.group_name === group);
-        const group_id = groupEntry.group_id;
-
         await axios.post(`${API_URL}add-group-chore`, { 
           group_chore_name: chore_name,
           assign_to: username,
-          group_id,
-          recurrence
+          recurrence: selectedRec.value,
+          group_id: selectedGroup.value,
         });
 
         await Promise.all(tasks.map(group_task_name =>
-          axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id })
+          axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value })
         ));
       }
 
       // reset everything -KK
       setChoreName('');
-      setUserGroups([]);
       setNewTask('');
-      setGroup('Personal');
-      setRecurrence('Just Once');
+      setSelectedRec(initialRec);
+      setSelectedGroup(initialGroup);
       setTasks([]);
-      navigation.goBack();    // exit and go back to home -KK
+      navigation.goBack();  // exit and go back to home -KK
     } catch (error) {
       console.error("Error adding chore:", error);
     }
@@ -118,20 +130,15 @@ const NewChoreDisplay = ({ navigation }) => {
     setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
   };
 
-  const refresh = () => {
-    userGroups.forEach(group => {
-      console.log("UI NewChore group is: " + group.group_name);
-    });
-  };
-
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
-      <View style={styles.formContainer}>
-        {/* the chore name bit -KK */}
+
+        <View style={styles.formContainer}>
+        {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.choreNameInput}
           placeholder="Enter Chore Name . . ."
           placeholderTextColor={theme.text3}
           value={chore_name}
@@ -139,72 +146,23 @@ const NewChoreDisplay = ({ navigation }) => {
           onChangeText={setChoreName}
         />
 
-        {/* the chore group bit -KK */}
+        {/* Group Dropdown */}
         <Text style={styles.label}>Group:</Text>
-        <TouchableOpacity
-          style={styles.dropdown}
-          onPress={() => setIsGroupModalVisible(true)}
-        >
-          <Text style={styles.dropdownText}>{group}</Text>
-        </TouchableOpacity>
+        <Dropdown
+          label="Select Group"
+          data={groupDropdownData}
+          onSelect={setSelectedGroup}
+          initialValue={initialGroup}
+        />
 
-        <Modal
-          visible={isGroupModalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setIsGroupModalVisible(false)}
-        >
-          <View style={oldStyles.modalOverlay}>
-            <View style={oldStyles.modalContainer}>
-              <TouchableOpacity onPress={() => { setGroup('Personal'); setIsGroupModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Personal</Text>
-              </TouchableOpacity>
-              {/* loop through all user groups and add that to the modal list -KK */}
-              {userGroups && userGroups.length > 0 && (
-                userGroups.map((group, index) => (
-                  <TouchableOpacity key={index} onPress={() => { setGroup(group.group_name); setIsGroupModalVisible(false); }}>
-                    <Text style={oldStyles.modalItem}>{group.group_name}</Text>
-                  </TouchableOpacity>
-                ))
-              )}
-            </View>
-          </View>
-        </Modal>
-
-        {/* the recurrence bit -KK */}
+        {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
-        <TouchableOpacity
-          style={styles.dropdown}
-          onPress={() => setIsRecurrenceModalVisible(true)}
-        >
-          <Text style={styles.dropdownText}>{recurrence}</Text>
-        </TouchableOpacity>
-
-        {/* modal is acting as the "drop down" menu for recurence */}
-        {/* this will be changed as recurrence is further implemented -KK */}
-        <Modal
-          visible={isRecurrenceModalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setIsRecurrenceModalVisible(false)}
-        >
-          <View style={oldStyles.modalOverlay}>
-            <View style={oldStyles.modalContainer}>
-              <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Just Once</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Every Minute'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Every Minute</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Daily'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Daily</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsRecurrenceModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Weekly</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <Dropdown
+          label="Select Item"
+          data={recDropdownData}
+          onSelect={setSelectedRec}
+          initialValue={initialRec}
+        />
 
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
@@ -232,7 +190,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Add Task input and button  -MH */}
         <View style={styles.inputAndButton}>
           <TextInput
-            style={styles.smallerInput}
+            style={styles.taskNameInput}
             placeholder="Add Task . . ."
             placeholderTextColor={theme.text3}
             value={newTask}
@@ -248,45 +206,22 @@ const NewChoreDisplay = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.centeredContent}>
-          <TouchableOpacity
-            style={styles.addChoreButton}
-            onPress={addChore}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.addChoreButtonText}>Add Chore</Text>
-          </TouchableOpacity>
-        </View>
       </View>
+            
+      {/* ADD CHORE Button */}
+      <View style={styles.centeredContent}>
+        <TouchableOpacity
+          style={styles.addChoreButton}
+          onPress={addChore}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addChoreButtonText}>Add Chore</Text>
+        </TouchableOpacity>
+      </View>
+      
     </View>
   );
 };
-
-
-// temporary styles for this screen -KK
-const oldStyles = StyleSheet.create({
-  
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  modalItem: {
-    fontSize: 18,
-    padding: 10,
-    width: '100%',
-    textAlign: 'center',
-  },
-});
 
 
 export default NewChoreScreen;

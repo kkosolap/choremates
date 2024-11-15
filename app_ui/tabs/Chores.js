@@ -21,7 +21,7 @@ const ChoresScreen = () => {
 
   return (
     <View style={styles.screen}>
-      <TabHeader title="Weekly Chores" />
+      <TabHeader title="Chores" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ChoresDisplay />
       </ScrollView>
@@ -38,10 +38,9 @@ const ChoresDisplay = () => {
   const [edit, setEdit] = useState(null);         // tracks which chores are being edited -KK
 
   const [personalData, setPersonalData] = useState([]);
+  const [groupData, setGroupData] = useState([]);
   const [task_name, setNewTask] = useState('');  
 
-  const [userGroups, setUserGroups] = useState([]);
-  const [groupData, setGroupData] = useState([]);
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -144,10 +143,7 @@ const ChoresDisplay = () => {
       group_chore_name, 
       group_task_name, 
       group_id
-    }).then((response) => {
-        refresh(username);     // refresh task list after updating -KK
-      })
-      .catch((error) => console.error(error));
+    }).then(refresh(username)).catch((error) => console.error(error)); // refresh task list after updating -KK
   };
 
   // fetch the task list for display -KK
@@ -158,15 +154,20 @@ const ChoresDisplay = () => {
 
     // get all the group chore ids for the user -KK
     const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username }).catch((error) => console.error(error));
-    setUserGroups(response.data)
 
-    // get the group chore data for each group -KK
+    let allGroupData = []; 
+
+    // get the group chore data for each group
     for (const group of response.data) {
       const group_id = group.group_id; 
       await axios.post(`${API_URL}get-group-chores-data-for-user`, { username, group_id })
-          .then((response) => setGroupData(response.data))
-          .catch((error) => console.error(error));
+        .then((response) => {
+          allGroupData = [...allGroupData, ...response.data]; 
+        })
+        .catch((error) => console.error(error));
     }
+
+    setGroupData(allGroupData); 
   };
 
 

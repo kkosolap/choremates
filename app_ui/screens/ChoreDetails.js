@@ -1,7 +1,7 @@
 // ChoreDetails.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
@@ -9,6 +9,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import Dropdown from '../components/dropdown.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -34,17 +35,27 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
+  // get current chore details from parameters -MH
   const route = useRoute();
-  const { routed_chore_name, routed_tasks, routed_recurrence } = route.params;  // Get chore name from parameters
+  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id } = route.params;
 
+  const [username, setUsername] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
-  const [recurrence, setRecurrence] = useState('Just Once');  // how often the chore recurrs, added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [username, setUsername] = useState(null);
+  const [choreGroup, setChoreGroup] = useState({});
 
-  // Get user
+  // recurrence dropdown -MH
+  const recDropdownData = [
+    { label: 'Just Once', value: 'Just Once' },
+    { label: 'Every Minute', value: 'Every Minute' },
+    { label: 'Daily', value: 'Daily' },
+    { label: 'Weekly', value: 'Weekly' },
+  ];
+  const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
+  const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
+
+  // Get user and groups
   useEffect(() => {
     const getUsername = async () => {   // get the username from securestore -KK
       const storedUsername = await SecureStore.getItemAsync('username');
@@ -54,22 +65,47 @@ const ChoreDetailsDisplay = ({navigation}) => {
         console.error("UI ChoreDetails.js: Username not found in SecureStore.");
       }
     };
+
     getUsername();
   }, []);
+
+  useEffect(() => {
+    const getGroupName = async () => {
+      if (routed_group_id == -1) {
+        setChoreGroup({ label: "Personal", value: routed_group_id });
+      } else {
+          try {
+            const response = await axios.post(`${API_URL}get-group-name`, { group_id: routed_group_id });
+            if (response && response.data) {
+              setChoreGroup({ label: response.data.group_name, value: routed_group_id });
+            } else {
+              console.error("Group name not found for the provided group_id.");
+            }
+          } catch (error) {
+            console.error("Error fetching group name:", error);
+          }
+      }
+    };
+  
+    getGroupName();
+  }, [routed_group_id]);
 
   // Set form starting values to the saved details of the chore -MH
   useEffect(() => {
     setChoreName(routed_chore_name);
     setTasks(routed_tasks);
-    setRecurrence(routed_recurrence);
-  }, [routed_chore_name, routed_tasks, routed_recurrence]);
+  }, [routed_chore_name, routed_tasks]);
 
   // Get the existing tasks for the chore from the database -MH
   const getExistingTasks = async () => {
-    const response = await axios.post(`${API_URL}get-tasks`, { chore_name, username });
-    
-    // get result as array of strings
-    return response.data.map(taskObj => taskObj.task_name);
+    let response = null;
+    if(choreGroup.label == 'Personal'){
+      response = await axios.post(`${API_URL}get-tasks`, { chore_name, username });
+      return response.data.map(taskObj => taskObj.task_name);
+    } else {
+      response = await axios.post(`${API_URL}get-group-tasks`, { group_chore_name: chore_name, group_id: choreGroup.value });
+      return response.data.map(taskObj => taskObj.group_task_name);
+    }
   };
 
   // Compare 'tasks' list with the database and add/remove tasks from the database to match 'tasks' -MH
@@ -87,17 +123,29 @@ const ChoreDetailsDisplay = ({navigation}) => {
         !tasks.includes(existingTask)
       );
 
-      // add new tasks
-      await Promise.all(
-        tasksToAdd.map(task_name =>
-          axios.post(`${API_URL}add-task`, { chore_name, task_name, username }))
-      );
+      if(choreGroup.label == 'Personal'){
+        // add new tasks
+        await Promise.all(
+          tasksToAdd.map(task_name =>
+            axios.post(`${API_URL}add-task`, { chore_name, task_name, username }))
+        );
 
-      // remove tasks that are no longer in the array
-      await Promise.all(
-        tasksToRemove.map(task_name =>
-          axios.post(`${API_URL}delete-task`, { chore_name, task_name, username }))
-      );
+        // remove tasks that are no longer in the array
+        await Promise.all(
+          tasksToRemove.map(task_name =>
+            axios.post(`${API_URL}delete-task`, { chore_name, task_name, username }))
+        );
+      } else { 
+        await Promise.all(
+          tasksToAdd.map(group_task_name =>
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
+        );
+
+        await Promise.all(
+          tasksToRemove.map(group_task_name =>
+            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
+        );
+      }
 
     } catch (error) {
       console.error("Error updating tasks in database:", error);
@@ -108,12 +156,22 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
     try {
-        await axios.post(`${API_URL}update-chore`, {
+        if(choreGroup.label == 'Personal') {
+          await axios.post(`${API_URL}update-chore`, {
             old_chore_name: routed_chore_name,  // original chore name
             new_chore_name: chore_name,  // updated chore name from input
             username,
-            recurrence,
-        });
+            recurrence: selectedRec.value,
+          });
+        } else {
+          await axios.post(`${API_URL}update-group-chore`, {
+            old_chore_name: routed_chore_name,  // original chore name
+            new_chore_name: chore_name,  // updated chore name from input
+            group_id: choreGroup.value,
+            recurrence: selectedRec.value,
+            assigned_to: username
+          });
+        }
 
         // add/remove tasks in database to match list in edit details window
         await updateTasksInDatabase();
@@ -143,7 +201,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Deletes the chore from the database -KK
   const deleteChore = async (chore_name) => {
     try {
-      await axios.post(`${API_URL}delete-chore`, { chore_name, username });
+      if (choreGroup.label == 'Personal'){
+        await axios.post(`${API_URL}delete-chore`, { chore_name, username });
+      } else {
+        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value });
+      }
       navigation.goBack();   
     } catch (error) {
       console.error(error);
@@ -159,46 +221,25 @@ const ChoreDetailsDisplay = ({navigation}) => {
         {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.choreNameInput}
           value={chore_name}
           selectionColor={theme.text2}
           onChangeText={setChoreName}
         />
 
+        {/* Show Group */}
+        <Text style={styles.label}>Group: {choreGroup.label}</Text>
+        <View style={styles.spacer}></View>
+        <View style={styles.spacer}></View>
+
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
-        <TouchableOpacity
-          style={styles.dropdown}
-          onPress={() => setIsModalVisible(true)}
-        >
-          <Text style={styles.dropdownText}>{recurrence}</Text>
-        </TouchableOpacity>
-
-        {/* modal is acting as the "drop down" menu for recurence */}
-        {/* this will be changed as recurrence is further implemented -KK */}
-        <Modal
-          visible={isModalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setIsModalVisible(false)}
-        >
-          <View style={oldStyles.modalOverlay}>
-            <View style={oldStyles.modalContainer}>
-              <TouchableOpacity onPress={() => { setRecurrence('Just Once'); setIsModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Just Once</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Every Minute'); setIsModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Every Minute</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Daily'); setIsModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Daily</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setRecurrence('Weekly'); setIsModalVisible(false); }}>
-                <Text style={oldStyles.modalItem}>Weekly</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <Dropdown
+          label=""
+          data={recDropdownData}
+          onSelect={setSelectedRec}
+          initialValue = {initialRec}
+        />
 
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
@@ -223,10 +264,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
           />
         </View>
 
-        {/* 'Add Task' input and button  -MH */}
+        {/* 'Add Task' input and button */}
         <View style={styles.inputAndButton}>
           <TextInput
-            style={styles.smallerInput}
+            style={styles.taskNameInput}
             placeholder="Add Task . . ."
             placeholderTextColor={theme.text3}
             value={newTask}
@@ -268,30 +309,5 @@ const ChoreDetailsDisplay = ({navigation}) => {
     </View>
   );
 };
-
-
-// temporary styles for this screen -KK
-const oldStyles = StyleSheet.create({
-  
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  modalItem: {
-    fontSize: 18,
-    padding: 10,
-    width: '100%',
-    textAlign: 'center',
-  },
-});
 
 export default ChoreDetailsScreen;

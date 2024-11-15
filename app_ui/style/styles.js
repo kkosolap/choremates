@@ -1,6 +1,9 @@
 // styles.js
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+// Added for future reference -VA
+// const { height } = Dimensions.get('window');
+
 
 // function to create styles based on the theme  -MH
 const createStyles = (theme) => {
@@ -166,6 +169,43 @@ const createStyles = (theme) => {
       marginTop: 8
     },
 
+    // home page chore sections
+    groupContentSection: {
+      marginTop: 20,
+      width: '90%',
+      alignItems: 'center',
+    },
+    groupChoreSectionLabel: {
+      flexDirection: 'row', // Align children (text and icon) horizontally
+      alignItems: 'center', // Center items vertically
+      justifyContent: 'space-between', // Ensure text stays on the left, button on the right
+      width: '100%',
+      paddingLeft: 30,
+      margin: 0,
+    },
+    groupLabelChevron: {
+      position: 'absolute',
+      left: 2,
+    },
+    choresList: {
+      flex: 1,
+      width: '100%',
+      alignItems: 'center', // Horizontally center content
+      justifyContent: 'flex-start', // Start content at the top
+    },
+    fullWidth: {
+      width: '100%',
+      margin: 0,
+    },
+    emptySectionText: {
+      fontSize: 18,
+      fontWeight: '400',
+      color: theme.text2,
+    },
+    emptySectionSection: {
+      marginHorizontal: 30,
+    },
+
     // chore block  -MH
     choreBlock: baseChoreBlock,
     choreBlockCompleted: {
@@ -182,6 +222,8 @@ const createStyles = (theme) => {
       backgroundColor: theme.lightest,
       borderColor: theme.lighter,
       borderWidth: 3,
+      margin: 5,
+      paddingVertical: 5,
     },
     choreCheck: {
       position: 'absolute', // position it absolutely within the header
@@ -225,12 +267,6 @@ const createStyles = (theme) => {
       right: 15,            // distance from the right edge
       top: 20,              // distance from the top edge
       zIndex: 1,            // ensure it's above other elements
-    },
-    choresList: {
-      flex: 1,
-      width: 390,
-      alignItems: 'center',          // Horizontally center content
-      justifyContent: 'flex-start',  // Start content at the top
     },
 
     // tasks  -MH
@@ -315,14 +351,13 @@ const createStyles = (theme) => {
 
     //logout -NN
     logoutButton: {
-      position: "absolute",
       width: '80%',
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
-      bottom: 100,
+      marginTop: 20,
     },
     logoutButtonText: {
       color: theme.white,
@@ -364,17 +399,17 @@ const createStyles = (theme) => {
       fontWeight: '600', // semi-bold
       marginBottom: 5,
     },
-    input: {
+    choreNameInput: {
       width: '100%',
       padding: 8,
       borderWidth: 1,
       borderColor: theme.lighter,
       borderRadius: 10,
-      marginBottom: 20,
+      marginBottom: 25,
       fontSize: 16,
       color: theme.text1, // color when typing
     },
-    smallerInput: {
+    taskNameInput: {
       width: '87%',
       padding: 8,
       borderWidth: 1,
@@ -388,14 +423,14 @@ const createStyles = (theme) => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      marginBottom: 20,
+      marginBottom: 25,
     },
     inputButtonContainer: {
       width: '13%',
       justifyContent: 'center',
       alignItems: 'flex-end', // align to the right
     },
-    dropdown: {
+    oldDropdown: {
       width: '100%',
       padding: 9,
       borderWidth: 1,
@@ -403,7 +438,7 @@ const createStyles = (theme) => {
       borderRadius: 10,
       marginBottom: 20,
     },
-    dropdownText: {
+    oldDropdownText: {
       fontSize: 16,
       color: theme.text1,
     },
@@ -458,8 +493,60 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
 
+    // chore details form dropdown -MH
+    dropdownContainer: {
+      width: '100%',
+      alignSelf: 'center',
+      marginBottom: 25,
+    },
+    dropdownButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      padding: 9,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+    },
+    dropdownButtonText: {
+      fontSize: 16,
+      color: theme.text1,
+      flex: 1,
+    },
+    dropdownCenteredContainer: {
+      justifyContent: 'center', // Center vertically
+      alignItems: 'center',     // Center horizontally
+      position: 'absolute',
+    },
+    dropdownOptionsContainer: {
+      backgroundColor: theme.white,
+      width: '100%',
+      borderRadius: 5,
+      elevation: 2,
+      shadowColor: theme.gray,
+      shadowRadius: 4,
+      shadowOffset: { height: 4, width: 0 },
+      shadowOpacity: 0.5,
+    },
+    dropdownOption: {
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderColor: theme.lighter,
+    },
+    dropdownOptionText: {
+      fontSize: 16,
+      color: theme.text1,
+    },
+    dropdownOverlay: {
+      alignItems: 'center',
+      width: '100%',
+      height: '100%',
+    },
+
     // Settings.js styles (for Profile/Settings page) -VA
-    // Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+    //      Width/heights/margins may need to be changes to be device reliant so it will suit all devices
+
     // profile section -KK
     profileContainer:{
       flexGrow: 1,
@@ -469,11 +556,17 @@ const createStyles = (theme) => {
       paddingTop: 20,         // Optional: Add some space at the top
       paddingBottom: 100,
     },
-    profileTopSection: {
+    profilePicSection: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: 75,        // Profile + name are off center
+    },
+    profileNameSection: {
+      alignItems: 'flex-start',
+      flexDirection: 'column', 
+      width: '100%',
+      paddingLeft: 25,
+      
     },
     profilePictureArea: {
       width: 100,
@@ -489,11 +582,12 @@ const createStyles = (theme) => {
       fontSize: 30,
       fontWeight: 'bold',
       color: '#5c5c5c',
-      maxWidth: 85,   // works with this width but cuts name off -VA
+      width: '100%',  // Allows the text to use the full available width
+      flexWrap: 'wrap',  // Ensures the text breaks if it's too long
     },
     profileUsernameText: {
-      fontSize: 18,
-      color: theme.gray,
+      fontSize: 20,
+      color: '#5c5c5c',
     },
     settingsPadding: {
       paddingBottom: 20,
@@ -516,32 +610,37 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     setProfileIcon: {
-      width: 80, // Width of the button
-      height: 80, // Height of the button
-      borderRadius: 40, // Makes the button circular
-      overflow: 'hidden', // Ensures the image is clipped to the button shape
+      width: 80, 
+      height: 80,
+      borderRadius: 40, 
+      overflow: 'hidden',
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 20,
 
     },
     pfpImage: {
-      width: 80,           // Ensures the image covers the button area
-      height: 80,          // Ensures the image covers the button area
-      resizeMode: 'cover', // Keeps the image aspect ratio
+      width: 80,          
+      height: 80,         
+      resizeMode: 'cover',
     },
+    
+    // Display Icons in Pop Up Profile Pic Selection
     pfpIconContainer: {
+      flex: 1,
+      marginTop: 20,
       flexDirection: 'row', 
       flexWrap: 'wrap',
       justifyContent: 'space-around', 
       width: '85%',
+      alignItems: 'center',
     },
     pfpContainer: {
       flex: 1, 
       justifyContent: 'center', 
       alignItems: 'center'
     },
-
+    
     // theme section -KK
     themeIconContainer: {
       width: 400,
@@ -585,7 +684,7 @@ const createStyles = (theme) => {
       marginLeft: 20,
     },
 
-    //members page -NN
+    // members page -NN
     manageButton: {
       position: 'absolute',
       width: '80%',

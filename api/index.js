@@ -311,26 +311,79 @@ app.post('/update-profile', async (req, res) => {
 /********************************************************** */
 // cron job for daily and weekly resets - AT
 // every minute for test purposes - AT
-cron.schedule('* * * * *', () => { resetRecurringChores('Every Minute'); });
-cron.schedule('0 0 * * *',  () => { resetRecurringChores('Daily'); });
-cron.schedule('0 0 * * 1',  () => { resetRecurringChores('Weekly'); });
+cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
+cron.schedule('0 0 * * *',  () => { resetAndRotateChores('Daily'); });
+cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); });
 
-// function to handle recurrence -AT
-async function resetRecurringChores(type) {
+// function to handle single user recurrence -AT
+async function resetAndRotateChores(type) {
+    try {
+        await resetSingleUserChores(type);          // single-user chores recurrence
+        await resetAndRotateGroupUserChores(type);  // group-user chores recurrence and rotation
+    } catch (error) {
+        console.error("Error in resetAndRotateChores:", error);
+    }
+}
+
+async function resetSingleUserChores(type) {
     const query = `SELECT id, is_completed FROM chores WHERE recurrence = ?`;
     const [chores] = await db.promise().query(query, [type]);
 
     for (const chore of chores) {
-        const [results] = await db.promise().query("SELECT is_completed FROM chores WHERE id = ?", [chore.id]);    
-        const is_completed = results[0].is_completed;
-
         const query = `UPDATE chores SET is_completed = false WHERE id = ?`;
         try{
             console.log("API resetRecurringChores: reseting chore " + chore.id);
-            await db.promise().query(query, [false, chore.id]);
+            await db.promise().query(query, [chore.id]);
         } catch (error) {
             console.error("Error resetting chore:", error);
         }
+    }
+}
+
+async function resetAndRotateGroupUserChores(type) {
+    const query = `SELECT id, group_id, assigned_to, is_completed FROM group_chores WHERE recurrence = ?`;
+    const [groupChores] = await db.promise().query(query, [type]);
+
+    for (const chore of groupChores) {
+        const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
+        try{
+            console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
+            await db.promise().query(query, [chore.id]);
+
+            // should only be calling rotate when the chores are reset each week
+            if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
+                await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
+            }
+
+        } catch (error) {
+            console.error("Error resetting chore:", error);
+        }
+    }
+}
+
+async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
+    try {
+        // retrieve all users in the group (order them for consistent rotation) -AT
+        const query = 'SELECT id FROM group_members WHERE group_id = ? ORDER BY id ASC'
+        const [users] = await db.promise().query(query, [group_id]);
+
+        // find the current user in the sorted user list -AT
+        const currentIndex = users.findIndex(user => user.id === current_assigned_to);
+        if (currentIndex === -1) {
+            console.error(`User with ID ${current_assigned_to} not found in group ${group_id}.`);
+            return;
+        }
+
+        // Rotate to the next user (loop back to the first user if at the end) -AT
+        const nextUser = users[(currentIndex + 1) % users.length];
+
+        // Update the chore with the new user assignment -AT
+        const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
+        await db.promise().query(updateQuery, [nextUser.id, chore_id]);
+
+        console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
+    } catch (error) {
+        console.error("Error rotating group chore to the next user:", error);
     }
 }
 
@@ -875,6 +928,50 @@ app.delete('/remove-user-from-group', (req, res) => {
     });
 });
 
+// let a non-admin member leave a group
+// input: username 
+//        group_id
+// output: if success, user with username will leave group with id = group_id
+app.delete('/leave-group', (req, res) => {
+    const { username, group_id } = req.body;
+
+    // query to check if the user is a member and not an admin in the specified group
+    const checkMembershipQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkMembershipQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API leave-group: Error checking membership status: ", err.message);
+            return res.status(500).json({ error: "Failed to check membership status" });
+        }
+
+        // verify the user is a member (not an admin)
+        if (results.length > 0 && results[0].role !== 'admin') {
+            // query to remove the user from the group
+            const removeMemberQuery = `
+                DELETE FROM group_members 
+                WHERE user_id = (SELECT id FROM users WHERE username = ?) 
+                AND group_id = ?
+            `;
+
+            db.query(removeMemberQuery, [username, group_id], (err, result) => {
+                if (err) {
+                    console.error("API leave-group: Error removing member from group: ", err.message);
+                    return res.status(500).json({ error: "Failed to leave group" });
+                }
+                res.status(200).json({ message: "Successfully left the group" });
+            });
+        } else {
+            res.status(403).json({ error: "Only non-admin members can leave the group" });
+        }
+    });
+});
+
+
 
 /********************************************************** */
 /*              GROUP CHORE IMPLEMENTATION BELOW:           */
@@ -943,6 +1040,21 @@ app.post('/get-group-chores-data-for-user', async (req, res) => {
     }
 });
 
+// get group_name by group_id -MH
+app.post('/get-group-name', async (req, res) => {
+    const { group_id } = req.body;
+    try {
+        const [results] = await db.promise().query("SELECT group_name FROM group_names WHERE id = ?", [group_id]);
+        if (results.length === 0) {
+        return res.status(404).json({ error: 'Group not found' });
+        }
+        res.json({ group_name: results[0].group_name });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // add a new chore to the group -KK
 app.post('/add-group-chore', async (req, res) => {
     try {
@@ -973,19 +1085,25 @@ app.post('/add-group-chore', async (req, res) => {
 // update the details of a chore -MH
 app.post('/update-group-chore', async (req, res) => {
     try {
-        const { old_chore_name, new_chore_name, group_id, recurrence, assign_to } = req.body;
-        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assign_to) {
+        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to } = req.body;
+        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to) {
             console.log("API update-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
         }
         
+        // NEED TO CHANGE LATER
+        const assign_to = await getUserId(assigned_to);
+        // NEED TO CHANGE ABOVE LATER
+
+        const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(old_chore_name, group_id);
+
         // Update the chore details in the database
         const query = `
             UPDATE group_chores
             SET group_chore_name = ?, recurrence = ?, assigned_to = ?
-            WHERE group_id = ? AND group_chore_name = ?
+            WHERE id = ?
         `;
-        await db.promise().query(query, [new_chore_name, recurrence, assign_to, group_id, old_chore_name]);
+        await db.promise().query(query, [new_chore_name, recurrence, assign_to, group_chore_id ]);
 
         res.status(200).json({ message: "Chore updated successfully." });
     } catch (error) {
