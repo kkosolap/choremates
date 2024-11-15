@@ -60,7 +60,7 @@ app.get('/get-users', (req, res) => {
 
 
 /********************************************************** */
-/*                HELPER FUNCTIONS BELOW:                */
+/*                HELPER FUNCTIONS BELOW:                   */
 /********************************************************** */
 // gets the user id given a username -KK
 async function getUserId(username) {
@@ -319,8 +319,16 @@ cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); });
 // function to handle single user recurrence -AT
 async function resetAndRotateChores(type) {
     try {
+<<<<<<< HEAD
         await resetSingleUserChores(type);          // single-user chores recurrence
         await resetAndRotateGroupUserChores(type);  // group-user chores recurrence and rotation
+=======
+        // Handle single-user chores recurrence
+        await resetSingleUserChores(type);
+
+        // Handle group-user chores recurrence and rotation
+        await resetAndRotateGroupUserChores(type);
+>>>>>>> 2d9dec7d9179f4c91e4a84521126022d64a3567a
     } catch (error) {
         console.error("Error in resetAndRotateChores:", error);
     }
@@ -333,8 +341,13 @@ async function resetSingleUserChores(type) {
     for (const chore of chores) {
         const query = `UPDATE chores SET is_completed = false WHERE id = ?`;
         try{
+<<<<<<< HEAD
             console.log("API resetRecurringChores: reseting chore " + chore.id);
             await db.promise().query(query, [chore.id]);
+=======
+            console.log("API resetSingleUserChores: resetting chore " + chore.id);
+            await db.promise().query(query, [false, chore.id]);
+>>>>>>> 2d9dec7d9179f4c91e4a84521126022d64a3567a
         } catch (error) {
             console.error("Error resetting chore:", error);
         }
@@ -346,10 +359,22 @@ async function resetAndRotateGroupUserChores(type) {
     const [groupChores] = await db.promise().query(query, [type]);
 
     for (const chore of groupChores) {
+<<<<<<< HEAD
         const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
         try{
             console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
             await db.promise().query(query, [chore.id]);
+=======
+        // const { id, group_id, assigned_to } = chore;
+
+        // const [results] = await db.promise().query("SELECT is_completed FROM group_chores WHERE id = ?", [chore.id]);    
+        // const is_completed = results[0].is_completed;
+
+        const query = `UPDATE chores SET is_completed = false WHERE id = ?`;
+        try{
+            console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
+            await db.promise().query(query, [false, chore.id]);
+>>>>>>> 2d9dec7d9179f4c91e4a84521126022d64a3567a
 
             // should only be calling rotate when the chores are reset each week
             if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
@@ -364,21 +389,36 @@ async function resetAndRotateGroupUserChores(type) {
 
 async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
     try {
+<<<<<<< HEAD
         // retrieve all users in the group (order them for consistent rotation) -AT
         const query = 'SELECT id FROM group_members WHERE group_id = ? ORDER BY id ASC'
         const [users] = await db.promise().query(query, [group_id]);
 
         // find the current user in the sorted user list -AT
+=======
+        // retrieve all users in the group (order them for consistent rotation)
+        const [users] = await db.promise().query('SELECT id FROM group_members WHERE group_id = ?', [group_id]);
+        users.sort((a, b) => a.id - b.id); // sort for consistent rotation order
+
+        // find the current user in the sorted user list
+>>>>>>> 2d9dec7d9179f4c91e4a84521126022d64a3567a
         const currentIndex = users.findIndex(user => user.id === current_assigned_to);
         if (currentIndex === -1) {
             console.error(`User with ID ${current_assigned_to} not found in group ${group_id}.`);
             return;
         }
 
+<<<<<<< HEAD
         // Rotate to the next user (loop back to the first user if at the end) -AT
         const nextUser = users[(currentIndex + 1) % users.length];
 
         // Update the chore with the new user assignment -AT
+=======
+        // Rotate to the next user (loop back to the first user if at the end)
+        const nextUser = users[(currentIndex + 1) % users.length];
+
+        // Update the chore with the new user assignment
+>>>>>>> 2d9dec7d9179f4c91e4a84521126022d64a3567a
         const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
         await db.promise().query(updateQuery, [nextUser.id, chore_id]);
 
