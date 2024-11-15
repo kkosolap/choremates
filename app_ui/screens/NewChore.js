@@ -101,7 +101,7 @@ const NewChoreDisplay = ({ navigation }) => {
         });
 
         await Promise.all(tasks.map(group_task_name =>
-          axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value })
+          axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value, username: username })
         ));
       }
 

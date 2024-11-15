@@ -1307,11 +1307,18 @@ app.post('/get-group-tasks', async (req, res) => {
 // adds a task for a given group chore to the database -KK
 app.post('/add-group-task', async (req, res) => {
     try {
-        const { group_chore_name, group_task_name, group_id } = req.body;
-        if(!group_chore_name || !group_task_name || !group_id){
+        const { group_chore_name, group_task_name, group_id, username } = req.body;
+        if(!group_chore_name || !group_task_name || !group_id || !username){
             console.log("API add-group-task: Missing fields.");
             return res.status(400).send("Missing fields.");
         } 
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API add-group-task: No permission to modify tasks in this group.");
+            return res.status(403).send("You do not have permission to modify tasks in this group.");
+        }
 
         const { group_chore_id, is_completed } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
         const [duplicate] = await db.promise().query("SELECT id FROM group_tasks WHERE group_task_name = ? AND group_chore_id = ?", [group_task_name, group_chore_id]);
@@ -1337,10 +1344,17 @@ app.post('/add-group-task', async (req, res) => {
 // deletes a task for a given chore from the database -KK
 app.post('/delete-group-task', async (req, res) => {
     try {
-        const { group_chore_name, group_task_name, group_id } = req.body;
-        if (!group_chore_name || !group_task_name || !group_id) {
+        const { group_chore_name, group_task_name, group_id, username } = req.body;
+        if (!group_chore_name || !group_task_name || !group_id || !username) {
             console.log("API delete-group-task: Missing fields.");
             return res.status(400).send("Missing fields.");
+        }
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API delete-group-task: No permission to modify tasks in this group.");
+            return res.status(403).send("You do not have permission to modify tasks in this group.");
         }
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);

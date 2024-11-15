@@ -138,12 +138,12 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else { 
         await Promise.all(
           tasksToAdd.map(group_task_name =>
-            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value, username: username }))
         );
 
         await Promise.all(
           tasksToRemove.map(group_task_name =>
-            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
+            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value, username: username }))
         );
       }
 
