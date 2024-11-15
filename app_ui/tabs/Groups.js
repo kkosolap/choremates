@@ -76,7 +76,7 @@ const GroupsScreen = () => {
 };
 
 // show all groups and create group button -NN
-const GroupsDisplay = ({ groupId }) => {
+const GroupsDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
@@ -132,7 +132,8 @@ const GroupsDisplay = ({ groupId }) => {
               console.log("Selected Group Name:", item.group_name); 
               navigation.navigate('Members', { 
                 groupName: item.group_name,
-                groupId: item.group_id 
+                groupId: item.group_id,
+                username: username,
               });
             }}
           >
@@ -143,10 +144,10 @@ const GroupsDisplay = ({ groupId }) => {
       />
 
       <TouchableOpacity 
-        style={styles.createButton} 
+        style={styles.manageCreateButton} 
         onPress={() => navigation.navigate('CreateGroup')}
       >
-        <Text style={styles.managecreateButtonText}>+ Create Group</Text>
+        <Text style={styles.manageCreateButtonText}>+ Create Group</Text>
       </TouchableOpacity>
     </View>
   );

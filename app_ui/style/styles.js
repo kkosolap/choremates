@@ -685,17 +685,7 @@ const createStyles = (theme) => {
     },
 
     // members page -NN
-    manageButton: {
-      position: 'absolute',
-      width: '80%',
-      bottom: 100,
-      height: 50,
-      borderRadius: 10,
-      backgroundColor: theme.main,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    managecreateButtonText: {
+    manageCreateButtonText: {
       color: theme.white,
       fontWeight: 'bold',
       fontSize: 16,
@@ -719,26 +709,34 @@ const createStyles = (theme) => {
     
     // members card - NN
     memberItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: 'row', // Ensure horizontal alignment
+      justifyContent: 'flex-start', // Align items at the start
+      alignItems: 'center', // Vertically center items
       padding: 20,
       marginVertical: 15,
       borderColor: theme.gray,
       borderWidth: 1,
       borderRadius: 20,
-      width: '95%', 
+      width: 350, 
       alignSelf: 'center',
       backgroundColor: theme.lighter,
     },
     memberName: {
-      textAlign: 'left',
+      marginLeft: 10,
       fontSize: 25,
       fontWeight: 'bold',
+      textAlign: 'left',
+      flex: 1,
     },
     memberRole: {
       textAlign: 'right',
       fontSize: 20,
+    },
+    profileImage: {
+      width: 40,
+      height: 40,
+      borderRadius: 25,
+      marginRight: 10,
     },
 
     // manage members screen - NN
@@ -801,7 +799,7 @@ const createStyles = (theme) => {
     },
 
     // create/invite button & pop-up - NN
-    createButton: {
+    manageCreateButton: {
       marginTop:20,
       width: '80%',
       height: 50,
@@ -811,17 +809,14 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     inviteButton: {
-      position: 'absolute',
       width: '35%',
-      bottom: 170,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
-      right: 50,
     },
-    groupNameInput: {
+    groupInviteeInput: {
       width: '85%',
       height: 40,
       paddingHorizontal: 10,
@@ -853,18 +848,16 @@ const createStyles = (theme) => {
 
     // groups display -NN
     groupItem: {
-      width: '100%',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 20,
-      paddingLeft: 95,
-      paddingRight: 95,
+      padding: 23,
       marginVertical: 15,
       borderColor: theme.gray,
       borderWidth: 1,
       borderRadius: 20,
       alignSelf: 'center',
       backgroundColor: theme.lighter,
+      width:350,
     },
     groupName: {
       fontSize: 25,

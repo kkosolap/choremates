@@ -55,7 +55,7 @@ const CreateGroupScreen = () => {
         <View style={styles.screen}>
             <RegisterHeader title="Enter Group Name" navigation={navigation} />
             <TextInput
-                style={styles.groupNameInput}
+                style={styles.groupInviteeInput}
                 placeholder="Group Name"
                 value={groupName}
                 onChangeText={setGroupName}
