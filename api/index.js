@@ -1261,32 +1261,63 @@ app.post('/match-group-task', async (req, res) => {
     }
 });
 
-app.get('/get-group-color', async (req, res) => {
-    const { user_id, group_id } = req.query;
-    console.log("User ID:", user_id);
-console.log("Group ID:", group_id);
+// app.get('/get-group-color', async (req, res) => {
+//     const { user_id, group_id } = req.query;
+//     console.log("User ID:", user_id);
+//     console.log("Group ID:", group_id);
 
-    const query = `
-      SELECT group_color 
-      FROM group_members 
-      WHERE user_id = ? AND group_id = ?
-    `;
+//     const query = `
+//       SELECT group_color 
+//       FROM group_members 
+//       WHERE user_id = ? AND group_id = ?
+//     `;
   
+//     try {
+//       // Make sure db.execute is correctly destructured
+//       const [rows, fields] = await db.execute(query, [user_id, group_id]);
+  
+//       // Check if any rows were returned
+//       if (rows.length > 0) {
+//         res.json({ group_color: rows[0].group_color });
+//       } else {
+//         res.status(404).json({ error: 'Group color not found' });
+//       }
+//     } catch (error) {
+//       console.error("Error fetching group color:", error);
+//       res.status(500).json({ error: 'Internal server error' });
+//     }
+//   });
+  
+app.get('/get-group-color', async (req, res) => {
     try {
-      // Make sure db.execute is correctly destructured
-      const [rows, fields] = await db.execute(query, [user_id, group_id]);
+      const { user_id, group_id } = req.query;
   
-      // Check if any rows were returned
+      if (!user_id || !group_id) {
+        console.log("API get-group-color: Missing user_id or group_id");
+        return res.status(400).json({ error: "Missing user_id or group_id" });
+      }
+  
+      console.log("Executing query with:", user_id, group_id);
+  
+
+      const [rows] = await db.promise().query(
+        "SELECT group_color FROM group_members WHERE user_id = ? AND group_id = ?",
+        [user_id, group_id]
+      );
+  
+      console.log("Query executed successfully:", rows);
+  
       if (rows.length > 0) {
         res.json({ group_color: rows[0].group_color });
       } else {
-        res.status(404).json({ error: 'Group color not found' });
+        res.status(404).json({ error: "Group color not found" });
       }
     } catch (error) {
-      console.error("Error fetching group color:", error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("API get-group-color: Error fetching group color:", error.message);
+      res.status(500).json({ error: `Internal server error: ${error.message}` });
     }
   });
+  
   
   
 
