@@ -928,6 +928,50 @@ app.delete('/remove-user-from-group', (req, res) => {
     });
 });
 
+// let a non-admin member leave a group
+// input: username 
+//        group_id
+// output: if success, user with username will leave group with id = group_id
+app.delete('/leave-group', (req, res) => {
+    const { username, group_id } = req.body;
+
+    // query to check if the user is a member and not an admin in the specified group
+    const checkMembershipQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkMembershipQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API leave-group: Error checking membership status: ", err.message);
+            return res.status(500).json({ error: "Failed to check membership status" });
+        }
+
+        // verify the user is a member (not an admin)
+        if (results.length > 0 && results[0].role !== 'admin') {
+            // query to remove the user from the group
+            const removeMemberQuery = `
+                DELETE FROM group_members 
+                WHERE user_id = (SELECT id FROM users WHERE username = ?) 
+                AND group_id = ?
+            `;
+
+            db.query(removeMemberQuery, [username, group_id], (err, result) => {
+                if (err) {
+                    console.error("API leave-group: Error removing member from group: ", err.message);
+                    return res.status(500).json({ error: "Failed to leave group" });
+                }
+                res.status(200).json({ message: "Successfully left the group" });
+            });
+        } else {
+            res.status(403).json({ error: "Only non-admin members can leave the group" });
+        }
+    });
+});
+
+
 
 /********************************************************** */
 /*              GROUP CHORE IMPLEMENTATION BELOW:           */
