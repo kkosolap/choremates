@@ -320,30 +320,6 @@ app.post('/get-id', async (req, res) => {
     }
   });
   
-// app.get('/get-user-id', async (req, res) => {
-//     const { username } = req.query;
-//     console.log('Received username:', username);
-
-//     if (!username) {
-//         return res.status(400).json({ success: false, message: 'Username is required' });
-//     }
-
-//     const query = `SELECT id FROM users WHERE username = ?`;
-  
-//     try {
-//         const [rows] = await db.execute(query, [username]);
-//         if (rows.length > 0) {
-//             res.json({ success: true, id: rows[0].id });
-//         } else {
-//             res.status(404).json({ success: false, message: 'User not found' });
-//         }
-//     } catch (error) {
-//         console.error('Error fetching user ID:', error);
-//         res.status(500).json({ success: false, message: 'Server error' });
-//     }
-// });
-
-  
 
 
 /********************************************************** */
@@ -1261,33 +1237,6 @@ app.post('/match-group-task', async (req, res) => {
     }
 });
 
-// app.get('/get-group-color', async (req, res) => {
-//     const { user_id, group_id } = req.query;
-//     console.log("User ID:", user_id);
-//     console.log("Group ID:", group_id);
-
-//     const query = `
-//       SELECT group_color 
-//       FROM group_members 
-//       WHERE user_id = ? AND group_id = ?
-//     `;
-  
-//     try {
-//       // Make sure db.execute is correctly destructured
-//       const [rows, fields] = await db.execute(query, [user_id, group_id]);
-  
-//       // Check if any rows were returned
-//       if (rows.length > 0) {
-//         res.json({ group_color: rows[0].group_color });
-//       } else {
-//         res.status(404).json({ error: 'Group color not found' });
-//       }
-//     } catch (error) {
-//       console.error("Error fetching group color:", error);
-//       res.status(500).json({ error: 'Internal server error' });
-//     }
-//   });
-  
 app.get('/get-group-color', async (req, res) => {
     try {
       const { user_id, group_id } = req.query;

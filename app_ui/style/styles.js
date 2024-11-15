@@ -641,6 +641,46 @@ const createStyles = (theme) => {
       justifyContent: 'center', 
       alignItems: 'center'
     },
+
+    // Home.js Toggle House View
+
+    homeToggleButton: {
+      backgroundColor: theme.lighter, // Button background color
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      flexDirection: 'row', // Align children (text and icon) horizontally
+      alignItems: 'center', // Center items vertically
+      justifyContent: 'space-between', // Ensure text stays on the left, button on the right
+      marginVertical: 10,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2, // For Android
+      width: '100%', // Make sure it takes up full width
+    },
+    
+    // Moved for clarity/relative -VA
+    choresList: {
+      flex: 1,
+      marginTop: 10,
+      // backgroundColor: '#999999',            // Makes chore container more visible, for debugging if height issues reoccur
+      // paddingVertical: 10,                   // Add more space between toggle view button and chore list
+      paddingHorizontal: 20,
+      width: 390,
+      alignItems: 'center',          // Horizontally center content
+      justifyContent: 'flex-start',  // Start content at the top
+    },
+
+    homeGroupColorButton: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      // width: 60,
+      // height: 60,
+      // borderRadius: 30, // circular button
+      backgroundColor: theme.main,
+    },
     
     // theme section -KK
     themeIconContainer: {
