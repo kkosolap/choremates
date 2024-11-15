@@ -22,7 +22,8 @@ require('dotenv').config();  // load env variables
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
-    database: "choremates",   
+    database: process.env.DB_DATABASE,
+    //database: "choremates",   
     user: process.env.DB_USER,
     // put "DB_PASSWORD=yourpassword" in your local .env file, 
     // replace yourpassword with your mysql root password -EL
