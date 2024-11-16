@@ -1,6 +1,6 @@
 // Groups.js
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Text, View, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Mail from 'react-native-vector-icons/Ionicons';
@@ -76,40 +76,48 @@ const GroupsScreen = () => {
 };
 
 // show all groups and create group button -NN
-const GroupsDisplay = ({ groupId }) => {
+const GroupsDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
   const [username, setUsername] = useState(null);
   const [groups, setGroups] = useState([]);
 
+  const fetchGroups = async (username) => {
+    try {
+      const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
+        username: username,
+      });
+      console.log("Group response:", response.data);
+      setGroups(response.data);
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+      Alert.alert("Failed to load groups.");
+    }
+  };
+
+  // fetch username and group
   useEffect(() => {
     const getUsername = async () => {
       const storedUsername = await SecureStore.getItemAsync('username');
       if (storedUsername) {
         setUsername(storedUsername);
-        fetchGroups(storedUsername); // call fetch group -NN
+        fetchGroups(storedUsername);
       } else {
         console.error("GroupsDisplay: Username not found in SecureStore.");
       }
     };
-
-    //get all groups the user is a part of -NN
-    const fetchGroups = async (username) => {
-      try {
-        const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
-          username: username,
-        });
-        console.log("Group response:", response.data);
-        setGroups(response.data);
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-        Alert.alert("Failed to load groups.");
-      }
-    };
-
     getUsername();
   }, []);
+
+  // update when focused
+  useFocusEffect(
+    useCallback(() => {
+      if (username) {
+        fetchGroups(username);
+      }
+    }, [username])
+  );
 
   return (
     <View style={styles.content}>
@@ -124,7 +132,8 @@ const GroupsDisplay = ({ groupId }) => {
               console.log("Selected Group Name:", item.group_name); 
               navigation.navigate('Members', { 
                 groupName: item.group_name,
-                groupId: item.group_id 
+                groupId: item.group_id,
+                username: username,
               });
             }}
           >
@@ -135,10 +144,10 @@ const GroupsDisplay = ({ groupId }) => {
       />
 
       <TouchableOpacity 
-        style={styles.createButton} 
+        style={styles.manageCreateButton} 
         onPress={() => navigation.navigate('CreateGroup')}
       >
-        <Text style={styles.managecreateButtonText}>+ Create Group</Text>
+        <Text style={styles.manageCreateButtonText}>+ Create Group</Text>
       </TouchableOpacity>
     </View>
   );
