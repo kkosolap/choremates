@@ -709,9 +709,9 @@ const createStyles = (theme) => {
     
     // members card - NN
     memberItem: {
-      flexDirection: 'row', // Ensure horizontal alignment
-      justifyContent: 'flex-start', // Align items at the start
-      alignItems: 'center', // Vertically center items
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
       padding: 20,
       marginVertical: 15,
       borderColor: theme.gray,
@@ -742,19 +742,16 @@ const createStyles = (theme) => {
     // manage members screen - NN
     manageMemberItem: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       alignItems: 'center',
-      marginVertical: 15,
-    },
-    manageMemberName: {
-      textAlign: 'left',
-      fontSize: 25,
-      fontWeight: 'bold',
       padding: 20,
+      marginVertical: 15,
       borderColor: theme.gray,
       borderWidth: 1,
       borderRadius: 20,
-      width: '70%', 
+      width: 350, 
+      height: 110,
+      alignSelf: 'center',
       backgroundColor: theme.lighter,
     },
     deleteButton: {
