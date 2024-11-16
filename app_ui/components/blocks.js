@@ -119,8 +119,8 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
 
 export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
   const { theme } = useTheme();
+  const styles = createStyles(themes)
 
-  // const styles = createStyles(theme);
   const [username, setUsername] = useState(null);
   const [groups, setGroups] = useState([]);
   const [groupColors, setGroupColors] = useState({});
@@ -140,22 +140,23 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
   };
 
   
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   const fetchGroups = async (username) => {
-  //     try {
-  //       const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
-  //         username: username,
-  //       });
-  //       console.log("Blocks.js Group response:", response.data);
-  //       setGroups(response.data);
-  //     } catch (error) {
-  //       console.error("Blocks.js Error fetching groups:", error);
-  //       Alert.alert("Blocks.js Failed to load groups.");
-  //     }
-  //   };
+    const fetchGroups = async (username) => {
+      try {
+        const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
+          username: username,
+        });
+        console.log("Blocks.js Group response:", response.data);
+        setGroups(response.data);
+      } catch (error) {
+        console.error("Blocks.js Error fetching groups:", error);
+        Alert.alert("Blocks.js Failed to load groups.");
+      }
+    };
+    fetchGroups(user);
 
-  // }, []);
+  }, []);
 
   useEffect(() => {
     const fetchGroupColors = async () => {
@@ -166,7 +167,7 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
           colorMap[group.group_id] = color;
           console.log('Group color fetching = :' + color);
 
-          console.log('COlor = :' + color);
+          // console.log('COlor = :' + color);
         }
         setGroupColors(colorMap);
       }
@@ -174,20 +175,20 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
     fetchGroupColors();
   }, [user, groups]);
 
+  console.log("group color: "+groupColors[group_id]);
+
   // Fetch the color for this specific group
 
 
-  const styles = createStyles(themes.yellow)     // hardcoded for now
 
-
-  const borderColors = {
-    yellow: colors.yellow.lighter,
-    green: colors.green.lighter,
-    blue: colors.blue.lighter,
-    purple: colors.purple.lighter,
-    pink: colors.pink.lighter,
+  const desaturatedColors = {
+    yellow: colors.yellow.desaturated,
+    green: colors.green.desaturated,
+    blue: colors.blue.desaturated,
+    purple: colors.purple.desaturated,
+    pink: colors.pink.desaturated,
   };
-  const backgroundColors= {
+  const lightestColors= {
     yellow: colors.yellow.lightest,
     green: colors.green.lightest,
     blue: colors.blue.lightest,
@@ -195,39 +196,17 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
     pink: colors.pink.lightest,
   };
   
+  const groupColor = groupColors[group_id];
 
-  const mainColors= {
-    yellow: colors.yellow.lightest,
-    '#A3E1A5': 'green',
-    blue: colors.blue.lightest,
-    purple: colors.purple.lightest,
-    pink: colors.pink.lightest,
-  };
+  const notCompletedColor = lightestColors[groupColor] || colors.purple.lighter;
+
+  const completedColor = desaturatedColors[groupColor] || colors.purple.desaturated;
   
-
-  const groupColor = mainColors[groupColors[group_id]] || colors.pink.lightest;
-  // console.log("Main colors: "+groupColors[12]);
-
-  // problem, getting when not loaded
-  // so always gets pink
-  // in g1: needs green
-  console.log("Fetched groupColor = " + groupColor);
-
-  const backgroundColor = backgroundColors[groupColor] || colors.purple.lighter;
-
-  const backgroundColorCompleted = backgroundColors[groupColor] || colors.purple.desaturated;
-
-  const borderColor = borderColors[groupColor] || colors.purple.lighter;
-  
-
   return (
     <TouchableOpacity
-      // style={completed ? styles.choreBlockCompleted : styles.choreBlockGroup}
-      // backgroundColor= {'red'}
       style={[
-        completed ? styles.choreBlockCompleted : styles.choreBlockGroup,
-        // this is where the group color implementation will go, but it won't work if
-        { backgroundColor: completed ? backgroundColorCompleted : backgroundColor, borderColor: borderColor }
+        completed ? styles.choreBlockCompleted : styles.choreBlock,
+        { backgroundColor: completed ? completedColor : notCompletedColor}
       ]}      
       
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
