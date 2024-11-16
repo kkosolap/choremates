@@ -91,7 +91,11 @@ const MembersDisplay = ({ username, navigation }) => {
 )
 
   const handleManageGroup = () => {
-    navigation.navigate('ManageGroup', {members});
+    navigation.navigate('ManageGroup', {
+      members: members,
+      username: username,
+      groupId: groupId,
+    });
   };
 
   const handleInviteMember = () => {
