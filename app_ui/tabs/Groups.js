@@ -118,40 +118,6 @@ const GroupsDisplay = () => {
     getUsername();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchGroupColors = async () => {
-  //     if (username && groups.length > 0) {
-  //       const colorMap = {};
-  //       for (const group of groups) {
-  //         const color = await getUserId(username, group);
-  //         colorMap[group.group_id] = color;
-  //       }
-  //       setGroupColors(colorMap);
-  //     }
-  //   };
-  //   fetchGroupColors();
-  // }, [username, groups]);
-
-  // // Function to fetch color for a group
-  // const getUserId = async (username, group) => {
-  //   try {
-  //     const response = await axios.post(`${API_URL}get-id`, { username });
-  //     const userId = response.data.id;
-  //     if (userId === undefined || group.group_id === undefined) {
-  //       console.error("userId or groupId is undefined");
-  //       return;
-  //     }
-
-  //     const colorResponse = await axios.get(`${API_URL}get-group-color`, {
-  //       params: { user_id: userId, group_id: group.group_id },
-  //     });
-
-  //     return colorResponse.data.group_color;
-  //   } catch (error) {
-  //     console.error("Error fetching user ID or group color:", error);
-  //     return 'purple'; // Default color if error occurs
-  //   }
-  // };
   useEffect(() => {
     const fetchGroupColors = async () => {
       if (username && groups.length > 0) {

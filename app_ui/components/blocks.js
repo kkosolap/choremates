@@ -286,7 +286,11 @@ export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence })
   
   return (
     <TouchableOpacity
-      style={styles.homeChoreBlock}
+      // style={styles.homeChoreBlock}
+      style={[
+        styles.homeChoreBlock,
+        { backgroundColor: 'red', borderColor: 'blue'}
+      ]}      
       onPress={() => onOpenChoreDetails(
         choreName,
         tasks
