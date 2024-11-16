@@ -37,8 +37,7 @@ const ManageDisplay = () => {
     console.log("Username:", username);
     console.log("Group ID:", groupId);
     console.log("User to remove:", userToRemove);
-    axios
-      .delete(`${API_URL}/remove-user-from-group`, {
+    axios.delete(`${API_URL}remove-user-from-group`, {
         data: {
           username,
           group_id: groupId,

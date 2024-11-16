@@ -935,6 +935,7 @@ app.delete('/remove-user-from-group', (req, res) => {
                 if (result.affectedRows > 0) {
                     return res.status(200).json({ success: `User ${user_to_remove} removed from the group` });
                 } else {
+                    console.error("API remove-user-from-group: User not found in this group");
                     return res.status(404).json({ error: "User not found in this group" });
                 }
             });
