@@ -10,6 +10,8 @@ import createStyles from '../style/styles';
 import themes from '../style/colors';
 import { completeChore, completeTask, completeGroupChore, completeGroupTask } from '../components/functions.js';
 import { getGroupColor } from '../components/groupcolor.js';
+import { useGroupColors } from '../components/usegroupcolor';
+
 
 
 import * as SecureStore from 'expo-secure-store';
@@ -123,7 +125,7 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
 
   const [username, setUsername] = useState(null);
   const [groups, setGroups] = useState([]);
-  const [groupColors, setGroupColors] = useState({});
+  // const [groupColors, setGroupColors] = useState({});
   const popoverButtonRef = useRef(null);
   
   
@@ -140,39 +142,65 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
   };
 
   
-  useEffect(() => {
+  // useEffect(() => {
 
-    const fetchGroups = async (username) => {
-      try {
-        const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
-          username: username,
-        });
-        console.log("Blocks.js Group response:", response.data);
-        setGroups(response.data);
-      } catch (error) {
-        console.error("Blocks.js Error fetching groups:", error);
-        Alert.alert("Blocks.js Failed to load groups.");
-      }
-    };
-    fetchGroups(user);
+  //   const fetchGroups = async (username) => {
+  //     try {
+  //       const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
+  //         username: username,
+  //       });
+  //       console.log("Blocks.js Group response:", response.data);
+  //       setGroups(response.data);
+  //     } catch (error) {
+  //       console.error("Blocks.js Error fetching groups:", error);
+  //       Alert.alert("Blocks.js Failed to load groups.");
+  //     }
+  //   };
+  //   fetchGroups(user);
 
-  }, []);
+  // }, []);
 
-  useEffect(() => {
-    const fetchGroupColors = async () => {
-      if (user && groups.length > 0) {
-        const colorMap = {};
-        for (const group of groups) {
-          const color = await getGroupColor(user, group);
-          colorMap[group.group_id] = color;
-        }
-        setGroupColors(colorMap);
-      }
-    };
-    fetchGroupColors();
-  }, [user, groups]);
+  // useEffect(() => {
+  //   const fetchGroupColors = async () => {
+  //     if (user && groups.length > 0) {
+  //       const colorMap = {};
+  //       for (const group of groups) {
+  //         const color = await getGroupColor(user, group);
+  //         colorMap[group.group_id] = color;
+  //       }
+  //       setGroupColors(colorMap);
+  //     }
+  //   };
+  //   fetchGroupColors();
+  // }, [user, groups]);
 
-  console.log("group color: "+groupColors[group_id]);
+  // console.log("group color: "+groupColors[group_id]);
+
+  // const desaturatedColors = {
+  //   yellow: colors.yellow.desaturated,
+  //   green: colors.green.desaturated,
+  //   blue: colors.blue.desaturated,
+  //   purple: colors.purple.desaturated,
+  //   pink: colors.pink.desaturated,
+  // };
+  // const lightestColors= {
+  //   yellow: colors.yellow.lightest,
+  //   green: colors.green.lightest,
+  //   blue: colors.blue.lightest,
+  //   purple: colors.purple.lightest,
+  //   pink: colors.pink.lightest,
+  // };
+  
+  // const groupColor = groupColors[group_id];
+
+  // const notCompletedColor = lightestColors[groupColor] || colors.purple.lighter;
+
+  // const completedColor = desaturatedColors[groupColor] || colors.purple.desaturated;
+  
+
+  const { groupColors } = useGroupColors(user);
+
+  const groupColor = groupColors[group_id];
 
   const desaturatedColors = {
     yellow: colors.yellow.desaturated,
@@ -181,20 +209,18 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
     purple: colors.purple.desaturated,
     pink: colors.pink.desaturated,
   };
-  const lightestColors= {
+  const lightestColors = {
     yellow: colors.yellow.lightest,
     green: colors.green.lightest,
     blue: colors.blue.lightest,
     purple: colors.purple.lightest,
     pink: colors.pink.lightest,
   };
-  
-  const groupColor = groupColors[group_id];
 
   const notCompletedColor = lightestColors[groupColor] || colors.purple.lighter;
-
   const completedColor = desaturatedColors[groupColor] || colors.purple.desaturated;
-  
+
+
   return (
     <TouchableOpacity
       style={[
@@ -283,14 +309,67 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
 export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  
+
   return (
     <TouchableOpacity
-      // style={styles.homeChoreBlock}
+      style={styles.homeChoreBlock}   
+      onPress={() => onOpenChoreDetails(
+        choreName,
+        tasks
+      )}
+      activeOpacity={0.8}
+    >
+
+      {/* Chore Title */}
+      <Text style={styles.homeChoreTitle}>{choreName}</Text>
+
+      {/* Reccurence */}
+      <Text style={styles.recurrenceLabel}>{recurrence}</Text>
+
+    </TouchableOpacity>
+  );
+};
+
+// block for displaying group chores on home page
+export const GroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence, user, group_id }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  // console.log("Theme main: " + theme.main)
+
+  // console.log("groupColor in choreblock = " + groupColor)
+  
+
+
+  const { groupColors } = useGroupColors(user);
+
+  const groupColor = groupColors[group_id];
+
+  const lighterColors = {
+    yellow: colors.yellow.lighter,
+    green: colors.green.lighter,
+    blue: colors.blue.lighter,
+    purple: colors.purple.lighter,
+    pink: colors.pink.lighter,
+  };
+  const lightestColors = {
+    yellow: colors.yellow.lightest,
+    green: colors.green.lightest,
+    blue: colors.blue.lightest,
+    purple: colors.purple.lightest,
+    pink: colors.pink.lightest,
+  };
+
+  const lightestColor = lightestColors[groupColor] || colors.purple.lighter;
+  const lighterColor = lighterColors[groupColor] || colors.purple.lighter;
+
+
+  return (
+    <TouchableOpacity
       style={[
         styles.homeChoreBlock,
-        { backgroundColor: 'red', borderColor: 'blue'}
-      ]}      
+        { backgroundColor: groupColor ? lightestColor : theme.lightest, borderColor:  groupColor ? lighterColor : theme.lighter}
+      ]}   
       onPress={() => onOpenChoreDetails(
         choreName,
         tasks

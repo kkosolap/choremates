@@ -12,11 +12,10 @@ import { useTheme } from '../style/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import { TabHeader } from '../components/headers.js';
 import { getGroupColor } from '../components/groupcolor.js';
+import { API_URL } from '../config.js';
 
 import axios from 'axios';
-import { API_URL } from '../config.js';
 import colors from '../style/colors';
-
 
 // groups screen & invite button - NN
 const GroupsScreen = () => {
