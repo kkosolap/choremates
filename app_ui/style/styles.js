@@ -209,6 +209,19 @@ const createStyles = (theme) => {
 
     // chore block  -MH
     choreBlock: baseChoreBlock,
+
+
+    choreBlockGroup : {
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: 10,
+      paddingVertical: 10,
+      width: '95%',
+      minHeight: 55,
+      borderRadius: 15,
+      // backgroundColor: theme.lighter,
+    },
+    
     choreBlockCompleted: {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,

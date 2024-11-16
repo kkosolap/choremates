@@ -40,6 +40,7 @@ const ChoresDisplay = () => {
   const [personalData, setPersonalData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [task_name, setNewTask] = useState('');  
+  const [groupColors, setGroupColors] = useState({});
 
 
   // calls refresh whenever the screen is in focus -KK
