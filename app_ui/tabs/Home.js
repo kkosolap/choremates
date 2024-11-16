@@ -354,14 +354,6 @@ const HomeDisplay = () => {
               {groupedGroupTasks[group_id].group_name}
             </Text>
 
-            {/* settings button
-            <TouchableOpacity
-              onPress={() => console.log("Settings clicked")}
-              activeOpacity={0.7}
-            >
-              <Icon name="ellipsis-vertical" size={24} color={theme.main} />
-            </TouchableOpacity> */}
-
           </TouchableOpacity>
 
           {/* Horizontal Line */}

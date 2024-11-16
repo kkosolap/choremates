@@ -1005,7 +1005,7 @@ const createStyles = (theme) => {
     },
     
     menuItem: {
-      width: '25%',  // 4 items per row (3 columns)
+      width: '20%',  // 4 items per row (3 columns)
       alignItems: 'center',
       justifyContent: 'center',
       marginVertical: 10,

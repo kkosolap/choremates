@@ -1266,9 +1266,40 @@ app.get('/get-group-color', async (req, res) => {
       res.status(500).json({ error: `Internal server error: ${error.message}` });
     }
   });
+
+app.post('/update-group-color', async (req, res) => {
+    const { username, group_id, group_color } = req.body;
+    // console.log("Request Body:", req.body);  // Add this to debug
+    // console.log('Received:', username, group_id, group_color);
   
-  
-  
+    // Validate input
+    if (!username || !group_id || !group_color) {
+      return res.status(400).json({ success: false, error: 'Missing parameters' });
+    }
+
+    try {
+      const user_id = await getUserId(username);
+      
+      if (!user_id) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      const [result] = await db.promise().query(
+        'UPDATE group_members SET group_color = ? WHERE group_id = ? AND user_id = ?',
+        [group_color, group_id, user_id]
+      );
+      
+      // Check if the update was successful
+      if (result.affectedRows > 0) {
+        return res.json({ success: true });
+      } else {
+        return res.status(404).json({ success: false, error: 'Group not found or no changes made' });
+      }
+    } catch (error) {
+      console.error('Error updating group color:', error);
+      return res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+  });
 
 
 // keep this at the very bottom of the file -KK
