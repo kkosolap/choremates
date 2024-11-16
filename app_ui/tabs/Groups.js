@@ -179,26 +179,51 @@ const GroupsDisplay = () => {
       keyExtractor={(item) => item.group_id.toString()}
       renderItem={({ item }) => {
 
+        //Left in because depends on display options
+
+        // const borderColors = {
+        //   yellow: colors.yellow.lighter,
+        //   green: colors.green.lighter,
+        //   blue: colors.blue.lighter,
+        //   purple: colors.purple.lighter,
+        //   pink: colors.pink.lighter,
+        // };
+        // const backgroundColors= {
+        //   yellow: colors.yellow.lightest,
+        //   green: colors.green.lightest,
+        //   blue: colors.blue.lightest,
+        //   purple: colors.purple.lightest,
+        //   pink: colors.pink.lightest,
+        // };
+        
+        // const groupColor = groupColors[item.group_id] || colors.green.lightest;
+
+        // const backgroundColor = backgroundColors[groupColor] || colors.purple.lighter;
+
+        // const borderColor = borderColors[groupColor] || colors.purple.lighter;
+        
+
+
         const borderColors = {
+          yellow: colors.yellow.main,
+          green: colors.green.main,
+          blue: colors.blue.main,
+          purple: colors.purple.main,
+          pink: colors.pink.main,
+        };
+        const backgroundColors= {
           yellow: colors.yellow.lighter,
           green: colors.green.lighter,
           blue: colors.blue.lighter,
           purple: colors.purple.lighter,
           pink: colors.pink.lighter,
         };
-        const backgroundColors= {
-          yellow: colors.yellow.lightest,
-          green: colors.green.lightest,
-          blue: colors.blue.lightest,
-          purple: colors.purple.lightest,
-          pink: colors.pink.lightest,
-        };
         
-        const groupColor = groupColors[item.group_id] || colors.green.lightest;
+        const groupColor = groupColors[item.group_id] || colors.green.lighter;
 
         const backgroundColor = backgroundColors[groupColor] || colors.purple.lighter;
 
-        const borderColor = borderColors[groupColor] || colors.purple.lighter;
+        const borderColor = borderColors[groupColor] || colors.purple.main;
         
         return (
           <View
@@ -225,7 +250,7 @@ const GroupsDisplay = () => {
               <Icon name="ellipsis-vertical" size={24} color="#000" />
             </TouchableOpacity>
 
-            {/* Popover Menu
+            {/* Popover Menu */}
             {selectedGroup && selectedGroup.group_id === item.group_id && (
               <Popover
                 isVisible={popoverVisible}
@@ -236,28 +261,17 @@ const GroupsDisplay = () => {
                 <View style={styles.menuContainer}>
                   <Text style={styles.groupName}>Change Group Color</Text>
                   <View style={styles.iconGrid}>
-                    {[...Array(5).keys()].map((_, index) => {
+                    {['blue', 'green', 'pink', 'yellow', 'purple'].map((colorChoice, index) => {
+                      const iconColors = {
+                        blue: colors.blue.main,
+                        green: colors.green.main,
+                        pink: colors.pink.main,
+                        yellow: colors.yellow.main,
+                        purple: colors.purple.main,
+                      };
                       
-                      // array to display icon color -VA
-                      const iconColors = [
-                        colors.blue.main,
-                        colors.green.main,
-                        colors.pink.main,
-                        colors.yellow.main,
-                        colors.purple.main,
-                      ];
+                      const iconColor = iconColors[colorChoice];
 
-                      // array to pass in color options to change in db -VA
-                      const colorChoices = [
-                        'blue',
-                        'green',
-                        'pink',
-                        'yellow',
-                        'purple',
-                      ];
-
-                      const iconColor = iconColors[index];
-                      const colorChoice = colorChoices[index];
                       return (
                         <TouchableOpacity
                           key={index}
@@ -271,44 +285,7 @@ const GroupsDisplay = () => {
                   </View>
                 </View>
               </Popover>
-            )} */}
-            {/* Popover Menu */}
-{selectedGroup && selectedGroup.group_id === item.group_id && (
-  <Popover
-    isVisible={popoverVisible}
-    onRequestClose={() => setPopoverVisible(false)}
-    from={() => popoverButtonRef.current}
-    popoverStyle={styles.popover}
-  >
-    <View style={styles.menuContainer}>
-      <Text style={styles.groupName}>Change Group Color</Text>
-      <View style={styles.iconGrid}>
-        {['blue', 'green', 'pink', 'yellow', 'purple'].map((colorChoice, index) => {
-          const iconColors = {
-            blue: colors.blue.main,
-            green: colors.green.main,
-            pink: colors.pink.main,
-            yellow: colors.yellow.main,
-            purple: colors.purple.main,
-          };
-          
-          const iconColor = iconColors[colorChoice];
-
-          return (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleColorChange(colorChoice)}
-              style={styles.menuItem}
-            >
-              <Icon name="brush" size={24} color={iconColor} style={styles.groupColorIcon} />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
-  </Popover>
-)}
-
+            )}
           </View>
         );
       }}

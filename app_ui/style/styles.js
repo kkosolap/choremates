@@ -197,6 +197,7 @@ const createStyles = (theme) => {
     fullWidth: {
       width: '100%',
       margin: 0,
+      alignItems: 'center', // Horizontally center content
     },
     emptySectionText: {
       fontSize: 18,
