@@ -45,3 +45,21 @@ export const ThemeButton = ({ iconName = "color-palette", iconSize = 50, color, 
     </TouchableOpacity>
   );
 };
+
+// for to-do/completed tab buttons on Chores tab
+export const SectionTabButton = ({ label, selected, onClick }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return (
+    <TouchableOpacity
+      style={selected ? styles.tabButtonSelected : styles.tabButtonDeselected}
+      activeOpacity={0.8}
+      onPress={onClick}
+    >
+      <Text style={styles.choreSectionTabText}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+};

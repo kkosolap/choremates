@@ -153,27 +153,27 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
       )}
 
       {/* Render tasks if visible */}
-      {visible && tasks.length > 0 && tasks.map(({ id, group_task, completed }) => (
+      {visible && tasks.length > 0 && tasks.map(({ id, task, completed }) => (
         <View key={id} style={styles.taskContainer}>
           <View style={styles.taskAndCheck}>
             {/* checkbox */}
             <TouchableOpacity
               style={styles.taskCheck}
-              onPress={() => handleToggleTaskCompletion(group_id, choreName, group_task)}
+              onPress={() => handleToggleTaskCompletion(group_id, choreName, task)}
             >
               <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.text3 : theme.text1} />
             </TouchableOpacity> 
 
             {/* task text */}
             <Text style={[styles.taskText, completed && styles.taskTextCompleted]}>
-              {group_task}
+              {task}
             </Text>
           </View>
 
           {/* delete button */}
           {isEditing && (
             <TouchableOpacity
-              onPress={() => onDelete(choreName, group_task, group_id)}
+              onPress={() => onDelete(choreName, task, group_id)}
             >
               <Icon name="close-outline" size={24} color={theme.text3} />
             </TouchableOpacity>

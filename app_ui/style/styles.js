@@ -56,19 +56,21 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
+      paddingBottom: 50,
     },
 
     // main content of a page  -MH
     content: {
       flex: 1,
       width: 390,
-      alignItems: 'center',   // Horizontally center content
+      alignItems: 'center',
       justifyContent: 'flex-start',  // Start content at the top
-      paddingTop: 30,  // Optional: Add some space at the top
-      paddingBottom: 100,
+      paddingTop: 20,
+      paddingBottom: 80,
     },
     scrollContainer: {
       paddingVertical: 0,
+      width: '100%',
     },
 
     // page sections -MH
@@ -200,12 +202,68 @@ const createStyles = (theme) => {
       margin: 0,
     },
     emptySectionText: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: '400',
       color: theme.text2,
     },
     emptySectionSection: {
       marginHorizontal: 30,
+      marginTop: -5,
+    },
+    emptyChoresSection: {
+      marginTop: 15,
+    },
+
+    // chores tab sections  -MH
+    choreSection: {
+      backgroundColor: theme.white,
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      marginTop: 26,
+      paddingVertical: 10,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: theme.lightest,
+    },
+    choreSectionTabs: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+
+      position: 'absolute',
+      top: 10,
+      zIndex: 1,
+    },
+    tabButtonSelected: {
+      backgroundColor: theme.white,
+      padding: 5,
+      marginBottom: -2,
+      paddingBottom: 7,
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+      width: '40%',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderBottomWidth: 0,
+      borderColor: theme.lightest,
+    },
+    tabButtonDeselected: {
+      backgroundColor: theme.desaturated,
+      padding: 5,
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+      width: '40%',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderBottomWidth: 0,
+      borderColor: theme.lightest,
+    },
+    choreSectionTabText: {
+      color: theme.text1,
+      fontSize: 18,
+      fontWeight: '600',
     },
 
     // chore block  -MH
@@ -213,11 +271,6 @@ const createStyles = (theme) => {
     choreBlockCompleted: {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
-    },
-    choreBlockOverdue: { // -AT
-      ...this.choreBlock,           // Inherits base chore block styles
-      borderColor: 'red',           // Red border for overdue indication
-      borderWidth: 1,
     },
     homeChoreBlock: {
       ...baseChoreBlock,
@@ -228,20 +281,16 @@ const createStyles = (theme) => {
       paddingVertical: 5,
     },
     choreCheck: {
-      position: 'absolute', // position it absolutely within the header
-      left: 15,             // distance from the right edge
-      top: 20,              // distance from the top edge
-      zIndex: 1,            // ensure it's above other elements
+      position: 'absolute',
+      left: 15,
+      top: 20,
+      zIndex: 1,
     },
     choreTitle: baseChoreTitle,
     choreTitleCompleted: {
       ...baseChoreTitle,
       color: theme.text3,
-      textDecorationLine: 'line-through',  // Adds a strikeout effect
-    },
-    choreTitleOverdue: { //- AT
-      ...this.choreTitle,           // Inherits base chore title styles
-      color: 'red',                 // Red text color for overdue
+      textDecorationLine: 'line-through',
     },
     homeChoreTitle: {
       ...baseChoreTitle,
@@ -258,11 +307,6 @@ const createStyles = (theme) => {
       color: theme.text2,
       width: '85%',
       height: 'auto',
-    },
-    overdueLabel: { // -AT
-      fontSize: 12,
-      color: 'red',   // Color to match overdue indicator -AT
-      marginLeft: 5,
     },
     editChoreButton: {
       position: 'absolute', // position it absolutely within the header

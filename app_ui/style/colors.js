@@ -7,6 +7,7 @@ const baseTheme = {
   text2: '#444956',   // subtitles
   text3: '#656975',   // completed chores (same color as gray below)
   white: '#ffffff',
+  lightGray: '#e2e2e2',
   gray: '#656975',
   black: '#000000',
   red: '#D56765',
