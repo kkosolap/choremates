@@ -165,9 +165,6 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
         for (const group of groups) {
           const color = await getGroupColor(user, group);
           colorMap[group.group_id] = color;
-          console.log('Group color fetching = :' + color);
-
-          // console.log('COlor = :' + color);
         }
         setGroupColors(colorMap);
       }
@@ -176,10 +173,6 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
   }, [user, groups]);
 
   console.log("group color: "+groupColors[group_id]);
-
-  // Fetch the color for this specific group
-
-
 
   const desaturatedColors = {
     yellow: colors.yellow.desaturated,
@@ -208,7 +201,6 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
         completed ? styles.choreBlockCompleted : styles.choreBlock,
         { backgroundColor: completed ? completedColor : notCompletedColor}
       ]}      
-      
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
