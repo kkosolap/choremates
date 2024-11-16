@@ -90,6 +90,7 @@ const MembersDisplay = ({ username, navigation }) => {
     }, [groupId])
 )
 
+// manage group button pressed -> managegroup page
   const handleManageGroup = () => {
     navigation.navigate('ManageGroup', {
       members: members,
@@ -98,8 +99,42 @@ const MembersDisplay = ({ username, navigation }) => {
     });
   };
 
+  // invite member button pressed -> invitemembers page
   const handleInviteMember = () => {
     navigation.navigate('InviteMember', { groupId });
+  };
+
+  // leave group button for members only
+  const handleLeaveGroup = () => {
+    Alert.alert(
+      "Confirm Leave",
+      "Are you sure you want to leave this group?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            axios.delete(`${API_URL}leave-group`, {
+              data: { username, group_id: groupId },
+            })
+            .then((response) => {
+              if (response.data.message === "Successfully left the group") {
+                alert("You have left the group.");
+                navigation.goBack();
+              }
+            })
+            .catch((error) => {
+              console.error("Error leaving group: ", error);
+              alert("Failed to leave the group.");
+            });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -157,7 +192,7 @@ const MembersDisplay = ({ username, navigation }) => {
           style={styles.logoutButton}
           onPress={() => {
             console.log('Leave Group button pressed');
-            handleManageGroup();
+            handleLeaveGroup();
           }}
         >
           <Text style={styles.manageCreateButtonText}>Leave Group</Text>
