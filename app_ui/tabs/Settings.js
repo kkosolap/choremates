@@ -19,7 +19,6 @@ import { API_URL } from '../config';
 // Header and page content
 const SettingsScreen = () => {
   const avatarMap = {
-    duck: require('../icons/duck.jpg'),
     pinkAvatar: require('../icons/pinkAvatar.jpg'),
     blueAvatar: require('../icons/blueAvatar.jpg'),
     purpleAvatar: require('../icons/purpleAvatar.jpg'),
@@ -27,23 +26,24 @@ const SettingsScreen = () => {
     yellowAvatar: require('../icons/yellowAvatar.jpg'),
 
     pinkCat: require('../icons/cat_pink.jpg'),
-    blueBee: require('../icons/bee_blue.jpg'),
+    pinkBee: require('../icons/bee_pink.jpg'),
 
     blueSlug: require('../icons/slug_blue.jpg'),
     bluePig: require('../icons/pig_blue.jpg'),
 
     purpleRabbit: require('../icons/rabbit_purple.jpg'),
     purpleMouse: require('../icons/mouse_purple.jpg'),
-    purpleSheep: require('../icons/sheep_purple.jpg'),
+    pinkSheep: require('../icons/sheep_pink.jpg'),
     purpleFox: require('../icons/fox_purple.jpg'),
 
     greenDog: require('../icons/dog_green.jpg'),
     greenDuck: require('../icons/duck_green.jpg'),
 
     yellowFrog: require('../icons/frog_yellow.jpg'),
+    yellowTurtle: require('../icons/turtle_yellow.jpg'),
 
     orangeDino: require('../icons/dino_orange.jpg'),
-    orangeTurtle: require('../icons/turtle_orange.jpg'),
+    orangePigeon: require('../icons/pigeon_orange.jpg'),
 
   };
   
@@ -108,7 +108,7 @@ const SettingsScreen = () => {
           <View style={styles.profileTopSection}>
             <View style={styles.profilePictureArea}>
               <Image 
-                source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.duck} 
+                source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.purpleAvatar} 
                 style={styles.profilePicturePhoto} 
               />
               <TouchableOpacity style={styles.profilePhotoEditButton} 
