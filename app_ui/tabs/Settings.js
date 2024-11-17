@@ -25,6 +25,26 @@ const SettingsScreen = () => {
     purpleAvatar: require('../icons/purpleAvatar.jpg'),
     greenAvatar: require('../icons/greenAvatar.jpg'),
     yellowAvatar: require('../icons/yellowAvatar.jpg'),
+
+    pinkCat: require('../icons/cat_pink.jpg'),
+    blueBee: require('../icons/bee_blue.jpg'),
+
+    blueSlug: require('../icons/slug_blue.jpg'),
+    bluePig: require('../icons/pig_blue.jpg'),
+
+    purpleRabbit: require('../icons/rabbit_purple.jpg'),
+    purpleMouse: require('../icons/mouse_purple.jpg'),
+    purpleSheep: require('../icons/sheep_purple.jpg'),
+    purpleFox: require('../icons/fox_purple.jpg'),
+
+    greenDog: require('../icons/dog_green.jpg'),
+    greenDuck: require('../icons/duck_green.jpg'),
+
+    yellowFrog: require('../icons/frog_yellow.jpg'),
+
+    orangeDino: require('../icons/dino_orange.jpg'),
+    orangeTurtle: require('../icons/turtle_orange.jpg'),
+
   };
   
   const { theme, changeTheme } = useTheme();
@@ -86,8 +106,6 @@ const SettingsScreen = () => {
 
           {/* Profile Picture */}
           <View style={styles.profileTopSection}>
-
-
             <View style={styles.profilePictureArea}>
               <Image 
                 source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.duck} 
@@ -104,13 +122,6 @@ const SettingsScreen = () => {
           <View style={styles.profileNameSection}>
             <View >
               <Text style={{ color: '#858585' }}>Display Name</Text>
-              {/* <TextInput 
-                style={styles.profileDisplayNameText} 
-                value={display_name} 
-                onChangeText={setDisplayName} 
-                onSubmitEditing={handleChangeDisplayName}
-                scrollEnabled={false}
-              /> */}
               <TextInput 
                 style={styles.profileDisplayNameText} 
                 value={display_name} 
@@ -119,8 +130,6 @@ const SettingsScreen = () => {
                 maxLength={16} 
                 scrollEnabled={false}
               />
-              {/* <Text style = {size=8}> {display_name.length}/16</Text> */}
-
               <Text style={{ color: '#858585' }}>User Name</Text>
               <Text style={styles.profileUsernameText}> @{username}</Text>
             </View>

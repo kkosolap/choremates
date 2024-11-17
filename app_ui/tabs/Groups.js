@@ -5,9 +5,6 @@ import { Text, View, TouchableOpacity, ScrollView, FlatList, Alert } from 'react
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Popover from 'react-native-popover-view';
-
-import * as SecureStore from 'expo-secure-store';
-
 import { useTheme } from '../style/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import { TabHeader } from '../components/headers.js';
@@ -16,6 +13,7 @@ import { API_URL } from '../config.js';
 
 import axios from 'axios';
 import colors from '../style/colors';
+import * as SecureStore from 'expo-secure-store';
 
 // groups screen & invite button - NN
 const GroupsScreen = () => {
@@ -59,7 +57,6 @@ const GroupsScreen = () => {
     navigation.navigate('GroupInvitations', { username });
   };
   
-
   return (
     <View style={styles.screen}>
       <TabHeader title="Groups" />
@@ -106,7 +103,6 @@ const GroupsDisplay = () => {
         const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
           username: username,
         });
-        console.log("Group response:", response.data);
         setGroups(response.data);
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -134,8 +130,6 @@ const GroupsDisplay = () => {
   // Function to handle color change
   const handleColorChange = async (newColor) => {
     if (selectedGroup && username) {
-      console.log(`Changing color for group: ${selectedGroup.group_name} to ${newColor}`);
-      // console.log("Parameters: " + username + ", " + selectedGroup.group_id + ", " + newColor)
       await updateGroupColor(username, selectedGroup.group_id, newColor);
     }
     setPopoverVisible(false);
@@ -145,7 +139,6 @@ const GroupsDisplay = () => {
     event.stopPropagation(); // Prevents triggering navigation
     setSelectedGroup(group);
     setPopoverVisible(true);
-    console.log(`Ellipsis pressed for group: ${group.group_name}`);
   };
 
   const updateGroupColor = async (username, groupId, newColor) => {
@@ -157,7 +150,6 @@ const GroupsDisplay = () => {
       });
   
       if (response.data.success) {
-        console.log("Group color updated:", newColor);
         setGroupColors((prevColors) => ({
           ...prevColors,
           [groupId]: newColor,
@@ -171,38 +163,12 @@ const GroupsDisplay = () => {
       Alert.alert("Error", "An error occurred while updating the group color.");
     }
   };
-  
 
   return (
     <FlatList
       data={groups}
       keyExtractor={(item) => item.group_id.toString()}
       renderItem={({ item }) => {
-
-        //Left in because depends on display options
-
-        // const borderColors = {
-        //   yellow: colors.yellow.lighter,
-        //   green: colors.green.lighter,
-        //   blue: colors.blue.lighter,
-        //   purple: colors.purple.lighter,
-        //   pink: colors.pink.lighter,
-        // };
-        // const backgroundColors= {
-        //   yellow: colors.yellow.lightest,
-        //   green: colors.green.lightest,
-        //   blue: colors.blue.lightest,
-        //   purple: colors.purple.lightest,
-        //   pink: colors.pink.lightest,
-        // };
-        
-        // const groupColor = groupColors[item.group_id] || colors.green.lightest;
-
-        // const backgroundColor = backgroundColors[groupColor] || colors.purple.lighter;
-
-        // const borderColor = borderColors[groupColor] || colors.purple.lighter;
-        
-
 
         const borderColors = {
           yellow: colors.yellow.main,
@@ -293,8 +259,5 @@ const GroupsDisplay = () => {
     />
   );
 };
-
-
-
 
 export default GroupsScreen;
