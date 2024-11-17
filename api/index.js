@@ -920,24 +920,38 @@ app.delete('/remove-user-from-group', (req, res) => {
                 return res.status(400).json({ error: "Admin cannot remove themselves" });
             }
 
-            // remove the user from the group
-            const removeUserQuery = `
-                DELETE FROM group_members 
-                WHERE group_id = ? AND user_id = (SELECT id FROM users WHERE username = ?)
+            // assign chores of the user to be removed to the admin
+            const assignChoresQuery = `
+                UPDATE group_chores
+                SET assigned_to = (SELECT id FROM users WHERE username = ?)
+                WHERE group_id = ? AND assigned_to = (SELECT id FROM users WHERE username = ?)
             `;
 
-            db.query(removeUserQuery, [group_id, user_to_remove], (err, result) => {
+            db.query(assignChoresQuery, [username, group_id, user_to_remove], (err, result) => {
                 if (err) {
-                    console.error("API remove-user-from-group: Error removing user: ", err.message);
-                    return res.status(500).json({ error: "Failed to remove user" });
+                    console.error("API remove-user-from-group: Error reassigning chores: ", err.message);
+                    return res.status(500).json({ error: "Failed to reassign chores" });
                 }
 
-                if (result.affectedRows > 0) {
-                    return res.status(200).json({ success: `User ${user_to_remove} removed from the group` });
-                } else {
-                    console.error("API remove-user-from-group: User not found in this group");
-                    return res.status(404).json({ error: "User not found in this group" });
-                }
+                // remove the user from the group
+                const removeUserQuery = `
+                    DELETE FROM group_members 
+                    WHERE group_id = ? AND user_id = (SELECT id FROM users WHERE username = ?)
+                `;
+
+                db.query(removeUserQuery, [group_id, user_to_remove], (err, result) => {
+                    if (err) {
+                        console.error("API remove-user-from-group: Error removing user: ", err.message);
+                        return res.status(500).json({ error: "Failed to remove user" });
+                    }
+
+                    if (result.affectedRows > 0) {
+                        return res.status(200).json({ success: `User ${user_to_remove} removed from the group, and their chores reassigned to the admin` });
+                    } else {
+                        console.error("API remove-user-from-group: User not found in this group");
+                        return res.status(404).json({ error: "User not found in this group" });
+                    }
+                });
             });
         } else {
             return res.status(403).json({ error: "You must be an admin to remove a user" });
@@ -945,16 +959,17 @@ app.delete('/remove-user-from-group', (req, res) => {
     });
 });
 
+
 // let a non-admin member leave a group --EL
 // input: username 
 //        group_id
-// output: if success, user with username will leave group with id = group_id
+// output: if success, user with username will leave the group, their assigned group_chores will be assigned to the admin
 app.delete('/leave-group', (req, res) => {
     const { username, group_id } = req.body;
 
-    // query to check if the user is a member and not an admin in the specified group
+    // query to check if the user is a member and not an admin
     const checkMembershipQuery = `
-        SELECT role 
+        SELECT role, user_id 
         FROM group_members 
         JOIN users ON group_members.user_id = users.id 
         WHERE users.username = ? AND group_members.group_id = ?
@@ -966,21 +981,51 @@ app.delete('/leave-group', (req, res) => {
             return res.status(500).json({ error: "Failed to check membership status" });
         }
 
-        // verify the user is a member (not an admin)
         if (results.length > 0 && results[0].role !== 'admin') {
-            // query to remove the user from the group
-            const removeMemberQuery = `
-                DELETE FROM group_members 
-                WHERE user_id = (SELECT id FROM users WHERE username = ?) 
-                AND group_id = ?
+            const userId = results[0].user_id;
+
+            // query to get the admin's ID for the group
+            const getAdminQuery = `
+                SELECT user_id AS admin_id 
+                FROM group_members 
+                WHERE group_id = ? AND role = 'admin'
             `;
 
-            db.query(removeMemberQuery, [username, group_id], (err, result) => {
+            db.query(getAdminQuery, [group_id], (err, adminResults) => {
                 if (err) {
-                    console.error("API leave-group: Error removing member from group: ", err.message);
-                    return res.status(500).json({ error: "Failed to leave group" });
+                    console.error("API leave-group: Error fetching admin ID: ", err.message);
+                    return res.status(500).json({ error: "Failed to fetch admin ID" });
                 }
-                res.status(200).json({ message: "Successfully left the group" });
+
+                const adminId = adminResults[0].admin_id;
+
+                // query to reassign chores to the admin
+                const reassignChoresQuery = `
+                    UPDATE group_chores 
+                    SET assigned_to = ? 
+                    WHERE group_id = ? AND assigned_to = ?
+                `;
+
+                db.query(reassignChoresQuery, [adminId, group_id, userId], (err) => {
+                    if (err) {
+                        console.error("API leave-group: Error reassigning chores: ", err.message);
+                        return res.status(500).json({ error: "Failed to reassign chores" });
+                    }
+
+                    // query to remove the user from the group
+                    const removeMemberQuery = `
+                        DELETE FROM group_members 
+                        WHERE user_id = ? AND group_id = ?
+                    `;
+
+                    db.query(removeMemberQuery, [userId, group_id], (err) => {
+                        if (err) {
+                            console.error("API leave-group: Error removing member from group: ", err.message);
+                            return res.status(500).json({ error: "Failed to leave group" });
+                        }
+                        res.status(200).json({ message: "Successfully left the group and chores reassigned to admin" });
+                    });
+                });
             });
         } else {
             res.status(403).json({ error: "Only non-admin members can leave the group" });
