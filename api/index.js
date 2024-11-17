@@ -387,53 +387,6 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
     }
 }
 
-async function resetAndRotateGroupUserChores(type) {
-    const query = `SELECT id, group_id, assigned_to, is_completed FROM group_chores WHERE recurrence = ?`;
-    const [groupChores] = await db.promise().query(query, [type]);
-
-    for (const chore of groupChores) {
-        const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
-        try{
-            console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
-            await db.promise().query(query, [chore.id]);
-
-            // should only be calling rotate when the chores are reset each week
-            if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
-                await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
-            }
-
-        } catch (error) {
-            console.error("Error resetting chore:", error);
-        }
-    }
-}
-
-async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
-    try {
-        // retrieve all users in the group (order them for consistent rotation) -AT
-        const query = 'SELECT id FROM group_members WHERE group_id = ? ORDER BY id ASC'
-        const [users] = await db.promise().query(query, [group_id]);
-
-        // find the current user in the sorted user list -AT
-        const currentIndex = users.findIndex(user => user.id === current_assigned_to);
-        if (currentIndex === -1) {
-            console.error(`User with ID ${current_assigned_to} not found in group ${group_id}.`);
-            return;
-        }
-
-        // Rotate to the next user (loop back to the first user if at the end) -AT
-        const nextUser = users[(currentIndex + 1) % users.length];
-
-        // Update the chore with the new user assignment -AT
-        const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
-        await db.promise().query(updateQuery, [nextUser.id, chore_id]);
-
-        console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
-    } catch (error) {
-        console.error("Error rotating group chore to the next user:", error);
-    }
-}
-
 module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser }; // export for testing purposes - AT
 
 /********************************************************** */
