@@ -122,6 +122,22 @@ async function getGroupTaskId(group_task_name, group_chore_id) {
     return results[0].id;
 }
 
+// check the user's group chore modification permission
+const canModifyChore = async (username, group_id) => {
+    const query = `
+        SELECT can_modify_chore
+        FROM group_members
+        JOIN users ON group_members.user_id = users.id
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+    const [rows] = await db.promise().query(query, [username, group_id]);
+    if (rows.length === 0) {
+        throw new Error("User is not a member of the group.");
+    }
+    return rows[0].can_modify_chore;
+};
+
+
 
 /********************************************************** */
 /*                USER AUTHENTICATION BELOW:                */
@@ -875,7 +891,7 @@ app.get('/get-is-admin', (req, res) => {
     });
 });
 
-// remove a user (must be member) from group (only admin can remove members, but admin cannot remove themselves)
+// remove a user (must be member) from group (only admin can remove members, but admin cannot remove themselves) --EL
 // input: username (requesting user, the user that's trying to remove someone from the group), 
 //        group_id, 
 //        user_to_remove (this is a username)
@@ -904,23 +920,38 @@ app.delete('/remove-user-from-group', (req, res) => {
                 return res.status(400).json({ error: "Admin cannot remove themselves" });
             }
 
-            // remove the user from the group
-            const removeUserQuery = `
-                DELETE FROM group_members 
-                WHERE group_id = ? AND user_id = (SELECT id FROM users WHERE username = ?)
+            // assign chores of the user to be removed to the admin
+            const assignChoresQuery = `
+                UPDATE group_chores
+                SET assigned_to = (SELECT id FROM users WHERE username = ?)
+                WHERE group_id = ? AND assigned_to = (SELECT id FROM users WHERE username = ?)
             `;
 
-            db.query(removeUserQuery, [group_id, user_to_remove], (err, result) => {
+            db.query(assignChoresQuery, [username, group_id, user_to_remove], (err, result) => {
                 if (err) {
-                    console.error("API remove-user-from-group: Error removing user: ", err.message);
-                    return res.status(500).json({ error: "Failed to remove user" });
+                    console.error("API remove-user-from-group: Error reassigning chores: ", err.message);
+                    return res.status(500).json({ error: "Failed to reassign chores" });
                 }
 
-                if (result.affectedRows > 0) {
-                    return res.status(200).json({ success: `User ${user_to_remove} removed from the group` });
-                } else {
-                    return res.status(404).json({ error: "User not found in this group" });
-                }
+                // remove the user from the group
+                const removeUserQuery = `
+                    DELETE FROM group_members 
+                    WHERE group_id = ? AND user_id = (SELECT id FROM users WHERE username = ?)
+                `;
+
+                db.query(removeUserQuery, [group_id, user_to_remove], (err, result) => {
+                    if (err) {
+                        console.error("API remove-user-from-group: Error removing user: ", err.message);
+                        return res.status(500).json({ error: "Failed to remove user" });
+                    }
+
+                    if (result.affectedRows > 0) {
+                        return res.status(200).json({ success: `User ${user_to_remove} removed from the group, and their chores reassigned to the admin` });
+                    } else {
+                        console.error("API remove-user-from-group: User not found in this group");
+                        return res.status(404).json({ error: "User not found in this group" });
+                    }
+                });
             });
         } else {
             return res.status(403).json({ error: "You must be an admin to remove a user" });
@@ -928,16 +959,17 @@ app.delete('/remove-user-from-group', (req, res) => {
     });
 });
 
-// let a non-admin member leave a group
+
+// let a non-admin member leave a group --EL
 // input: username 
 //        group_id
-// output: if success, user with username will leave group with id = group_id
+// output: if success, user with username will leave the group, their assigned group_chores will be assigned to the admin
 app.delete('/leave-group', (req, res) => {
     const { username, group_id } = req.body;
 
-    // query to check if the user is a member and not an admin in the specified group
+    // query to check if the user is a member and not an admin
     const checkMembershipQuery = `
-        SELECT role 
+        SELECT role, user_id 
         FROM group_members 
         JOIN users ON group_members.user_id = users.id 
         WHERE users.username = ? AND group_members.group_id = ?
@@ -949,27 +981,147 @@ app.delete('/leave-group', (req, res) => {
             return res.status(500).json({ error: "Failed to check membership status" });
         }
 
-        // verify the user is a member (not an admin)
         if (results.length > 0 && results[0].role !== 'admin') {
-            // query to remove the user from the group
-            const removeMemberQuery = `
-                DELETE FROM group_members 
-                WHERE user_id = (SELECT id FROM users WHERE username = ?) 
-                AND group_id = ?
+            const userId = results[0].user_id;
+
+            // query to get the admin's ID for the group
+            const getAdminQuery = `
+                SELECT user_id AS admin_id 
+                FROM group_members 
+                WHERE group_id = ? AND role = 'admin'
             `;
 
-            db.query(removeMemberQuery, [username, group_id], (err, result) => {
+            db.query(getAdminQuery, [group_id], (err, adminResults) => {
                 if (err) {
-                    console.error("API leave-group: Error removing member from group: ", err.message);
-                    return res.status(500).json({ error: "Failed to leave group" });
+                    console.error("API leave-group: Error fetching admin ID: ", err.message);
+                    return res.status(500).json({ error: "Failed to fetch admin ID" });
                 }
-                res.status(200).json({ message: "Successfully left the group" });
+
+                const adminId = adminResults[0].admin_id;
+
+                // query to reassign chores to the admin
+                const reassignChoresQuery = `
+                    UPDATE group_chores 
+                    SET assigned_to = ? 
+                    WHERE group_id = ? AND assigned_to = ?
+                `;
+
+                db.query(reassignChoresQuery, [adminId, group_id, userId], (err) => {
+                    if (err) {
+                        console.error("API leave-group: Error reassigning chores: ", err.message);
+                        return res.status(500).json({ error: "Failed to reassign chores" });
+                    }
+
+                    // query to remove the user from the group
+                    const removeMemberQuery = `
+                        DELETE FROM group_members 
+                        WHERE user_id = ? AND group_id = ?
+                    `;
+
+                    db.query(removeMemberQuery, [userId, group_id], (err) => {
+                        if (err) {
+                            console.error("API leave-group: Error removing member from group: ", err.message);
+                            return res.status(500).json({ error: "Failed to leave group" });
+                        }
+                        res.status(200).json({ message: "Successfully left the group and chores reassigned to admin" });
+                    });
+                });
             });
         } else {
             res.status(403).json({ error: "Only non-admin members can leave the group" });
         }
     });
 });
+
+// let an admin disband a group --EL
+// input: username 
+//        group_id
+// output: if success, group with id = group_id will be disbanded
+app.delete('/disband-group', (req, res) => {
+    const { username, group_id } = req.body;
+
+    // query to verify if the user is the admin of the specified group
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API disband-group: Error verifying admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to verify admin status" });
+        }
+
+        // check if the user is an admin
+        if (results.length > 0 && results[0].role === 'admin') {
+            // query to delete the group
+            const deleteGroupQuery = `
+                DELETE FROM group_names 
+                WHERE id = ?
+            `;
+
+            db.query(deleteGroupQuery, [group_id], (err, result) => {
+                if (err) {
+                    console.error("API disband-group: Error disbanding group: ", err.message);
+                    return res.status(500).json({ error: "Failed to disband group" });
+                }
+                res.status(200).json({ message: "Group successfully disbanded" });
+            });
+        } else {
+            res.status(403).json({ error: "Only group admins can disband the group" });
+        }
+    });
+});
+
+// let an admin update a group member's permission to modify (add, update, delete) group chores --EL
+// input: username (the admin)
+//        group_id 
+//        user_to_update (update this member's permission)
+//        can_modify_chore (True / False, update permission to the corresponding boolean)
+// output: if success, group with id = group_id will be disbanded
+app.put('/update-chore-permission', (req, res) => {
+    const { username, group_id, user_to_update, can_modify_chore } = req.body;
+
+    // query to check if the requester is an admin of the group
+    const checkAdminQuery = `
+        SELECT role 
+        FROM group_members 
+        JOIN users ON group_members.user_id = users.id 
+        WHERE users.username = ? AND group_members.group_id = ?
+    `;
+
+    db.query(checkAdminQuery, [username, group_id], (err, results) => {
+        if (err) {
+            console.error("API update-chore-permission: Error verifying admin status: ", err.message);
+            return res.status(500).json({ error: "Failed to verify admin status" });
+        }
+
+        // verify if the requester is an admin
+        if (results.length > 0 && results[0].role === 'admin') {
+            // query to update chore modification permission for the member
+            const updatePermissionQuery = `
+                UPDATE group_members 
+                JOIN users ON group_members.user_id = users.id 
+                SET can_modify_chore = ? 
+                WHERE users.username = ? AND group_members.group_id = ?
+            `;
+
+            db.query(updatePermissionQuery, [can_modify_chore, user_to_update, group_id], (err, result) => {
+                if (err) {
+                    console.error("API update-chore-permission: Error updating group chore permission: ", err.message);
+                    return res.status(500).json({ error: "Failed to update group chore permission" });
+                }
+
+                res.status(200).json({ message: "Group chore modification permission updated successfully" });
+            });
+        } else {
+            res.status(403).json({ error: "Only admins can update group chore permissions" });
+        }
+    });
+});
+
 
 
 
@@ -1058,11 +1210,19 @@ app.post('/get-group-name', async (req, res) => {
 // add a new chore to the group -KK
 app.post('/add-group-chore', async (req, res) => {
     try {
-        const { group_chore_name, group_id, assign_to, recurrence } = req.body;
-        if (!group_chore_name || !group_id || !assign_to || !recurrence) {
+        // username (user who's trying to add this group chore) --EL
+        const { group_chore_name, group_id, assign_to, recurrence, username } = req.body;
+        if (!group_chore_name || !group_id || !assign_to || !recurrence || !username) {
             console.log("API add-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
         }  
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API add-group-chore: No permission to modify chores in this group.");
+            return res.status(403).send("You do not have permission to modify chores in this group.");
+        }
 
         // TEMPORARY
         const user_id = await getUserId(assign_to);
@@ -1085,10 +1245,18 @@ app.post('/add-group-chore', async (req, res) => {
 // update the details of a chore -MH
 app.post('/update-group-chore', async (req, res) => {
     try {
-        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to } = req.body;
-        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to) {
+        // username (user who's trying to update this group chore) --EL
+        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to, username } = req.body;
+        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to || !username) {
             console.log("API update-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
+        }
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API update-group-chore: No permission to modify chores in this group.");
+            return res.status(403).send("You do not have permission to modify chores in this group.");
         }
         
         // NEED TO CHANGE LATER
@@ -1114,10 +1282,17 @@ app.post('/update-group-chore', async (req, res) => {
 
 app.post('/delete-group-chore', async (req, res) => {
     try {
-        const { group_chore_name, group_id } = req.body;
-        if (!group_chore_name || !group_id) {
+        const { group_chore_name, group_id, username } = req.body;
+        if (!group_chore_name || !group_id || !username) {
             console.log("API delete-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
+        }
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API delete-group-chore: No permission to modify chores in this group.");
+            return res.status(403).send("You do not have permission to modify chores in this group.");
         }
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
@@ -1178,11 +1353,18 @@ app.post('/get-group-tasks', async (req, res) => {
 // adds a task for a given group chore to the database -KK
 app.post('/add-group-task', async (req, res) => {
     try {
-        const { group_chore_name, group_task_name, group_id } = req.body;
-        if(!group_chore_name || !group_task_name || !group_id){
+        const { group_chore_name, group_task_name, group_id, username } = req.body;
+        if(!group_chore_name || !group_task_name || !group_id || !username){
             console.log("API add-group-task: Missing fields.");
             return res.status(400).send("Missing fields.");
         } 
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API add-group-task: No permission to modify tasks in this group.");
+            return res.status(403).send("You do not have permission to modify tasks in this group.");
+        }
 
         const { group_chore_id, is_completed } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
         const [duplicate] = await db.promise().query("SELECT id FROM group_tasks WHERE group_task_name = ? AND group_chore_id = ?", [group_task_name, group_chore_id]);
@@ -1208,10 +1390,17 @@ app.post('/add-group-task', async (req, res) => {
 // deletes a task for a given chore from the database -KK
 app.post('/delete-group-task', async (req, res) => {
     try {
-        const { group_chore_name, group_task_name, group_id } = req.body;
-        if (!group_chore_name || !group_task_name || !group_id) {
+        const { group_chore_name, group_task_name, group_id, username } = req.body;
+        if (!group_chore_name || !group_task_name || !group_id || !username) {
             console.log("API delete-group-task: Missing fields.");
             return res.status(400).send("Missing fields.");
+        }
+
+        // check permissions
+        const hasPermission = await canModifyChore(username, group_id);
+        if (!hasPermission) {
+            console.log("API delete-group-task: No permission to modify tasks in this group.");
+            return res.status(403).send("You do not have permission to modify tasks in this group.");
         }
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(group_chore_name, group_id);
