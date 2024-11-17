@@ -14,31 +14,44 @@ import { API_URL } from '../config.js';
 
 
 // for inviting members -NN
-const InviteMemberScreen = ({ username }) => {
+const InviteMemberScreen = () => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
     const route = useRoute();
     const navigation = useNavigation();
-    const [inviteeId, setInviteeId] = useState('');
     const groupId = route.params.groupId;
+    const [inviteeName, setInviteeName] = useState('');
+    const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const getUsername = async () => {   // get the username from securestore -KK
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+        //console.log(username);
+      } else {
+        console.error("UI Member.js: Username not found in SecureStore.");
+      }
+    };
+    getUsername();
+  }, []);
 
     const handleSendInvitation = async () => {
-        if (!inviteeId) {
-          Alert.alert('Please enter the invitee ID');
+        if (!inviteeName) {
+          Alert.alert('Please enter the invitee name');
           return;
         }
-        console.log('User ID:', username);
-        console.log('Invitee ID:', inviteeId);
+        console.log('Username:', username);
+        console.log('Invitee name:', inviteeName);
         console.log('Group ID:', groupId);
         try {
-          const response = await axios.post(`${API_URL}sendInvitation`, {
-            inviter_id: username,
-            invitee_id: inviteeId,
+          const response = await axios.post(`${API_URL}send-invite`, {
+            inviter_name: username,
+            invitee_name: inviteeName,
             group_id: groupId,
           });
-          Alert.alert('Invitation sent successfully', `Invitation sent to user ID: ${inviteeId}`);
-          setInviteeId('');
-          setIsInviteModalVisible(false);
+          Alert.alert('Invitation sent successfully', `Invitation sent to user: ${inviteeName}`);
+          setInviteeName('');
         } catch (error) {
           console.error("Error sending invitation:", error);
           Alert.alert("Failed to send invitation.");
@@ -47,12 +60,12 @@ const InviteMemberScreen = ({ username }) => {
 
     return (
         <View style={styles.screen}>
-            <RegisterHeader title="Enter Invitee ID" navigation={navigation} />
+            <RegisterHeader title="Enter Invitee Username" navigation={navigation} />
             <TextInput
                 style={styles.groupInviteeInput}
-                placeholder="Enter Invitee ID"
-                value={inviteeId}
-                onChangeText={setInviteeId}
+                placeholder="Enter Invitee Username"
+                value={inviteeName}
+                onChangeText={setInviteeName}
             />
             <TouchableOpacity style={styles.submitButton} onPress={handleSendInvitation}>
                 <Text style={styles.submitButtonText}>Send Invitation</Text>
