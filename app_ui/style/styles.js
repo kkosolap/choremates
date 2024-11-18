@@ -754,6 +754,18 @@ const createStyles = (theme) => {
       alignSelf: 'center',
       backgroundColor: theme.lighter,
     },
+    permissionButtonContainer: {
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    permissionButton: {
+      borderColor: 'black',
+      borderWidth: 1,
+      padding: 5,
+      borderRadius: 5,
+      marginHorizontal: 10,
+      margin: 5,
+    },
     deleteButton: {
       backgroundColor: theme.red,
       padding: 20,

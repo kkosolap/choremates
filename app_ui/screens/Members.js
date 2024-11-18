@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from 'react-native-vector-icons';
 
 import { ScreenHeader } from '../components/headers.js';
 import { useTheme } from '../style/ThemeProvider.js';
 import createStyles from '../style/styles.js';
-import { Ionicons } from 'react-native-vector-icons';
+
 
 import axios from 'axios';
 import { API_URL } from '../config.js';
@@ -157,11 +158,9 @@ const MembersDisplay = ({ username, navigation }) => {
                   <Text style={styles.memberName}>{item.username}</Text>
                   {item.role === 'admin' ? (
                     <Ionicons name="star" size={25} color="gold" />
-                  ) : item.role === 'member' ? (
-                    <Ionicons name="eye" size={25} color="white" />
-                  ) : (
-                    <Text style={styles.memberRole}>Role: {item.role}</Text>
-                  )}
+                  // ) : item.role === 'member' ? (
+                  //   <Ionicons name="eye" size={25} color="white" />
+                  ) : null}
               </View>
           )}
       />

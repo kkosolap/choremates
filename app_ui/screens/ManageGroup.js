@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-
 import Delete from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from 'react-native-vector-icons';
+
 import { useTheme } from '../style/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import { ScreenHeader } from '../components/headers.js';
@@ -112,6 +113,22 @@ const ManageDisplay = () => {
     );
   };
 
+  const handlePermissionUpdate = (userToUpdate, canModify) => {
+    axios.put(`${API_URL}update-chore-permission`, {
+      username,
+      group_id: groupId,
+      user_to_update: userToUpdate,
+      can_modify_chore: canModify,
+    })
+    .then((response) => {
+      alert(`${canModify ? 'Edit Access!' : 'View Only!'}`);
+    })
+    .catch((error) => {
+      console.error("Error updating permission: ", error);
+      alert("Failed to update permission.");
+    });
+  };
+
   return (
     <View style={styles.content}>
       <FlatList
@@ -121,13 +138,29 @@ const ManageDisplay = () => {
           <View style={styles.manageMemberItem}>
             <Text style={styles.memberName}>{item.username}</Text>
             {item.username !== username && (
-              <TouchableOpacity 
-                style={styles.deleteButton} 
+            <>
+              <View style={styles.permissionButtonContainer}>
+                <TouchableOpacity
+                  style={styles.permissionButton}
+                  onPress={() => handlePermissionUpdate(item.username, true)}
+                >
+                  <Ionicons name="pencil" size={20} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.permissionButton}
+                  onPress={() => handlePermissionUpdate(item.username, false)}
+                >
+                  <Ionicons name="eye" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.deleteButton}
                 onPress={() => handleRemoveMember(item.username)}
               >
                 <Delete name="close" size={25} color="black" />
               </TouchableOpacity>
-            )}
+            </>
+          )}
           </View>
         )}
       />
