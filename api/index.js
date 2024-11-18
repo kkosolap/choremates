@@ -351,7 +351,7 @@ async function resetAndRotateGroupUserChores(type) {
             await db.promise().query(query, [chore.id]);
 
             // should only be calling rotate when the chores are reset each week
-            if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
+            if (type === 'Weekly' || type === 'Daily') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
                 await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
             }
 
@@ -387,7 +387,7 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
     }
 }
 
-module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser }; // export for testing purposes - AT
+module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser, }; // export for testing purposes - AT
 
 /********************************************************** */
 /*             CHORE IMPLEMENTATION BELOW:                  */

@@ -17,6 +17,7 @@ jest.useFakeTimers(); // to enable fake timers
 const { resetAndRotateGroupUserChores, rotateChoreToNextUser } = require('../api/index'); // adjust the path as necessary
 // const db = require('./dbTestConfig'); // mock DB module (revision: we mock db module below)
 
+/*
 // Mock the DB module (to avoid actual DB interactions)
 jest.mock('../api/index', () => ({
     resetAndRotateGroupUserChores: jest.fn().mockResolvedValue(true), // Mock the function
@@ -25,6 +26,7 @@ jest.mock('../api/index', () => ({
     // const mockResetAndRotate = jest.fn();
     // const rotateChore = jest.fn();
 }));
+*/
 
 /*
 beforeEach(async () => {
@@ -34,60 +36,37 @@ beforeEach(async () => {
 });
 */
 
-test('should reset and rotate chores based on their recurrence type', async () => {
-    // insert data into db
-    /* try {
-        console.log('Inserting test data');
-        const insertChoresQuery = `
-            INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to, is_completed)
-            VALUES
-            (101, 'test daily', 'Daily', 201, 0),
-            (101, 'test weekly', 'Weekly', 202, 0)
-        `;
+describe('resetAndRotateGroupuserChores tests', () => {
+    test('should reset and rotate chores based on their recurrence type', async () => {
+        const rotateChoreSpy = jest.spyOn(require('../api/index'), 'rotateChoreToNextUser');
+        console.log('Running resetAndRotateGroupUserChores for Daily chores...');
+        await resetAndRotateGroupUserChores('Daily'); // Call the original function
 
-        console.log('Checking database connection...');
-        if (db.state === 'disconnected') {
-            console.error('Database connection lost.');
-        } else {
-            console.log('Database connection active.');
-        }
-        //await db.promise().query(insertChoresQuery);
-    
+        jest.advanceTimersByTime(86400000); // Fast forward one day
+        expect(rotateChoreSpy).not.toHaveBeenCalled(); // No rotation for daily chores
 
-        console.log('Test data entered');
-    } catch (error) {
-        console.error('error inserting data:', error);
-    }
-    */
-    
-    const rotateChoreMock = jest.fn(async (groupId, choreId, assignedTo) => {
-        console.log(`Rotating chore ${choreId} for group ${groupId} to next user ${assignedTo}`);
-    })
+        // Optionally verify that the original `rotateChoreToNextUser` was not called
+        expect(rotateChoreSpy).not.toHaveBeenCalled();
+    });
 
-    rotateChoreToNextUser.mockImplementation(rotateChoreMock); // replacing original function with mock
+    test('should reset weekly chores and rotate them', async () => {
+        // Spy on the original function without mocking it
+        const rotateChoreSpy = jest.spyOn(require('../api/index'), 'rotateChoreToNextUser');
 
-    console.log('running resetAndRotateGroupUserChores');
-    await resetAndRotateGroupUserChores('Daily'); // call for daily chores
-    console.log('resetAndRotateGroupUserChores completed');
+        // Call resetAndRotateGroupUserChores and let it do its real work
+        console.log('Running resetAndRotateGroupUserChores for Weekly chores...');
+        await resetAndRotateGroupUserChores('Weekly');
 
-    console.log('advance time by one day');
-    jest.advanceTimersByTime(86400000); // fast forward one day
-    expect(rotateChoreMock).toHaveBeenCalledTimes(0); // we expect it to not have been called... we dont rotate chores daily
+        jest.advanceTimersByTime(604800000); // Fast forward one week
+        expect(rotateChoreSpy).toHaveBeenCalledTimes(2); // Rotation happens for weekly chores
 
-    
-    console.log('advance time by one week');
-    jest.advanceTimersByTime(604800000); // fast forward one week
-    //expect(rotateChoreMock).toHaveBeenCalledTimes(2); // daily chore and weekly chore reset every week
-    expect(rotateChoreMock).toHaveBeenCalledWith(1, 1, 101); // this is the daily chore
-    expect(rotateChoreMock).toHaveBeenCalledWith(1, 2, 102); // this is the weekly chore
-    console.log('did call with the correct chores');
-    expect(rotateChoreMock).toHaveBeenCalledTimes(2); // daily chore and weekly chore reset every week
-
-    // Clean up: delete test data from the DB
-    //const cleanupQuery = 'DELETE FROM group_chores WHERE group_id IN (101, 102)';
-    //await db.promise().query(cleanupQuery);
+        // Optionally verify the calls to the original `rotateChoreToNextUser`
+        expect(rotateChoreSpy).toHaveBeenCalledWith(101, 1, 201); // First chore rotation
+        expect(rotateChoreSpy).toHaveBeenCalledWith(101, 2, 202); // Second chore rotation
+    });
     console.log('done');
 });
+
 
 // Close DB connection after tests
 afterAll(async () => {
