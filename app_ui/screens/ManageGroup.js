@@ -22,12 +22,12 @@ const ManageScreen = ({ navigation, route }) => {
     <View style={styles.screen}>
       <ScreenHeader title="Manage Group" navigation={navigation} />
 
-      <ManageDisplay />
+      <ManageDisplay navigation={navigation}/>
     </View>
   );
 };
 
-const ManageDisplay = () => {
+const ManageDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const route = useRoute();
