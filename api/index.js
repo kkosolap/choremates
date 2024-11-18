@@ -313,7 +313,7 @@ app.post('/update-profile', async (req, res) => {
 // every minute for test purposes - AT
 cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
 cron.schedule('0 0 * * *',  () => { resetAndRotateChores('Daily'); });
-cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); });
+cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); }); // resets every monday
 
 // function to handle single user recurrence -AT
 async function resetAndRotateChores(type) {
@@ -341,8 +341,10 @@ async function resetSingleUserChores(type) {
 }
 
 async function resetAndRotateGroupUserChores(type) {
+    console.log('in resetAndRotateGroupUserChores');
     const query = `SELECT id, group_id, assigned_to, is_completed FROM group_chores WHERE recurrence = ?`;
     const [groupChores] = await db.promise().query(query, [type]);
+    console.log('after query');
 
     for (const chore of groupChores) {
         const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
@@ -351,17 +353,18 @@ async function resetAndRotateGroupUserChores(type) {
             await db.promise().query(query, [chore.id]);
 
             // should only be calling rotate when the chores are reset each week
-            if (type === 'Weekly' || type === 'Daily') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
-                await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
+            if (type === 'Weekly' || type === 'Daily' || type === 'Every Minute') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
+                await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to, db);
             }
 
         } catch (error) {
             console.error("Error resetting chore:", error);
         }
     }
+    return 1;
 }
 
-async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
+async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to, db) {
     try {
         // retrieve all users in the group (order them for consistent rotation) -AT
         const query = 'SELECT id FROM group_members WHERE group_id = ? ORDER BY id ASC'

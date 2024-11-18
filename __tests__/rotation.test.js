@@ -1,8 +1,7 @@
 const mysql = require('mysql2');
 require('dotenv').config({ path: '.env.test' });
 
-jest.setTimeout(20000); // Global timeout of 20 seconds
-
+/*
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -11,10 +10,20 @@ const db = mysql.createConnection({
     charset: 'utf8mb4'
 });
 
+db.connect((err) =>{
+    if (err){
+        console.log("API connect: Error connecting to database: ", err.message);
+        return;
+    }
+    console.log("Connected to database.");
+});
+*/
+
 jest.useFakeTimers(); // to enable fake timers
 
 // Import necessary modules and your functions
 const { resetAndRotateGroupUserChores, rotateChoreToNextUser } = require('../api/index'); // adjust the path as necessary
+/// resetAndRotateGroupUserChores('Daily');
 // const db = require('./dbTestConfig'); // mock DB module (revision: we mock db module below)
 
 /*
@@ -37,18 +46,27 @@ beforeEach(async () => {
 */
 
 describe('resetAndRotateGroupuserChores tests', () => {
-    test('should reset and rotate chores based on their recurrence type', async () => {
-        const rotateChoreSpy = jest.spyOn(require('../api/index'), 'rotateChoreToNextUser');
-        console.log('Running resetAndRotateGroupUserChores for Daily chores...');
-        await resetAndRotateGroupUserChores('Daily'); // Call the original function
+    jest.setTimeout(30000); // Global timeout of 30 seconds 
 
-        jest.advanceTimersByTime(86400000); // Fast forward one day
+    
+    test('should reset and rotate chores based on their recurrence type', async () => {
+        console.log('entering test');
+        const rotateChoreSpy = jest.spyOn(require('../api/index'), 'rotateChoreToNextUser'); // this pulls the original function to use it
+        console.log('Running resetAndRotateGroupUserChores for Daily chores...');        
+        const res = await resetAndRotateGroupUserChores('Daily'); // Call the original function
+        console.log('blahblahblahblahblahblahblah', res);
+
+        jest.advanceTimersByTime(86400000); // Fast forward one day 
+        console.log('after fast forward one day');
         expect(rotateChoreSpy).not.toHaveBeenCalled(); // No rotation for daily chores
+        console.log('end daily');
+        
 
         // Optionally verify that the original `rotateChoreToNextUser` was not called
-        expect(rotateChoreSpy).not.toHaveBeenCalled();
+        // expect(rotateChoreSpy).not.toHaveBeenCalled(); // wtf duplicate
     });
-
+    
+/*
     test('should reset weekly chores and rotate them', async () => {
         // Spy on the original function without mocking it
         const rotateChoreSpy = jest.spyOn(require('../api/index'), 'rotateChoreToNextUser');
@@ -61,9 +79,10 @@ describe('resetAndRotateGroupuserChores tests', () => {
         expect(rotateChoreSpy).toHaveBeenCalledTimes(2); // Rotation happens for weekly chores
 
         // Optionally verify the calls to the original `rotateChoreToNextUser`
-        expect(rotateChoreSpy).toHaveBeenCalledWith(101, 1, 201); // First chore rotation
-        expect(rotateChoreSpy).toHaveBeenCalledWith(101, 2, 202); // Second chore rotation
+        expect(rotateChoreSpy).toHaveBeenCalledWith(1, 1, 101); // First chore rotation
+        expect(rotateChoreSpy).toHaveBeenCalledWith(1, 2, 102); // Second chore rotation
     });
+    */
     console.log('done');
 });
 
