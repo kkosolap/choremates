@@ -11,7 +11,7 @@ import * as SecureStore from 'expo-secure-store';
 import createStyles from '../style/styles';
 import { useTheme } from '../style/ThemeProvider';
 import { TabHeader } from '../components/headers.js';
-import { ChoreBlock } from '../components/blocks.js';
+import { ChoreBlock, GroupChoreBlock } from '../components/blocks.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -42,12 +42,6 @@ const HomeDisplay = () => {
   const [username, setUsername] = useState(null);
   const [personalData, setPersonalData] = useState([]);
   const [groupData, setGroupData] = useState([]);
-
-  // state to control visibility of three-dot button -VA
-  const [showThreeDots, setShowThreeDots] = useState(false);
-  const handleTouchablePress = () => {
-    setShowThreeDots(!showThreeDots); // Toggle visibility of three-dot button
-  };
 
   // list of a user's groups
   const [groupList, setGroupList] = useState([]);
@@ -290,13 +284,6 @@ const HomeDisplay = () => {
             Personal Chores
           </Text>
 
-          {/* settings button */}
-          <TouchableOpacity
-            onPress={() => console.log("Settings clicked")}
-            activeOpacity={0.7}
-          >
-            <Icon name="ellipsis-vertical" size={24} color={theme.main} />
-          </TouchableOpacity>
         </TouchableOpacity>
 
         {/* Horizontal Line */}
@@ -308,7 +295,7 @@ const HomeDisplay = () => {
 
             {Object.keys(groupedPersonalTasks).length > 0 ? (
               // Group WITH Chores
-              <View style={styles.choresList}>
+              <View style={styles.homeChoresSection}>
                 {Object.keys(groupedPersonalTasks).map((chore_name) => (
                   <ChoreBlock
                     key={chore_name}
@@ -362,13 +349,6 @@ const HomeDisplay = () => {
               {groupedGroupTasks[group_id].group_name}
             </Text>
 
-            {/* settings button */}
-            <TouchableOpacity
-              onPress={() => console.log("Settings clicked")}
-              activeOpacity={0.7}
-            >
-              <Icon name="ellipsis-vertical" size={24} color={theme.main} />
-            </TouchableOpacity>
           </TouchableOpacity>
 
           {/* Horizontal Line */}
@@ -380,9 +360,9 @@ const HomeDisplay = () => {
 
               {Object.keys(groupedGroupTasks[group_id].chores).length > 0 ? (
                 // Group WITH Chores
-                <View style={styles.choresList}>
+                <View style={styles.homeChoresSection}>
                   {Object.keys(groupedGroupTasks[group_id].chores).map((group_chore_name) => (
-                    <ChoreBlock
+                    <GroupChoreBlock
                       key={group_chore_name}
                       choreName={group_chore_name}
                       tasks={groupedGroupTasks[group_id].chores[group_chore_name].group_tasks}
@@ -393,6 +373,8 @@ const HomeDisplay = () => {
                         groupedGroupTasks[group_id].chores[group_chore_name].group_id
                       )}
                       recurrence={groupedGroupTasks[group_id].chores[group_chore_name].recurrence}
+                      user = {username}
+                      group_id={group_id}
                     />
                   ))}
                 </View>

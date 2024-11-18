@@ -1,6 +1,7 @@
 // blocks.js
 
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -8,7 +9,9 @@ import { useTheme } from '../style/ThemeProvider';
 import createStyles from '../style/styles';
 import themes from '../style/colors';
 import { completeChore, completeTask, completeGroupChore, completeGroupTask } from '../components/functions.js';
+import { useGroupColors } from '../components/usegroupcolor';
 
+import colors from '../style/colors';
 
 // block for displaying a chore in weekly list
 export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
@@ -110,9 +113,8 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
 
 export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
   const { theme } = useTheme();
-  // const styles = createStyles(themes.groupTheme);  
-  const styles = createStyles(themes.yellow);
-  
+  const styles = createStyles(themes)
+
   const handleToggleChoreCompletion = (group_id, chore_name) => {
     completeGroupChore(group_id, chore_name, tasks)
       .then(() => refresh(user))  
@@ -125,9 +127,35 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
       .catch((error) => console.error("Error toggling task:", error));
   };
 
+  const { groupColors } = useGroupColors(user);
+
+  const groupColor = groupColors[group_id];
+
+  const desaturatedColors = {
+    yellow: colors.yellow.desaturated,
+    green: colors.green.desaturated,
+    blue: colors.blue.desaturated,
+    purple: colors.purple.desaturated,
+    pink: colors.pink.desaturated,
+  };
+
+  const lighterColors = {
+    yellow: colors.yellow.lighter,
+    green: colors.green.lighter,
+    blue: colors.blue.lighter,
+    purple: colors.purple.lighter,
+    pink: colors.pink.lighter,
+  };
+
+  const notCompletedColor = lighterColors[groupColor] || colors.purple.lighter;
+  const completedColor = desaturatedColors[groupColor] || colors.purple.desaturated;
+
   return (
     <TouchableOpacity
-      style={completed ? styles.choreBlockCompleted : styles.choreBlock}
+      style={[
+        completed ? styles.choreBlockCompleted : styles.choreBlock,
+        { backgroundColor: completed ? completedColor : notCompletedColor}
+      ]}      
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
@@ -210,10 +238,59 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
 export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  
+
   return (
     <TouchableOpacity
-      style={styles.homeChoreBlock}
+      style={styles.homeChoreBlock}   
+      onPress={() => onOpenChoreDetails(
+        choreName,
+        tasks
+      )}
+      activeOpacity={0.8}
+    >
+
+      {/* Chore Title */}
+      <Text style={styles.homeChoreTitle}>{choreName}</Text>
+
+      {/* Reccurence */}
+      <Text style={styles.recurrenceLabel}>{recurrence}</Text>
+
+    </TouchableOpacity>
+  );
+};
+
+// block for displaying group chores on home page
+export const GroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence, user, group_id }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  const { groupColors } = useGroupColors(user);
+  const groupColor = groupColors[group_id];
+
+  const lighterColors = {
+    yellow: colors.yellow.lighter,
+    green: colors.green.lighter,
+    blue: colors.blue.lighter,
+    purple: colors.purple.lighter,
+    pink: colors.pink.lighter,
+  };
+  const lightestColors = {
+    yellow: colors.yellow.lightest,
+    green: colors.green.lightest,
+    blue: colors.blue.lightest,
+    purple: colors.purple.lightest,
+    pink: colors.pink.lightest,
+  };
+
+  const lightestColor = lightestColors[groupColor] || colors.purple.lighter;
+  const lighterColor = lighterColors[groupColor] || colors.purple.lighter;
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.homeChoreBlock,
+        { backgroundColor: groupColor ? lightestColor : theme.lightest, borderColor:  groupColor ? lighterColor : theme.lighter}
+      ]}   
       onPress={() => onOpenChoreDetails(
         choreName,
         tasks

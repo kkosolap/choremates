@@ -9,6 +9,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
 import { ThemeProvider, useTheme } from './style/ThemeProvider';
+// import { UserProvider } from './components/usercomponents.js';
+
 import { LogoutProvider } from './style/LogOutProvider';
 import createStyles from './style/styles';
 import Signin from './screens/Signin';
@@ -24,6 +26,7 @@ import GroupInvitations from './screens/GroupInvitations';
 import ManageScreen from './screens/ManageGroup';
 import CreateGroupScreen from './screens/CreateGroup.js';
 import MembersScreen from './screens/Members.js';
+
 
 
 
@@ -114,14 +117,19 @@ const App = () => {
   };
 
   return (
-    <ThemeProvider username={username}>
-      <LogoutProvider handleLogout={handleLogout}>
-        <NavigationContainer>
-          {/* Call useTheme here to ensure it's within the provider -MH */}
-          <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
-        </NavigationContainer>
-      </LogoutProvider>
-    </ThemeProvider>
+    // <UserProvider>
+
+      <ThemeProvider username={username}>
+        <LogoutProvider handleLogout={handleLogout}>
+          <NavigationContainer>
+            {/* Call useTheme here to ensure it's within the provider -MH */}
+            <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
+          </NavigationContainer>
+        </LogoutProvider>
+      </ThemeProvider>
+
+    // </UserProvider>
+
   );
 };
 

@@ -1,6 +1,7 @@
 // styles.js
 
 import { StyleSheet, Dimensions } from 'react-native';
+import themes from './colors';
 // Added for future reference -VA
 // const { height } = Dimensions.get('window');
 
@@ -191,7 +192,7 @@ const createStyles = (theme) => {
       position: 'absolute',
       left: 2,
     },
-    choresList: {
+    homeChoresSection: {
       flex: 1,
       width: '100%',
       alignItems: 'center', // Horizontally center content
@@ -272,6 +273,16 @@ const createStyles = (theme) => {
       ...baseChoreBlock,
       backgroundColor: theme.desaturated,
     },
+    choreBlockGroup : {
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: 10,
+      paddingVertical: 10,
+      width: '95%',
+      minHeight: 55,
+      borderRadius: 15,
+      //backgroundColor: theme.lighter,
+    },
     homeChoreBlock: {
       ...baseChoreBlock,
       backgroundColor: theme.lightest,
@@ -309,10 +320,10 @@ const createStyles = (theme) => {
       height: 'auto',
     },
     editChoreButton: {
-      position: 'absolute', // position it absolutely within the header
-      right: 15,            // distance from the right edge
-      top: 20,              // distance from the top edge
-      zIndex: 1,            // ensure it's above other elements
+      position: 'absolute',
+      right: 15,
+      top: 20,
+      zIndex: 1,
     },
 
     // tasks  -MH
@@ -395,7 +406,7 @@ const createStyles = (theme) => {
       fontSize: 16,
     },
 
-    //logout -NN
+    // logout -NN
     logoutButton: {
       width: '80%',
       height: 45,
@@ -410,7 +421,7 @@ const createStyles = (theme) => {
       fontSize: 18,
     },
 
-    //register -NN
+    // register -NN
     registerButton: {
       marginTop: 20,
     },
@@ -598,7 +609,7 @@ const createStyles = (theme) => {
       width: 350,
       alignItems: 'center',
       justifyContent: 'flex-start',
-      paddingTop: 20,         // Optional: Add some space at the top
+      paddingTop: 20,
       paddingBottom: 100,
     },
     profilePicSection: {
@@ -616,7 +627,7 @@ const createStyles = (theme) => {
     profilePictureCircle: {
       width: 100,
       height: 100,
-      overflow: 'visible',    // Crop any overflow for circular shape
+      overflow: 'visible', // Crop any overflow for circular shape
     },
     profileNameLabel: {
       fontSize: 12,
@@ -691,6 +702,15 @@ const createStyles = (theme) => {
       flex: 1, 
       justifyContent: 'center', 
       alignItems: 'center'
+    },
+
+    homeGroupColorButton: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      // width: 60,
+      // height: 60,
+      // borderRadius: 30, // circular button
+      backgroundColor: theme.main,
     },
     
     // theme section -KK
@@ -897,26 +917,58 @@ const createStyles = (theme) => {
       right: 20,
       padding: 5,
     },
-
+    
     // groups display -NN
     groupItem: {
-      width: '100%',
-      justifyContent: 'space-between',
+      width: '95%',
+      flexDirection: 'row',  // Align text and icon in a row
       alignItems: 'center',
-      padding: 20,
-      paddingLeft: 95,
-      paddingRight: 95,
+      justifyContent: 'space-between',
+      paddingVertical: 20,
+      paddingHorizontal: 20,
       marginVertical: 15,
-      borderColor: theme.gray,
-      borderWidth: 1,
+      borderWidth: 3,
       borderRadius: 20,
-      alignSelf: 'center',
-      backgroundColor: theme.lighter,
     },
     groupName: {
       fontSize: 25,
       fontWeight: 'bold',
+      flexShrink: 1,
     },
+    groupColorPicker: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    popover: {
+      padding: 10,
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 5,
+      elevation: 5,
+    },
+    menuContainer: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+    },
+    iconGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',  // Allow wrapping of icons to next line
+      justifyContent: 'space-between',  // Spread out the items
+      marginTop: 10,
+    },
+    menuItem: {
+      width: '20%',  // 4 items per row (3 columns)
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: 10,
+      padding: 10,
+    },
+    groupColorIcon: {
+      alignSelf: 'center',
+    }
   });
 };
 

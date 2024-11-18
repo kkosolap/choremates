@@ -305,6 +305,20 @@ app.post('/update-profile', async (req, res) => {
     }
 });
 
+// Get id (user's id) -VA
+app.post('/get-id', async (req, res) => {
+    const { username } = req.body;
+    try {
+      const user_id = await getUserId(username);  
+      
+      res.json({ id: user_id });  
+    } catch (error) {
+      console.error('Error fetching user ID:', error);
+      res.status(500).json({ error: 'Database error' });
+    }
+  });
+  
+
 
 /********************************************************** */
 /*             RECURRENCE IMPLEMENTATION BELOW:             */
@@ -332,7 +346,6 @@ async function resetSingleUserChores(type) {
     for (const chore of chores) {
         const query = `UPDATE chores SET is_completed = false WHERE id = ?`;
         try{
-            console.log("API resetRecurringChores: reseting chore " + chore.id);
             await db.promise().query(query, [chore.id]);
         } catch (error) {
             console.error("Error resetting chore:", error);
@@ -347,7 +360,6 @@ async function resetAndRotateGroupUserChores(type) {
     for (const chore of groupChores) {
         const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
         try{
-            console.log("API resetAndRotateGroupUserChores: resetting chore " + chore.id);
             await db.promise().query(query, [chore.id]);
 
             // should only be calling rotate when the chores are reset each week
@@ -381,7 +393,7 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
         const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
         await db.promise().query(updateQuery, [nextUser.id, chore_id]);
 
-        console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
+        //console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
     } catch (error) {
         console.error("Error rotating group chore to the next user:", error);
     }
@@ -1220,6 +1232,65 @@ app.post('/match-group-task', async (req, res) => {
         res.status(500).send("An error occurred while matching task completion status.");
     }
 });
+
+app.get('/get-group-color', async (req, res) => {
+    try {
+      const { user_id, group_id } = req.query;
+  
+      if (!user_id || !group_id) {
+        console.log("API get-group-color: Missing user_id or group_id");
+        return res.status(400).json({ error: "Missing user_id or group_id" });
+      }
+
+      const [rows] = await db.promise().query(
+        "SELECT group_color FROM group_members WHERE user_id = ? AND group_id = ?",
+        [user_id, group_id]
+      );
+  
+      if (rows.length > 0) {
+        res.json({ group_color: rows[0].group_color });
+      } else {
+        res.status(404).json({ error: "Group color not found" });
+      }
+    } catch (error) {
+      console.error("API get-group-color: Error fetching group color:", error.message);
+      res.status(500).json({ error: `Internal server error: ${error.message}` });
+    }
+  });
+
+app.post('/update-group-color', async (req, res) => {
+    const { username, group_id, group_color } = req.body;
+    // console.log("Request Body:", req.body);  // Add this to debug
+    // console.log('Received:', username, group_id, group_color);
+  
+    // Validate input
+    if (!username || !group_id || !group_color) {
+      return res.status(400).json({ success: false, error: 'Missing parameters' });
+    }
+
+    try {
+      const user_id = await getUserId(username);
+      
+      if (!user_id) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      const [result] = await db.promise().query(
+        'UPDATE group_members SET group_color = ? WHERE group_id = ? AND user_id = ?',
+        [group_color, group_id, user_id]
+      );
+      
+      // Check if the update was successful
+      if (result.affectedRows > 0) {
+        return res.json({ success: true });
+      } else {
+        return res.status(404).json({ success: false, error: 'Group not found or no changes made' });
+      }
+    } catch (error) {
+      console.error('Error updating group color:', error);
+      return res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+  });
 
 
 // keep this at the very bottom of the file -KK

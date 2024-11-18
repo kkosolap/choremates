@@ -3,7 +3,8 @@
 import React, { useState, useCallback } from 'react';
 import { Text, View, Image, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; // For an edit icon
+
+import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 
 import colors from '../style/colors';
@@ -42,15 +43,28 @@ const SettingsDisplay = () => {
   const [profile_pic, setProfilePic] = useState('');
 
   const handleLogout = useLogout();
-  const navigation = useNavigation(); // get the navigation object
+  const navigation = useNavigation();
 
   const avatarMap = {
-    duck: require('../icons/duck.jpg'),
     pinkAvatar: require('../icons/pinkAvatar.jpg'),
     blueAvatar: require('../icons/blueAvatar.jpg'),
     purpleAvatar: require('../icons/purpleAvatar.jpg'),
     greenAvatar: require('../icons/greenAvatar.jpg'),
     yellowAvatar: require('../icons/yellowAvatar.jpg'),
+    pinkCat: require('../icons/cat_pink.jpg'),
+    pinkBee: require('../icons/bee_pink.jpg'),
+    blueSlug: require('../icons/slug_blue.jpg'),
+    bluePig: require('../icons/pig_blue.jpg'),
+    purpleRabbit: require('../icons/rabbit_purple.jpg'),
+    purpleMouse: require('../icons/mouse_purple.jpg'),
+    pinkSheep: require('../icons/sheep_pink.jpg'),
+    purpleFox: require('../icons/fox_purple.jpg'),
+    greenDog: require('../icons/dog_green.jpg'),
+    greenDuck: require('../icons/duck_green.jpg'),
+    yellowFrog: require('../icons/frog_yellow.jpg'),
+    yellowTurtle: require('../icons/turtle_yellow.jpg'),
+    orangeDino: require('../icons/dino_orange.jpg'),
+    orangePigeon: require('../icons/pigeon_orange.jpg'),
   };
 
   useFocusEffect(
@@ -81,16 +95,17 @@ const SettingsDisplay = () => {
   );
   
   const handleChangeDisplayName = async () => {
-    try {
-      await axios.post(`${API_URL}update-display`, {username, display_name});
-    } catch (error) {
-      console.log("UI Settings.js: Error changing display name.");
-    }
+      try {
+        await axios.post(`${API_URL}update-display`, {username, display_name});
+      } catch (error) {
+        console.error("UI Settings.js: Error changing display name:", error);
+      }
   };
 
   const openChangeProfilePic = () => {
     navigation.navigate('ChangeProfilePic');
   };
+
 
   return (
     <View style={styles.content}>
