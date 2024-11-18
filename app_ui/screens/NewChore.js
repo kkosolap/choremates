@@ -34,6 +34,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const [username, setUsername] = useState(null);
+  const [user_id, setUserID] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
@@ -53,25 +54,57 @@ const NewChoreDisplay = ({ navigation }) => {
   const initialGroup = { label: 'Personal', value: -1 };
   const [selectedGroup, setSelectedGroup] = useState(initialGroup);
 
-  // Get user and groups
-  useEffect(() => {
-    const getUsername = async () => {   // get the username from securestore -KK
-      const storedUsername = await SecureStore.getItemAsync('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      } else {
-        console.error("UI NewChore.js: Username not found in SecureStore.");
-      }
-      
-      // get all groups for the user -KK
-      const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
+  // assignment dropdown
+  const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
+  const initialAssignment = { label: username, value: user_id };
+  const [assign_to, setAssignment] = useState(null);
 
-      if (response && response.data) {
-        const transformedData = response.data.map(group => ({
-          label: group.group_name,
-          value: group.group_id,
-        }));
-        setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedData]);
+  const [loading, setLoading] = useState(true); 
+
+  useEffect(() => {
+    const getUsername = async () => {
+      try {
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+        } else {
+          console.error("UI NewChore.js: Username not found in SecureStore.");
+        }
+
+        const userResponse = await axios.post(`${API_URL}get-user-id`, { username: storedUsername });
+        if (userResponse.data[0][0]) {
+          setUserID(userResponse.data[0][0].id);
+        } else {
+          console.error("UI NewChore.js: Failed to fetch user ID.");
+        }
+
+        const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername });
+        if (groupResponse && groupResponse.data) {
+          const transformedGroupData = groupResponse.data.map(group => ({
+            label: group.group_name,
+            value: group.group_id,
+          }));
+          setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
+
+          // fetch group members for each group -KK
+          const memberPromises = groupResponse.data.map(async group => {
+            const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+              params: { group_id: group.group_id },
+            });
+            return {
+              group_id: group.group_id,
+              members: memberResponse.data.map(member => ({
+                label: member.username,
+                value: member.user_id,
+              })),
+            };
+          });
+          const allGroupMembers = await Promise.all(memberPromises);
+          setAssignmentDropdownData(allGroupMembers);
+        }
+        setLoading(false); 
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
     getUsername();
@@ -91,12 +124,11 @@ const NewChoreDisplay = ({ navigation }) => {
         ));
       }else{
         // add the group chore to the database -KK
-        // assign_to is hardcoded as of now
         await axios.post(`${API_URL}add-group-chore`, { 
           group_chore_name: chore_name,
-          assign_to: username,
           recurrence: selectedRec.value,
           group_id: selectedGroup.value,
+          assign_to: assign_to.value
         });
 
         await Promise.all(tasks.map(group_task_name =>
@@ -133,7 +165,10 @@ const NewChoreDisplay = ({ navigation }) => {
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
-
+      {loading ? (
+        <Text>Loading...</Text> // Display a loader or placeholder
+      ) : (
+      <>
         <View style={styles.formContainer}>
         {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
@@ -151,9 +186,25 @@ const NewChoreDisplay = ({ navigation }) => {
         <Dropdown
           label="Select Group"
           data={groupDropdownData}
-          onSelect={setSelectedGroup}
+          onSelect={(group) => {
+            setSelectedGroup(group);
+            setAssignment(initialAssignment);
+          }}
           initialValue={initialGroup}
         />
+
+        {/* Assignment Dropdown */}
+        {selectedGroup.value !== -1 && (
+          <>
+            <Text style={styles.label}>Assignment:</Text>
+            <Dropdown
+              label="Assign to Member"
+              data={assignmentDropdownData.find((group) => group.group_id === selectedGroup.value).members || []} 
+              onSelect={setAssignment}
+              initialValue={initialAssignment}
+            />
+          </>
+        )}
 
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
@@ -206,19 +257,20 @@ const NewChoreDisplay = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+        </View>
             
-      {/* ADD CHORE Button */}
-      <View style={styles.centeredContent}>
-        <TouchableOpacity
-          style={styles.addChoreButton}
-          onPress={addChore}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.addChoreButtonText}>Add Chore</Text>
-        </TouchableOpacity>
-      </View>
-      
+        {/* ADD CHORE Button */}
+        <View style={styles.centeredContent}>
+          <TouchableOpacity
+            style={styles.addChoreButton}
+            onPress={addChore}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.addChoreButtonText}>Add Chore</Text>
+          </TouchableOpacity>
+        </View>
+        </>
+    )}
     </View>
   );
 };
