@@ -195,6 +195,11 @@ const ChoresDisplay = () => {
     setGroupData(allGroupData); 
   };
 
+  // Check if on To-Do or Completed Tab
+  const personalChoresToShow = showToDo ? groupedPersonalTasksToDo : groupedPersonalTasksCompleted;
+  const groupChoresToShow = showToDo ? groupedGroupTasksToDo : groupedGroupTasksCompleted;
+  const emptyDisplayText = showToDo ? "No Chores To-Do!" : "No Completed Chores";
+
 
   // page content -MH
   return (
@@ -214,125 +219,63 @@ const ChoresDisplay = () => {
       </View>
 
       <View style={styles.choreSection}>
-        {showToDo ? (
-          // ----- To-Do Tab -----
-          <ScrollView
-            style={styles.scrollContainer}
-            contentContainerStyle={styles.centeredContent}
-          >
-            {Object.keys(groupedPersonalTasksToDo).length > 0 || Object.keys(groupedGroupTasksToDo).length > 0  ? (
-              // If there are Chores To-Do
-              <>
-              {/* personal chores */}
-              {Object.keys(groupedPersonalTasksToDo).map((chore_name) => (
-                <ActiveChoreBlock
-                  user={username}
-                  key={chore_name}
-                  choreName={chore_name}
-                  tasks={groupedPersonalTasksToDo[chore_name].tasks}
-                  completed={groupedPersonalTasksToDo[chore_name].is_completed}
-                  visible={visibleTasks[chore_name]}
-                  onToggleVisibility={toggleVisibility}
-                  onEdit={() => setEditing(editing === chore_name ? null : chore_name)}
-                  onDelete={deleteTask}
-                  isEditing={editing === chore_name}
-                  newTask={task_name}
-                  setNewTask={setNewTask}
-                  onAddTask={addTask}
-                  refresh={refresh}
-                />
-              ))}
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.centeredContent}
+        >
+          {Object.keys(personalChoresToShow).length > 0 || Object.keys(groupChoresToShow).length > 0  ? (
+            // If there are Chores To Show
+            <>
+            {/* personal chores */}
+            {Object.keys(personalChoresToShow).map((chore_name) => (
+              <ActiveChoreBlock
+                user={username}
+                key={chore_name}
+                choreName={chore_name}
+                tasks={personalChoresToShow[chore_name].tasks}
+                completed={personalChoresToShow[chore_name].is_completed}
+                visible={visibleTasks[chore_name]}
+                onToggleVisibility={toggleVisibility}
+                onEdit={() => setEditing(editing === chore_name ? null : chore_name)}
+                onDelete={deleteTask}
+                isEditing={editing === chore_name}
+                newTask={task_name}
+                setNewTask={setNewTask}
+                onAddTask={addTask}
+                refresh={refresh}
+              />
+            ))}
 
-              {/* group chores */}
-              {Object.keys(groupedGroupTasksToDo).map((group_chore_name) => (
-                <ActiveGroupChoreBlock
-                  user={username}
-                  key={group_chore_name}
-                  group_id={groupedGroupTasksToDo[group_chore_name].group_id}
-                  choreName={group_chore_name}
-                  tasks={groupedGroupTasksToDo[group_chore_name].group_tasks}
-                  completed={groupedGroupTasksToDo[group_chore_name].is_completed}
-                  visible={visibleTasks[group_chore_name]}
-                  onToggleVisibility={toggleVisibility}
-                  onEdit={() => setEditing(editing === group_chore_name ? null : group_chore_name)}
-                  onDelete={deleteGroupTask}
-                  isEditing={editing === group_chore_name}
-                  newTask={task_name}
-                  setNewTask={setNewTask}
-                  onAddTask={addGroupTask}
-                  refresh={refresh}
-                />
-              ))}
-              </>
-            ) : (
-              // If NO chores To-Do
-              <View style={styles.emptyChoresSection}>
-                <Text style={styles.emptySectionText}>
-                  No Chores To-Do!
-                </Text>
-              </View>
-            )}
-          </ScrollView>
-        ) : (
-          // ----- Completed Tab -----
-          <ScrollView
-            style={styles.scrollContainer}
-            contentContainerStyle={styles.centeredContent}
-          >
-            {Object.keys(groupedPersonalTasksCompleted).length > 0 || Object.keys(groupedGroupTasksCompleted).length > 0  ? (
-              // If there are Completed Chores
-              <>
-              {/* personal chores */}
-              {Object.keys(groupedPersonalTasksCompleted).map((chore_name) => (
-                <ActiveChoreBlock
-                  user={username}
-                  key={chore_name}
-                  choreName={chore_name}
-                  tasks={groupedPersonalTasksCompleted[chore_name].tasks}
-                  completed={groupedPersonalTasksCompleted[chore_name].is_completed}
-                  visible={visibleTasks[chore_name]}
-                  onToggleVisibility={toggleVisibility}
-                  onEdit={() => setEditing(editing === chore_name ? null : chore_name)}
-                  onDelete={deleteTask}
-                  isEditing={editing === chore_name}
-                  newTask={task_name}
-                  setNewTask={setNewTask}
-                  onAddTask={addTask}
-                  refresh={refresh}
-                />
-              ))}
-
-              {/* group chores */}
-              {Object.keys(groupedGroupTasksCompleted).map((group_chore_name) => (
-                <ActiveGroupChoreBlock
-                  user={username}
-                  key={group_chore_name}
-                  group_id={groupedGroupTasksCompleted[group_chore_name].group_id}
-                  choreName={group_chore_name}
-                  tasks={groupedGroupTasksCompleted[group_chore_name].group_tasks}
-                  completed={groupedGroupTasksCompleted[group_chore_name].is_completed}
-                  visible={visibleTasks[group_chore_name]}
-                  onToggleVisibility={toggleVisibility}
-                  onEdit={() => setEditing(editing === group_chore_name ? null : group_chore_name)}
-                  onDelete={deleteGroupTask}
-                  isEditing={editing === group_chore_name}
-                  newTask={task_name}
-                  setNewTask={setNewTask}
-                  onAddTask={addGroupTask}
-                  refresh={refresh}
-                />
-              ))}
-              </>
-            ) : (
-              // If NO Completed Chores
-              <View style={styles.emptyChoresSection}>
-                <Text style={styles.emptySectionText}>
-                  No Completed Chores
-                </Text>
-              </View>
-            )}
-          </ScrollView>
-        )}
+            {/* group chores */}
+            {Object.keys(groupChoresToShow).map((group_chore_name) => (
+              <ActiveGroupChoreBlock
+                user={username}
+                key={group_chore_name}
+                group_id={groupChoresToShow[group_chore_name].group_id}
+                choreName={group_chore_name}
+                tasks={groupChoresToShow[group_chore_name].group_tasks}
+                completed={groupChoresToShow[group_chore_name].is_completed}
+                visible={visibleTasks[group_chore_name]}
+                onToggleVisibility={toggleVisibility}
+                onEdit={() => setEditing(editing === group_chore_name ? null : group_chore_name)}
+                onDelete={deleteGroupTask}
+                isEditing={editing === group_chore_name}
+                newTask={task_name}
+                setNewTask={setNewTask}
+                onAddTask={addGroupTask}
+                refresh={refresh}
+              />
+            ))}
+            </>
+          ) : (
+            // If NO chores To-Do
+            <View style={styles.emptyChoresSection}>
+              <Text style={styles.emptySectionText}>
+                {emptyDisplayText}
+              </Text>
+            </View>
+          )}
+        </ScrollView>
       </View>
 
     </View>
