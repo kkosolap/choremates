@@ -59,52 +59,53 @@ const NewChoreDisplay = ({ navigation }) => {
   const initialAssignment = { label: username, value: user_id };
   const [assign_to, setAssignment] = useState(null);
 
-  // Get user and groups
+  const [loading, setLoading] = useState(true); 
+
   useEffect(() => {
-    const getUsername = async () => {   // get the username from securestore -KK
-      const storedUsername = await SecureStore.getItemAsync('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      } else {
-        console.error("UI NewChore.js: Username not found in SecureStore.");
-      }
-      // get the user's user_id -KK
-      const userResponse = await axios.post(`${API_URL}get-user-id`, { username: storedUsername }).catch((error) => console.error(error));
-      setUserID(userResponse.data);
-
-      console.log("username ", storedUsername, "has user id", JSON.stringify(userResponse.data));
-
-      // get all groups for the user -KK
-      const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername }).catch((error) => console.error(error));
-
-      if (groupResponse && groupResponse.data) {
-        const transformedGroupData = groupResponse.data.map(group => ({
-          label: group.group_name,
-          value: group.group_id,
-        }));
-        setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
-      }
-
-      // get all members for each group -KK
-      const memberPromises = groupResponse.data.map(async (group) => {
-        const memberResponse = await axios.get(`${API_URL}get-group-members`, {
-          params: { group_id: group.group_id },
-        });
-        if (memberResponse.data) {
-          return {
-            group_id: group.group_id,
-            members: memberResponse.data.map(member => ({
-              label: member.username,
-              value: member.user_id,
-            })),
-          };
+    const getUsername = async () => {
+      try {
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+        } else {
+          console.error("UI NewChore.js: Username not found in SecureStore.");
         }
-        else return null;
-      });
 
-      const allGroupMembers = await Promise.all(memberPromises);
+        const userResponse = await axios.post(`${API_URL}get-user-id`, { username: storedUsername });
+        if (userResponse.data[0][0]) {
+          setUserID(userResponse.data[0][0].id);
+        } else {
+          console.error("UI NewChore.js: Failed to fetch user ID.");
+        }
 
-      setAssignmentDropdownData(allGroupMembers);
+        const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername });
+        if (groupResponse && groupResponse.data) {
+          const transformedGroupData = groupResponse.data.map(group => ({
+            label: group.group_name,
+            value: group.group_id,
+          }));
+          setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
+
+          // fetch group members for each group -KK
+          const memberPromises = groupResponse.data.map(async group => {
+            const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+              params: { group_id: group.group_id },
+            });
+            return {
+              group_id: group.group_id,
+              members: memberResponse.data.map(member => ({
+                label: member.username,
+                value: member.user_id,
+              })),
+            };
+          });
+          const allGroupMembers = await Promise.all(memberPromises);
+          setAssignmentDropdownData(allGroupMembers);
+        }
+        setLoading(false); 
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
     getUsername();
   }, []);
@@ -113,7 +114,6 @@ const NewChoreDisplay = ({ navigation }) => {
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
     console.log("UI NewChore: adding chore " + chore_name + " to " + selectedGroup.label);
-    console.log("assignment is ", JSON.stringify(assign_to));
     try {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
@@ -165,7 +165,10 @@ const NewChoreDisplay = ({ navigation }) => {
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
-
+      {loading ? (
+        <Text>Loading...</Text> // Display a loader or placeholder
+      ) : (
+      <>
         <View style={styles.formContainer}>
         {/* Chore Name Input */}
         <Text style={styles.label}>Chore Name:</Text>
@@ -196,7 +199,7 @@ const NewChoreDisplay = ({ navigation }) => {
             <Text style={styles.label}>Assignment:</Text>
             <Dropdown
               label="Assign to Member"
-              data={assignmentDropdownData[selectedGroup.value] || []} 
+              data={assignmentDropdownData.find((group) => group.group_id === selectedGroup.value).members || []} 
               onSelect={setAssignment}
               initialValue={initialAssignment}
             />
@@ -254,19 +257,20 @@ const NewChoreDisplay = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+        </View>
             
-      {/* ADD CHORE Button */}
-      <View style={styles.centeredContent}>
-        <TouchableOpacity
-          style={styles.addChoreButton}
-          onPress={addChore}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.addChoreButtonText}>Add Chore</Text>
-        </TouchableOpacity>
-      </View>
-      
+        {/* ADD CHORE Button */}
+        <View style={styles.centeredContent}>
+          <TouchableOpacity
+            style={styles.addChoreButton}
+            onPress={addChore}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.addChoreButtonText}>Add Chore</Text>
+          </TouchableOpacity>
+        </View>
+        </>
+    )}
     </View>
   );
 };

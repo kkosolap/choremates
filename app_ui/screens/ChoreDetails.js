@@ -60,34 +60,57 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const [initialAssignment, setInitialAssignment] = useState(null);
   const [assign_to, setAssignment] = useState(null);
 
+  const [loading, setLoading] = useState(true); 
+
   // Get user and groups
   useEffect(() => {
-    const getUsername = async () => {   // get the username from securestore -KK
-      const storedUsername = await SecureStore.getItemAsync('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      } else {
-        console.error("UI ChoreDetails.js: Username not found in SecureStore.");
-      }
-
-      if(routed_group_id != -1){
-        // get the initial assignment -KK
-        console.log("user id is ", routed_assignment);
-
-        const userResponse = await axios.post(`${API_URL}get-username`, { user_id: routed_assignment }).catch((error) => console.error(error));
-        setInitialAssignment({ label: userResponse.data, value: routed_assignment });
-
-        console.log(" username is ", JSON.stringify(userResponse.data));
-
-        // get all members for the group -KK
-        const memberResponse = await axios.get(`${API_URL}get-group-members`, {
-          params: { group_id: routed_group_id },
-        });
-        setAssignmentDropdownData(memberResponse);
+    const init = async () => {
+      try {
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+        } else {
+          console.error("UI ChoreDetails.js: Username not found in SecureStore.");
+        }
+  
+        if (routed_group_id !== -1) {
+          // Fetch initial assignment
+          const userResponse = await axios.post(`${API_URL}get-username`, {
+            user_id: routed_assignment,
+          });
+  
+          if (userResponse?.data?.[0]?.username) {
+            setInitialAssignment({
+              label: userResponse.data[0].username,
+              value: routed_assignment,
+            });
+          } else {
+            console.error("UI ChoreDetails.js: Failed to fetch initial assignment username.");
+          }
+  
+          // Fetch group members for the assignment dropdown
+          const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+            params: { group_id: routed_group_id },
+          });
+  
+          if (memberResponse?.data) {
+            const transformedData = memberResponse.data.map((member) => ({
+              label: member.username,
+              value: member.user_id,
+            }));
+            setAssignmentDropdownData(transformedData);
+          } else {
+            console.error("UI ChoreDetails.js: Failed to fetch group members.");
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("UI ChoreDetails.js: Error initializing chore details:", error);
       }
     };
-    getUsername();
+    init();
   }, []);
+  
 
   useEffect(() => {
     const getGroupName = async () => {
@@ -235,7 +258,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
-
+      {loading ? (
+        <Text>Loading...</Text> // Display a loader or placeholder
+      ) : (
+      <>
       <View style={styles.formContainer}>
 
         {/* Chore Name Input */}
@@ -256,12 +282,14 @@ const ChoreDetailsDisplay = ({navigation}) => {
         {routed_group_id !== -1 && (
           <>
             <Text style={styles.label}>Assignment:</Text>
-            <Dropdown
-              label="Assign to Member"
-              data={assignmentDropdownData || []}
-              onSelect={setAssignment}
-              initialValue={initialAssignment}
-            />
+            {initialAssignment && (
+              <Dropdown
+                label="Assign to Member"
+                data={assignmentDropdownData || []}
+                onSelect={setAssignment}
+                initialValue={initialAssignment}
+              />
+            )}
           </>
         )}
 
@@ -339,6 +367,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
           <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
         </TouchableOpacity>
       </View>
+      </>
+    )}
     </View>
   );
 };

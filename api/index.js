@@ -196,37 +196,37 @@ app.post('/logout', (req, res) => {
 /********************************************************** */
 /*                USER IMPLEMENTATION BELOW:                */
 /********************************************************** */
-// get the user's id from username -KK
+// get the user's id from their username -KK
 app.post('/get-user-id', async (req, res) => {
     try {
         const { username } = req.body;
         if (!username) {
-            console.log("API get-display: Missing username.");
+            console.log("API get-user-id: Missing username.");
             return res.status(400).send("Missing username.");
         }
-        const user_id = await getUserId(username);
 
-        res.status(200).json(user_id);
+        const results = await db.promise().query("SELECT id FROM users WHERE username = ?", [username]);
+        res.status(200).json(results);
     } catch (error) {
-        console.error("API get-display: Error:", error.message);
-        res.status(500).send("Error getting display name.");
+        console.error("API get-user-id: Error:", error.message);
+        res.status(500).send("Error getting user id.");
     }
 });
 
 // get the user's username from user_id -KK
-app.post('/get-user-id', async (req, res) => {
+app.post('/get-username', async (req, res) => {
     try {
         const { user_id } = req.body;
         if (!user_id) {
-            console.log("API get-display: Missing user id.");
+            console.log("API get-username: Missing user id.");
             return res.status(400).send("Missing user id.");
         }
 
         const results = await db.promise().query("SELECT username FROM users WHERE id = ?", [user_id]);
-        res.status(200).json(results);
+        res.status(200).json(results[0]);
     } catch (error) {
-        console.error("API get-display: Error:", error.message);
-        res.status(500).send("Error getting display name.");
+        console.error("API get-username: Error:", error.message);
+        res.status(500).send("Error getting username.");
     }
 });
 
@@ -1010,12 +1010,13 @@ app.post('/get-group-chores-data-for-user', async (req, res) => {
 
         const query = `
             SELECT 
-                group_chores.group_id, 
-                group_chores.group_chore_name,
-                group_chores.is_completed AS chore_is_completed,
+                group_chores.group_id,
+                group_chores.group_chore_name, 
+                group_chores.is_completed AS chore_is_completed, 
                 group_chores.recurrence AS chore_recurrence,
+                group_chores.assigned_to,
                 group_tasks.id,
-                group_tasks.group_task_name,
+                group_tasks.group_task_name, 
                 group_tasks.is_completed AS task_is_completed
             FROM group_chores
             LEFT JOIN group_tasks ON group_chores.id = group_tasks.group_chore_id

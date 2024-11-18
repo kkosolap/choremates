@@ -223,7 +223,7 @@ const HomeDisplay = () => {
       const group_id = group.group_id;
       
       // Fetch group tasks
-      await axios.post(`${API_URL}get-group-chores-data-for-user`, { username: user, group_id })
+      await axios.post(`${API_URL}get-group-chores-data`, { username: user, group_id })
         .then((response) => {
           allGroupData = [...allGroupData, ...response.data];
         })
@@ -239,14 +239,12 @@ const HomeDisplay = () => {
       }
     }
 
-    console.log("all group data: ", JSON.stringify(allGroupData));
-  
     // Attach group names to group data
     const enrichedGroupData = allGroupData.map((group_task) => ({
       ...group_task,
       group_name: groupNameMap[group_task.group_id] || 'Unknown Group'
-    }));
-  
+    }));  
+
     setGroupData(enrichedGroupData);
   };
 
