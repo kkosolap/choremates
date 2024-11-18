@@ -120,11 +120,9 @@ const MembersDisplay = ({ username, navigation }) => {
             axios.delete(`${API_URL}leave-group`, {
               data: { username, group_id: groupId },
             })
-            .then((response) => {
-              if (response.data.message === "Successfully left the group") {
-                alert("You have left the group.");
-                navigation.goBack();
-              }
+            .then(() => {
+              alert("You have left the group.");
+              navigation.navigate('GroupsMain');
             })
             .catch((error) => {
               console.error("Error leaving group: ", error);

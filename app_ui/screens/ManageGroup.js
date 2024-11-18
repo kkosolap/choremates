@@ -90,7 +90,22 @@ const ManageDisplay = () => {
         },
         {
           text: "OK",
-            // logic
+          onPress: () => {
+            axios.delete(`${API_URL}disband-group`, {
+              data: {
+                username,
+                group_id: groupId,
+              },
+            })
+              .then(() => {
+                alert("Group has been disbanded.");
+                navigation.navigate('GroupsMain');
+              })
+              .catch((error) => {
+                console.error("Error disbanding group: ", error);
+                alert("Failed to disband the group.");
+              });
+          },
         },
       ],
       { cancelable: false }

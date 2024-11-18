@@ -60,7 +60,7 @@ const InviteMemberScreen = () => {
 
     return (
         <View style={styles.screen}>
-            <RegisterHeader title="Enter Invitee Username" navigation={navigation} />
+            <RegisterHeader title="Invite User" navigation={navigation} />
             <TextInput
                 style={styles.groupInviteeInput}
                 placeholder="Enter Invitee Username"
