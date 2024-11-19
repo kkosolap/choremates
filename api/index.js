@@ -22,7 +22,7 @@ require('dotenv').config();  // load env variables
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
-    database: "choremates",   
+    database: "choremates",  
     user: process.env.DB_USER,
     // put "DB_PASSWORD=yourpassword" in your local .env file, 
     // replace yourpassword with your mysql root password -EL
@@ -377,7 +377,7 @@ app.post('/get-id', async (req, res) => {
 // every minute for test purposes - AT
 cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
 cron.schedule('0 0 * * *',  () => { resetAndRotateChores('Daily'); });
-cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); });
+cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); }); // resets every monday
 
 // function to handle single user recurrence -AT
 async function resetAndRotateChores(type) {
@@ -404,8 +404,10 @@ async function resetSingleUserChores(type) {
 }
 
 async function resetAndRotateGroupUserChores(type) {
+    //console.log('in resetAndRotateGroupUserChores');
     const query = `SELECT id, group_id, assigned_to, is_completed FROM group_chores WHERE recurrence = ?`;
     const [groupChores] = await db.promise().query(query, [type]);
+    //console.log('after query');
 
     for (const chore of groupChores) {
         const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
@@ -413,7 +415,7 @@ async function resetAndRotateGroupUserChores(type) {
             await db.promise().query(query, [chore.id]);
 
             // should only be calling rotate when the chores are reset each week
-            if (type === 'Weekly') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
+            if (type === 'Weekly' || type === 'Daily' || type === 'Every Minute') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
                 await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
             }
 
@@ -421,16 +423,17 @@ async function resetAndRotateGroupUserChores(type) {
             console.error("Error resetting chore:", error);
         }
     }
+    return 1;
 }
 
 async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
     try {
         // retrieve all users in the group (order them for consistent rotation) -AT
-        const query = 'SELECT id FROM group_members WHERE group_id = ? ORDER BY id ASC'
+        const query = 'SELECT user_id FROM group_members WHERE group_id = ? ORDER BY user_id ASC'
         const [users] = await db.promise().query(query, [group_id]);
 
         // find the current user in the sorted user list -AT
-        const currentIndex = users.findIndex(user => user.id === current_assigned_to);
+        const currentIndex = users.findIndex(user => user.user_id === current_assigned_to);
         if (currentIndex === -1) {
             console.error(`User with ID ${current_assigned_to} not found in group ${group_id}.`);
             return;
@@ -441,7 +444,7 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
 
         // Update the chore with the new user assignment -AT
         const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
-        await db.promise().query(updateQuery, [nextUser.id, chore_id]);
+        await db.promise().query(updateQuery, [nextUser.user_id, chore_id]);
 
         //console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
     } catch (error) {
@@ -449,6 +452,7 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
     }
 }
 
+module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser, }; // export for testing purposes - AT
 
 /********************************************************** */
 /*             CHORE IMPLEMENTATION BELOW:                  */

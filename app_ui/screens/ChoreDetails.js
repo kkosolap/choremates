@@ -84,6 +84,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
               label: userResponse.data[0].username,
               value: routed_assignment,
             });
+            setAssignment({
+              label: userResponse.data[0].username,
+              value: routed_assignment,
+            });
           } else {
             console.error("UI ChoreDetails.js: Failed to fetch initial assignment username.");
           }

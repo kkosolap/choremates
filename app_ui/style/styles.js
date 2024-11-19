@@ -752,6 +752,16 @@ const createStyles = (theme) => {
     },
 
     // members page -NN
+    manageButton: {
+      position: 'absolute',
+      width: '80%',
+      bottom: 100,
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     manageCreateButtonText: {
       color: theme.white,
       fontWeight: 'bold',
