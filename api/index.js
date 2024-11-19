@@ -212,6 +212,40 @@ app.post('/logout', (req, res) => {
 /********************************************************** */
 /*                USER IMPLEMENTATION BELOW:                */
 /********************************************************** */
+// get the user's id from their username -KK
+app.post('/get-user-id', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            console.log("API get-user-id: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+
+        const results = await db.promise().query("SELECT id FROM users WHERE username = ?", [username]);
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("API get-user-id: Error:", error.message);
+        res.status(500).send("Error getting user id.");
+    }
+});
+
+// get the user's username from user_id -KK
+app.post('/get-username', async (req, res) => {
+    try {
+        const { user_id } = req.body;
+        if (!user_id) {
+            console.log("API get-username: Missing user id.");
+            return res.status(400).send("Missing user id.");
+        }
+
+        const results = await db.promise().query("SELECT username FROM users WHERE id = ?", [user_id]);
+        res.status(200).json(results[0]);
+    } catch (error) {
+        console.error("API get-username: Error:", error.message);
+        res.status(500).send("Error getting username.");
+    }
+});
+
 // get the user's display name -KK
 app.post('/get-display', async (req, res) => {
     try {
@@ -716,7 +750,7 @@ app.get('/get-group-members', (req, res) => {
 
     // Query to retrieve member names for the specified group
     const getGroupMembersQuery = `
-        SELECT users.username, group_members.role 
+        SELECT users.username, group_members.user_id, group_members.role 
         FROM group_members 
         JOIN users ON group_members.user_id = users.id 
         WHERE group_members.group_id = ?
@@ -1143,7 +1177,7 @@ app.post('/get-group-chores-data', async (req, res) => {
                 group_chores.group_chore_name, 
                 group_chores.is_completed AS chore_is_completed, 
                 group_chores.recurrence AS chore_recurrence,
-                group_chores.assigned_to
+                group_chores.assigned_to,
                 group_tasks.group_task_name, 
                 group_tasks.is_completed AS task_is_completed
             FROM group_chores
@@ -1172,12 +1206,13 @@ app.post('/get-group-chores-data-for-user', async (req, res) => {
 
         const query = `
             SELECT 
-                group_chores.group_id, 
-                group_chores.group_chore_name,
-                group_chores.is_completed AS chore_is_completed,
+                group_chores.group_id,
+                group_chores.group_chore_name, 
+                group_chores.is_completed AS chore_is_completed, 
                 group_chores.recurrence AS chore_recurrence,
+                group_chores.assigned_to,
                 group_tasks.id,
-                group_tasks.group_task_name,
+                group_tasks.group_task_name, 
                 group_tasks.is_completed AS task_is_completed
             FROM group_chores
             LEFT JOIN group_tasks ON group_chores.id = group_tasks.group_chore_id
@@ -1217,16 +1252,6 @@ app.post('/add-group-chore', async (req, res) => {
             return res.status(400).send("Missing required fields.");
         }  
 
-        // check permissions
-        const hasPermission = await canModifyChore(username, group_id);
-        if (!hasPermission) {
-            console.log("API add-group-chore: No permission to modify chores in this group.");
-            return res.status(403).send("You do not have permission to modify chores in this group.");
-        }
-
-        // TEMPORARY
-        const user_id = await getUserId(assign_to);
-
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-group-chore: Duplicate chore name.");
@@ -1234,7 +1259,7 @@ app.post('/add-group-chore', async (req, res) => {
         }
 
         const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to) VALUES (?, ?, ?, ?)";
-        await db.promise().query(query, [group_id, group_chore_name, recurrence, user_id]);
+        await db.promise().query(query, [group_id, group_chore_name, recurrence, assign_to]);
         res.status(200).json({ message: "Chore added to group successfully." });
     } catch (error) {
         console.error("API add-group-chore: Error:", error.message);
@@ -1246,8 +1271,8 @@ app.post('/add-group-chore', async (req, res) => {
 app.post('/update-group-chore', async (req, res) => {
     try {
         // username (user who's trying to update this group chore) --EL
-        const { old_chore_name, new_chore_name, group_id, recurrence, assigned_to, username } = req.body;
-        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assigned_to || !username) {
+        const { old_chore_name, new_chore_name, group_id, recurrence, assign_to, username } = req.body;
+        if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assign_to || !username) {
             console.log("API update-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
         }
@@ -1258,10 +1283,6 @@ app.post('/update-group-chore', async (req, res) => {
             console.log("API update-group-chore: No permission to modify chores in this group.");
             return res.status(403).send("You do not have permission to modify chores in this group.");
         }
-        
-        // NEED TO CHANGE LATER
-        const assign_to = await getUserId(assigned_to);
-        // NEED TO CHANGE ABOVE LATER
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(old_chore_name, group_id);
 
