@@ -37,7 +37,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // get current chore details from parameters -MH
   const route = useRoute();
-  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id } = route.params;
+  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id, routed_assignment } = route.params;
 
   const [username, setUsername] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
@@ -55,19 +55,62 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
 
+  // assignment dropdown data
+  const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
+  const [initialAssignment, setInitialAssignment] = useState(null);
+  const [assign_to, setAssignment] = useState(null);
+
+  const [loading, setLoading] = useState(true); 
+
   // Get user and groups
   useEffect(() => {
-    const getUsername = async () => {   // get the username from securestore -KK
-      const storedUsername = await SecureStore.getItemAsync('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      } else {
-        console.error("UI ChoreDetails.js: Username not found in SecureStore.");
+    const init = async () => {
+      try {
+        const storedUsername = await SecureStore.getItemAsync('username');
+        if (storedUsername) {
+          setUsername(storedUsername);
+        } else {
+          console.error("UI ChoreDetails.js: Username not found in SecureStore.");
+        }
+  
+        if (routed_group_id !== -1) {
+          // Fetch initial assignment
+          const userResponse = await axios.post(`${API_URL}get-username`, {
+            user_id: routed_assignment,
+          });
+  
+          if (userResponse?.data?.[0]?.username) {
+            setInitialAssignment({
+              label: userResponse.data[0].username,
+              value: routed_assignment,
+            });
+          } else {
+            console.error("UI ChoreDetails.js: Failed to fetch initial assignment username.");
+          }
+  
+          // Fetch group members for the assignment dropdown
+          const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+            params: { group_id: routed_group_id },
+          });
+  
+          if (memberResponse?.data) {
+            const transformedData = memberResponse.data.map((member) => ({
+              label: member.username,
+              value: member.user_id,
+            }));
+            setAssignmentDropdownData(transformedData);
+          } else {
+            console.error("UI ChoreDetails.js: Failed to fetch group members.");
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("UI ChoreDetails.js: Error initializing chore details:", error);
       }
     };
-
-    getUsername();
+    init();
   }, []);
+  
 
   useEffect(() => {
     const getGroupName = async () => {
@@ -138,12 +181,12 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else { 
         await Promise.all(
           tasksToAdd.map(group_task_name =>
-            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value, username: username }))
         );
 
         await Promise.all(
           tasksToRemove.map(group_task_name =>
-            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value }))
+            axios.post(`${API_URL}delete-group-task`, { group_chore_name: chore_name, group_task_name, group_id: choreGroup.value, username: username }))
         );
       }
 
@@ -169,7 +212,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
             new_chore_name: chore_name,  // updated chore name from input
             group_id: choreGroup.value,
             recurrence: selectedRec.value,
-            assigned_to: username
+            assign_to: assign_to.value,
+            username: username
           });
         }
 
@@ -204,7 +248,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
       if (choreGroup.label == 'Personal'){
         await axios.post(`${API_URL}delete-chore`, { chore_name, username });
       } else {
-        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value });
+        await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value, username: username });
       }
       navigation.goBack();   
     } catch (error) {
@@ -215,7 +259,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
-
+      {loading ? (
+        <Text>Loading...</Text> // Display a loader or placeholder
+      ) : (
+      <>
       <View style={styles.formContainer}>
 
         {/* Chore Name Input */}
@@ -231,6 +278,21 @@ const ChoreDetailsDisplay = ({navigation}) => {
         <Text style={styles.label}>Group: {choreGroup.label}</Text>
         <View style={styles.spacer}></View>
         <View style={styles.spacer}></View>
+
+        {/* Assignment Dropdown */}
+        {routed_group_id !== -1 && (
+          <>
+            <Text style={styles.label}>Assignment:</Text>
+            {initialAssignment && (
+              <Dropdown
+                label="Assign to Member"
+                data={assignmentDropdownData || []}
+                onSelect={setAssignment}
+                initialValue={initialAssignment}
+              />
+            )}
+          </>
+        )}
 
         {/* Recurrence Dropdown */}
         <Text style={styles.label}>Recurrence:</Text>
@@ -306,6 +368,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
           <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
         </TouchableOpacity>
       </View>
+      </>
+    )}
     </View>
   );
 };

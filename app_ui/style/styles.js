@@ -752,17 +752,7 @@ const createStyles = (theme) => {
     },
 
     // members page -NN
-    manageButton: {
-      position: 'absolute',
-      width: '80%',
-      bottom: 100,
-      height: 50,
-      borderRadius: 10,
-      backgroundColor: theme.main,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    managecreateButtonText: {
+    manageCreateButtonText: {
       color: theme.white,
       fontWeight: 'bold',
       fontSize: 16,
@@ -787,44 +777,61 @@ const createStyles = (theme) => {
     // members card - NN
     memberItem: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       alignItems: 'center',
       padding: 20,
       marginVertical: 15,
       borderColor: theme.gray,
       borderWidth: 1,
       borderRadius: 20,
-      width: '95%', 
+      width: 350, 
       alignSelf: 'center',
       backgroundColor: theme.lighter,
     },
     memberName: {
-      textAlign: 'left',
+      marginLeft: 10,
       fontSize: 25,
       fontWeight: 'bold',
+      textAlign: 'left',
+      flex: 1,
     },
     memberRole: {
       textAlign: 'right',
       fontSize: 20,
     },
+    profileImage: {
+      width: 40,
+      height: 40,
+      borderRadius: 25,
+      marginRight: 10,
+    },
 
     // manage members screen - NN
     manageMemberItem: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       alignItems: 'center',
-      marginVertical: 15,
-    },
-    manageMemberName: {
-      textAlign: 'left',
-      fontSize: 25,
-      fontWeight: 'bold',
       padding: 20,
+      marginVertical: 15,
       borderColor: theme.gray,
       borderWidth: 1,
       borderRadius: 20,
-      width: '70%', 
+      width: 350, 
+      height: 110,
+      alignSelf: 'center',
       backgroundColor: theme.lighter,
+    },
+    permissionButtonContainer: {
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    permissionButton: {
+      borderColor: 'black',
+      borderWidth: 1,
+      padding: 5,
+      borderRadius: 5,
+      marginHorizontal: 10,
+      margin: 5,
     },
     deleteButton: {
       backgroundColor: theme.red,
@@ -868,7 +875,7 @@ const createStyles = (theme) => {
     },
 
     // create/invite button & pop-up - NN
-    createButton: {
+    manageCreateButton: {
       marginTop:20,
       width: '80%',
       height: 50,
@@ -878,17 +885,14 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     inviteButton: {
-      position: 'absolute',
       width: '35%',
-      bottom: 170,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
-      right: 50,
     },
-    groupNameInput: {
+    groupInviteeInput: {
       width: '85%',
       height: 40,
       paddingHorizontal: 10,
@@ -927,7 +931,7 @@ const createStyles = (theme) => {
       paddingVertical: 20,
       paddingHorizontal: 20,
       marginVertical: 15,
-      borderWidth: 3,
+      borderWidth: 2,
       borderRadius: 20,
     },
     groupName: {

@@ -148,7 +148,8 @@ const ChoresDisplay = () => {
     axios.post(`${API_URL}add-group-task`, { 
       group_chore_name, 
       group_task_name: task_name, 
-      group_id
+      group_id,
+      username: username
     }).then((response) => {
       setNewTask('');          // reset the input -KK
       refresh(username);       // refresh ltask list after updating -KK
@@ -168,7 +169,8 @@ const ChoresDisplay = () => {
     await axios.post(`${API_URL}delete-group-task`, { 
       group_chore_name, 
       group_task_name, 
-      group_id
+      group_id,
+      username: username
     }).then(refresh(username)).catch((error) => console.error(error)); // refresh task list after updating -KK
   };
 

@@ -134,12 +134,13 @@ const HomeDisplay = () => {
   };
 
   // open ChoreDetails page above current page
-  const openChoreDetails = (chore_name, grouped_tasks, recurrence, group_id) => {
+  const openChoreDetails = (chore_name, grouped_tasks, recurrence, group_id, assigned_to) => {
     navigation.navigate('ChoreDetails', {
       routed_chore_name: chore_name,
       routed_tasks: grouped_tasks,
       routed_recurrence: recurrence,
-      routed_group_id: group_id
+      routed_group_id: group_id,
+      routed_assignment: assigned_to
     });
   };
 
@@ -175,6 +176,7 @@ const HomeDisplay = () => {
             group_id: group_task.group_id,
             is_completed: group_task.chore_is_completed,
             recurrence: group_task.chore_recurrence,
+            assigned_to: group_task.assigned_to,
             group_tasks: [],
           };
         }
@@ -215,7 +217,7 @@ const HomeDisplay = () => {
       const group_id = group.group_id;
       
       // Fetch group tasks
-      await axios.post(`${API_URL}get-group-chores-data-for-user`, { username: user, group_id })
+      await axios.post(`${API_URL}get-group-chores-data`, { username: user, group_id })
         .then((response) => {
           allGroupData = [...allGroupData, ...response.data];
         })
@@ -230,13 +232,13 @@ const HomeDisplay = () => {
           .catch((error) => console.error(error));
       }
     }
-  
+
     // Attach group names to group data
     const enrichedGroupData = allGroupData.map((group_task) => ({
       ...group_task,
       group_name: groupNameMap[group_task.group_id] || 'Unknown Group'
-    }));
-  
+    }));  
+
     setGroupData(enrichedGroupData);
   };
 
@@ -305,7 +307,8 @@ const HomeDisplay = () => {
                       chore_name,
                       groupedPersonalTasks[chore_name].tasks,
                       groupedPersonalTasks[chore_name].recurrence,
-                      -1
+                      -1,
+                      -1,
                     )}
                     recurrence={groupedPersonalTasks[chore_name].recurrence}
                   />
@@ -370,7 +373,8 @@ const HomeDisplay = () => {
                         group_chore_name,
                         groupedGroupTasks[group_id].chores[group_chore_name].group_tasks,
                         groupedGroupTasks[group_id].chores[group_chore_name].recurrence,
-                        groupedGroupTasks[group_id].chores[group_chore_name].group_id
+                        groupedGroupTasks[group_id].chores[group_chore_name].group_id,
+                        groupedGroupTasks[group_id].chores[group_chore_name].assigned_to
                       )}
                       recurrence={groupedGroupTasks[group_id].chores[group_chore_name].recurrence}
                       user = {username}

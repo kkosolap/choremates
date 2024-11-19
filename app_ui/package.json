@@ -30,6 +30,7 @@
     "react-native-dotenv": "^3.4.11",
     "react-native-element-dropdown": "^2.12.2",
     "react-native-gesture-handler": "~2.16.1",
+    "react-native-modal-dropdown": "^1.0.2",
     "react-native-popover-view": "^5.1.9",
     "react-native-popup-menu": "^0.16.1",
     "react-native-reanimated": "~3.10.1",

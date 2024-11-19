@@ -26,6 +26,7 @@ import GroupInvitations from './screens/GroupInvitations';
 import ManageScreen from './screens/ManageGroup';
 import CreateGroupScreen from './screens/CreateGroup.js';
 import MembersScreen from './screens/Members.js';
+import InviteMemberScreen from './screens/InviteMember.js';
 
 
 
@@ -69,6 +70,7 @@ const GroupsStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="GroupsMain" component={GroupsScreen} />
       <Stack.Screen name="CreateGroup" component={CreateGroupScreen} />
+      <Stack.Screen name="InviteMember" component={InviteMemberScreen} />
       <Stack.Screen name="ManageGroup" component={ManageScreen} />
       <Stack.Screen name="GroupInvitations" component={GroupInvitations} />
       <Stack.Screen name="Members" component={MembersScreen} />
