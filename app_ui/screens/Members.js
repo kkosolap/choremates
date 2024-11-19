@@ -16,12 +16,28 @@ import { API_URL } from '../config.js';
 
 // used to reference image paths stored locally
 const avatarMap = {
+  // to  be remove
   duck: require('../icons/duck.jpg'),
+
   pinkAvatar: require('../icons/pinkAvatar.jpg'),
   blueAvatar: require('../icons/blueAvatar.jpg'),
   purpleAvatar: require('../icons/purpleAvatar.jpg'),
   greenAvatar: require('../icons/greenAvatar.jpg'),
   yellowAvatar: require('../icons/yellowAvatar.jpg'),
+  pinkCat: require('../icons/cat_pink.jpg'),
+  pinkBee: require('../icons/bee_pink.jpg'),
+  blueSlug: require('../icons/slug_blue.jpg'),
+  bluePig: require('../icons/pig_blue.jpg'),
+  purpleRabbit: require('../icons/rabbit_purple.jpg'),
+  purpleMouse: require('../icons/mouse_purple.jpg'),
+  pinkSheep: require('../icons/sheep_pink.jpg'),
+  purpleFox: require('../icons/fox_purple.jpg'),
+  greenDog: require('../icons/dog_green.jpg'),
+  greenDuck: require('../icons/duck_green.jpg'),
+  yellowFrog: require('../icons/frog_yellow.jpg'),
+  yellowTurtle: require('../icons/turtle_yellow.jpg'),
+  orangeDino: require('../icons/dino_orange.jpg'),
+  orangePigeon: require('../icons/pigeon_orange.jpg'),
 };
 
 const MembersScreen = ({ navigation }) => {

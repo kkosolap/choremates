@@ -291,7 +291,6 @@ app.post('/get-theme', async (req, res) => {
             return res.status(400).send("Missing username.");
         }
         const user_id = await getUserId(username);
-        console.log(user_id);
 
         const [results] = await db.promise().query("SELECT theme FROM users WHERE id = ?", [user_id]);
         res.status(200).json(results);
