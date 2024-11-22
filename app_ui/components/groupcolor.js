@@ -7,7 +7,7 @@ import { API_URL } from '../config';
 export const getGroupColor = async (username, group) => {
   try {
     // Fetch user ID based on the username
-    const response = await axios.post(`${API_URL}get-id`, { username });
+    const response = await axios.post(`${API_URL}get-user-id`, { username });
     const userId = response.data.id;
 
     if (!userId || !group.group_id) {

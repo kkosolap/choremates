@@ -136,7 +136,7 @@ const ManageDisplay = ({ navigation }) => {
         keyExtractor={(item) => item.username}
         renderItem={({ item }) => (
           <View style={styles.manageMemberItem}>
-            <Text style={styles.memberName}>{item.username}</Text>
+            <Text style={styles.memberName}>{item.display_name}</Text>
             {item.username !== username && (
             <>
               <View style={styles.permissionButtonContainer}>

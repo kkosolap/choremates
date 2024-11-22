@@ -34,6 +34,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const [username, setUsername] = useState(null);
+  const [display, setDisplay] = useState(null);
   const [user_id, setUserID] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
@@ -56,7 +57,7 @@ const NewChoreDisplay = ({ navigation }) => {
 
   // assignment dropdown
   const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
-  const initialAssignment = { label: username, value: user_id };
+  const initialAssignment = { label: display, value: user_id };
   const [assign_to, setAssignment] = useState(null);
 
   const [loading, setLoading] = useState(true); 
@@ -72,11 +73,10 @@ const NewChoreDisplay = ({ navigation }) => {
         }
 
         const userResponse = await axios.post(`${API_URL}get-user-id`, { username: storedUsername });
-        if (userResponse.data[0][0]) {
-          setUserID(userResponse.data[0][0].id);
-        } else {
-          console.error("UI NewChore.js: Failed to fetch user ID.");
-        }
+        setUserID(userResponse.data.id);
+
+        const displayResponse = await axios.post(`${API_URL}get-display`, { user_id: userResponse.data.id });
+        setDisplay(displayResponse.data[0].display_name);
 
         const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername });
         if (groupResponse && groupResponse.data) {
@@ -94,7 +94,7 @@ const NewChoreDisplay = ({ navigation }) => {
             return {
               group_id: group.group_id,
               members: memberResponse.data.map(member => ({
-                label: member.username,
+                label: member.display_name,
                 value: member.user_id,
               })),
             };

@@ -75,21 +75,21 @@ const ChoreDetailsDisplay = ({navigation}) => {
   
         if (routed_group_id !== -1) {
           // Fetch initial assignment
-          const userResponse = await axios.post(`${API_URL}get-username`, {
+          const displayResponse = await axios.post(`${API_URL}get-display`, {
             user_id: routed_assignment,
           });
-  
-          if (userResponse?.data?.[0]?.username) {
+
+          if (displayResponse?.data?.[0]?.display_name) {
             setInitialAssignment({
-              label: userResponse.data[0].username,
+              label: displayResponse.data[0].display_name,
               value: routed_assignment,
             });
             setAssignment({
-              label: userResponse.data[0].username,
+              label: displayResponse.data[0].display_name,
               value: routed_assignment,
             });
           } else {
-            console.error("UI ChoreDetails.js: Failed to fetch initial assignment username.");
+            console.error("UI ChoreDetails.js: Failed to fetch initial assignment display name.");
           }
   
           // Fetch group members for the assignment dropdown
@@ -99,7 +99,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   
           if (memberResponse?.data) {
             const transformedData = memberResponse.data.map((member) => ({
-              label: member.username,
+              label: member.display_name,
               value: member.user_id,
             }));
             setAssignmentDropdownData(transformedData);

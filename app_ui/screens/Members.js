@@ -182,7 +182,7 @@ const MembersDisplay = ({ username, navigation }) => {
                   ) : (
                     <Text >No Image</Text>
                   )}
-                  <Text style={styles.memberName}>{item.username}</Text>
+                  <Text style={styles.memberName}>{item.display_name}</Text>
                   {item.role === 'admin' ? (
                     <Ionicons name="star" size={25} color="gold" />
                   // ) : item.role === 'member' ? (
