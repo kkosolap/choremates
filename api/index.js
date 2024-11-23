@@ -864,6 +864,30 @@ app.post('/send-invite', async (req, res) => {
             return res.status(403).json({ error: "Only admins can invite members to the group" });
         }
 
+        // check if the invitee is already in the group
+        const checkMemberQuery = `
+            SELECT * FROM group_members 
+            WHERE user_id = ? AND group_id = ?
+        `;
+        const [memberResults] = await db.promise().query(checkMemberQuery, [invitee_id, group_id]);
+
+        if (memberResults.length > 0) {
+            console.error("API send-invite: Invitee is already in the group");
+            return res.status(400).json({ error: "User already in the group" });
+        }
+
+        // check if there is a pending invitation for the invitee
+        const checkInvitationQuery = `
+            SELECT * FROM group_invitations 
+            WHERE invitee_id = ? AND group_id = ? AND status = 'pending'
+        `;
+        const [invitationResults] = await db.promise().query(checkInvitationQuery, [invitee_id, group_id]);
+
+        if (invitationResults.length > 0) {
+            console.error("API send-invite: Invitee already has a pending invitation from the group");
+            return res.status(400).json({ error: "This user already has a pending invitation from the group" });
+        }
+
         // insert the invitation into the group_invitations table
         const insertInvitationQuery = `
             INSERT INTO group_invitations (inviter_id, invitee_id, group_id, status)
