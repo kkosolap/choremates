@@ -826,41 +826,56 @@ app.post('/get-all-groups-for-user', async (req, res) => {
 });
 
 // send an invitation, only 'admin' can invite -EL
-// input: inviter_name, invitee_name, group_id
+// input: inviter_name (username), invitee_name (username), group_id
 app.post('/send-invite', async (req, res) => {
     const { inviter_name, invitee_name, group_id } = req.body;
 
-    const inviter_id = await getUserId(inviter_name);
-    const invitee_id = await getUserId(invitee_name);
+    try {
+        // query to fetch user_id
+        const userIdQuery = "SELECT id FROM users WHERE username = ?";
 
-    // check if inviter is an admin in the group
-    const adminCheckQuery = `
-        SELECT role FROM group_members 
-        WHERE user_id = ? AND group_id = ? AND role = 'admin'
-    `;
+        // check if inviter exists
+        const [inviterResults] = await db.promise().query(userIdQuery, [inviter_name]);
 
-    db.query(adminCheckQuery, [inviter_id, group_id], (err, results) => {
-        if (err) {
-            console.error("API send-invite: Error checking admin role when inviting: ", err.message);
-            return res.status(500).json({ error: "Failed to verify inviter's role" });
+        if (inviterResults.length === 0) {
+            console.error("API send-invite: Inviter does not exist");
+            return res.status(404).json({ error: `Inviter '${inviter_name}' does not exist` });
         }
-        if (results.length === 0) {
+        const inviter_id = inviterResults[0].id;
+
+        // check if invitee exists
+        const [inviteeResults] = await db.promise().query(userIdQuery, [invitee_name]);
+
+        if (inviteeResults.length === 0) {
+            console.error("API send-invite: Invitee does not exist");
+            return res.status(404).json({ error: `Invitee '${invitee_name}' does not exist` });
+        }
+        const invitee_id = inviteeResults[0].id;
+
+        // check if the inviter is an admin in the group
+        const adminCheckQuery = `
+            SELECT role FROM group_members 
+            WHERE user_id = ? AND group_id = ? AND role = 'admin'
+        `;
+
+        const [adminResults] = await db.promise().query(adminCheckQuery, [inviter_id, group_id]);
+
+        if (adminResults.length === 0) {
             return res.status(403).json({ error: "Only admins can invite members to the group" });
         }
 
-        // insert invitation into group_invitations table
+        // insert the invitation into the group_invitations table
         const insertInvitationQuery = `
             INSERT INTO group_invitations (inviter_id, invitee_id, group_id, status)
             VALUES (?, ?, ?, 'pending')
         `;
-        db.query(insertInvitationQuery, [inviter_id, invitee_id, group_id], (err, result) => {
-            if (err) {
-                console.error("API send-invite: Error creating invitation: ", err.message);
-                return res.status(500).json({ error: "Failed to send invitation" });
-            }
-            res.status(200).json({ message: "Invitation sent successfully" });
-        });
-    });
+        await db.promise().query(insertInvitationQuery, [inviter_id, invitee_id, group_id]);
+
+        res.status(200).json({ message: "Invitation sent successfully" });
+    } catch (error) {
+        console.error("API send-invite: Unexpected error: ", error.message);
+        res.status(500).json({ error: "An unexpected error occurred" });
+    }
 });
 
 // get received pending invitations for a specific user -EL
