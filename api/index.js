@@ -765,6 +765,37 @@ app.get('/get-group-members', (req, res) => {
     });
 });
 
+// get number of members in a group -EL
+// input: group_id
+// output: {member_count: integer}
+app.get('/get-group-size', (req, res) => {
+    const { group_id } = req.query;
+
+    if (!group_id) {
+        return res.status(400).json({ error: "Group ID is required" });
+    }
+
+    // query to count the number of members in the group
+    const countMembersQuery = `
+        SELECT COUNT(*) AS member_count 
+        FROM group_members 
+        WHERE group_id = ?
+    `;
+
+    db.query(countMembersQuery, [group_id], (err, results) => {
+        if (err) {
+            console.error("API get-group-size: Error retrieving member count: ", err.message);
+            return res.status(500).json({ error: "Failed to retrieve group member count" });
+        }
+
+        // return the count of members
+        res.status(200).json({ member_count: results[0].member_count });
+    });
+});
+
+
+
+
 // returns the id and name of all the groups that the user is a member/admin of -KK
 // input: username
 // output: group_id, group_name 
