@@ -351,6 +351,23 @@ app.post('/update-profile', async (req, res) => {
         res.status(500).send("Error updating theme.");
     }
 });
+
+// returns true if the user has editing rights for the group -KK
+app.post('/get-perms', async (req, res) => {
+    try {
+        const { username, group_id } = req.body;
+        if(!username || !group_id) {
+            console.log("API get-perms: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }
+
+        const perm = await canModifyChore(username, group_id);
+        res.json(perm);
+    } catch (error) {
+        console.error("API get-perms: Error:", error.message);
+        res.status(500).send("Error getting user permission.");
+    }
+});
   
 
 
@@ -780,7 +797,8 @@ app.post('/get-all-groups-for-user', async (req, res) => {
 
         const query =   `SELECT 
                             group_members.group_id,
-                            group_names.group_name
+                            group_names.group_name,
+                            group_members.can_modify_chore 
                         FROM group_members
                         JOIN group_names ON group_members.group_id = group_names.id
                         WHERE group_members.user_id = ?`

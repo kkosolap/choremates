@@ -514,7 +514,7 @@ const createStyles = (theme) => {
       right: 15,
     },
     taskItem: {
-      fontSize: 16,
+      fontSize: 18,
       marginLeft: 10,
       marginBottom: 2,
       color: theme.text2,

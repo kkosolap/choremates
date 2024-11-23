@@ -80,27 +80,33 @@ const NewChoreDisplay = ({ navigation }) => {
 
         const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername });
         if (groupResponse && groupResponse.data) {
-          const transformedGroupData = groupResponse.data.map(group => ({
-            label: group.group_name,
-            value: group.group_id,
-          }));
-          setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
 
-          // fetch group members for each group -KK
-          const memberPromises = groupResponse.data.map(async group => {
-            const memberResponse = await axios.get(`${API_URL}get-group-members`, {
-              params: { group_id: group.group_id },
+          const groupsWithPerms = groupResponse.data.filter(group => group.can_modify_chore === 1);
+
+          if (groupsWithPerms.length > 0){
+            const transformedGroupData = groupsWithPerms.map(group => ({
+              label: group.group_name,
+              value: group.group_id,
+            }));
+            
+            setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
+
+            // fetch group members for each group -KK
+            const memberPromises = groupsWithPerms.map(async group => {
+              const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+                params: { group_id: group.group_id },
+              });
+              return {
+                group_id: group.group_id,
+                members: memberResponse.data.map(member => ({
+                  label: member.display_name,
+                  value: member.user_id,
+                })),
+              };
             });
-            return {
-              group_id: group.group_id,
-              members: memberResponse.data.map(member => ({
-                label: member.display_name,
-                value: member.user_id,
-              })),
-            };
-          });
-          const allGroupMembers = await Promise.all(memberPromises);
-          setAssignmentDropdownData(allGroupMembers);
+            const allGroupMembers = await Promise.all(memberPromises);
+            setAssignmentDropdownData(allGroupMembers);
+          }
         }
         setLoading(false); 
       } catch (error) {
