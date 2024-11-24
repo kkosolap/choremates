@@ -461,7 +461,7 @@ const createStyles = (theme) => {
     },
     choreNameInput: {
       width: '100%',
-      padding: 8,
+      padding: 6,
       borderWidth: 1,
       borderColor: theme.lighter,
       borderRadius: 10,
@@ -471,7 +471,7 @@ const createStyles = (theme) => {
     },
     choreNameInputNoEdit: {
       width: '100%',
-      padding: 8,
+      padding: 6,
       borderWidth: 1,
       borderColor: theme.lighter,
       borderRadius: 10,
@@ -483,6 +483,7 @@ const createStyles = (theme) => {
     choreNameInputText: {
       fontSize: 16,
       color: theme.text1,
+      paddingVertical: 4,
     },
     taskNameInput: {
       width: '87%',
