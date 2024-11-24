@@ -1,7 +1,7 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -23,7 +23,9 @@ const NewChoreScreen = ({ navigation }) => {
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Add a New Chore" navigation={navigation} />
-      <NewChoreDisplay navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <NewChoreDisplay navigation={navigation} />
+      </ScrollView>
     </View>
   );
 };
@@ -228,6 +230,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Show task list  -MH */}
         <View style={styles.taskList}>
           <FlatList
+            scrollEnabled={false}
             data={tasks}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (

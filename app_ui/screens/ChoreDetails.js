@@ -1,7 +1,7 @@
 // ChoreDetails.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
@@ -24,7 +24,9 @@ const ChoreDetailsScreen = ({ navigation }) => {
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Chore Details" navigation={navigation} />
-      <ChoreDetailsDisplay navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ChoreDetailsDisplay navigation={navigation} />
+      </ScrollView>
     </View>
   );
 };
@@ -381,6 +383,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
             {tasks && tasks.length > 0 ? (
               <View style={styles.taskList}>
                 <FlatList
+                  scrollEnabled={false}
                   data={tasks}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => (
@@ -430,6 +433,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
             {/* Show Task List */}
             {tasks && tasks.length > 0 ? (
               <FlatList
+                scrollEnabled={false}
                 data={tasks}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
