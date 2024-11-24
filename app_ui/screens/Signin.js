@@ -54,6 +54,7 @@ const Signin = ({ onSignin }) => {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        onSubmitEditing={handleSignin}
       />
 
       <TouchableOpacity style={styles.signinButton} onPress={handleSignin}>
