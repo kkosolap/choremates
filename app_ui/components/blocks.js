@@ -155,7 +155,7 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
       style={[
         completed ? styles.choreBlockCompleted : styles.choreBlock,
         { backgroundColor: completed ? completedColor : notCompletedColor}
-      ]}      
+      ]}
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
