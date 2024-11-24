@@ -3,7 +3,7 @@
 import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
 
 // logout button

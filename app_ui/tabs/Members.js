@@ -7,7 +7,7 @@ import Mail from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Ionicons'
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 

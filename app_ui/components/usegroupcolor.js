@@ -1,4 +1,4 @@
-// usergroupcolor.js
+// usegroupcolor.js
 
 import { useEffect, useState } from 'react';
 import { getGroupColor } from './groupcolor';

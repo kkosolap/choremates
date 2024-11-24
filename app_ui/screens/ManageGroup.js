@@ -6,7 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import Delete from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
 
-import { useTheme } from '../style/ThemeProvider.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import { ScreenHeader } from '../components/headers.js';
 

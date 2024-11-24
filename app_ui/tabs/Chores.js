@@ -6,7 +6,7 @@ import { Text, View, ScrollView, } from 'react-native';
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
 import { ActiveChoreBlock, ActiveGroupChoreBlock } from '../components/blocks.js';
 import { SectionTabButton } from '../components/buttons.js';

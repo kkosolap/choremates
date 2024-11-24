@@ -5,7 +5,7 @@ import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'r
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';

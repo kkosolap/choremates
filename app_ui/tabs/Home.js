@@ -9,7 +9,7 @@ import Collapsible from 'react-native-collapsible';
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
 import { ChoreBlock, GroupChoreBlock } from '../components/blocks.js';
 

@@ -8,7 +8,7 @@ import Popover from 'react-native-popover-view';
 
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import colors from '../style/colors';
 import { TabHeader } from '../components/headers.js';

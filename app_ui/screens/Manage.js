@@ -5,7 +5,7 @@ import { Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Arrow from 'react-native-vector-icons/MaterialIcons';
 import Delete from 'react-native-vector-icons/Ionicons';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
 import { TabHeader } from '../components/headers.js';
 

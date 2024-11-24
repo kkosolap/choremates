@@ -12,8 +12,8 @@ import createStyles from '../style/styles';
 import LogoutButton from '../components/logout'; 
 import { TabHeader } from '../components/headers.js';
 import { SettingsButton, ThemeButton } from '../components/buttons.js';
-import { useTheme } from '../style/ThemeProvider';
-import { useLogout } from '../style/LogOutProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
+import { useLogout } from '../contexts/LogOutProvider';
 
 import axios from 'axios';
 import { API_URL } from '../config';

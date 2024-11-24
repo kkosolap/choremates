@@ -6,7 +6,7 @@ import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
