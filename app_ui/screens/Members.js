@@ -110,7 +110,7 @@ const MembersDisplay = ({ username, navigation }) => {
             setIsAdmin(true);
           }
         } catch (error) {
-          Alert.alert('Error retrieving group members: ' + error.message);
+          Alert.alert(error.response.data.error);
         }
       };
 

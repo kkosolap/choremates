@@ -26,9 +26,9 @@ const Signin = ({ onSignin }) => {
       await SecureStore.setItemAsync('token', token); // Store the token securely
       await SecureStore.setItemAsync('username', username); // Store username securely
       onSignin(username); // Update the logged-in state
-    } catch (error) {
-      console.error('Login Error:', error);
-      Alert.alert('Error', error.response?.data?.message || 'Login failed');
+    } catch (message) {
+      // console.error('Login Error:', error);
+      Alert.alert(message.response.data.message);
     }
   };
 

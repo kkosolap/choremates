@@ -103,7 +103,7 @@ const GroupsDisplay = () => {
         setGroups(response.data);
       } catch (error) {
         console.error("Error fetching groups:", error);
-        Alert.alert("Failed to load groups.");
+        Alert.alert(error.response.data.error);
       }
     };
 

@@ -28,7 +28,7 @@ const GroupInvitations = ({ navigation, route }) => {
         }
       } catch (error) {
         console.error("Error fetching invitations:", error);
-        Alert.alert("Failed to load invitations.");
+        Alert.alert(error.response.data.error);
       }
     };
     
@@ -48,7 +48,7 @@ const GroupInvitations = ({ navigation, route }) => {
       }
     } catch (error) {
       console.error(`Failed to ${response} invitation:`, error);
-      Alert.alert(`Failed to ${response} invitation.`);
+      Alert.alert(error.response.data.error);
     }
   };
 

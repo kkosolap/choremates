@@ -34,10 +34,6 @@ const CreateGroupScreen = () => {
     }, []);
 
     const handleCreateGroup = async () => {
-        if (!groupName) {
-            Alert.alert('Please enter a group name');
-            return;
-        }
         try {
             const response = await axios.post(`${API_URL}create-group`, {
                 group_name: groupName,
@@ -47,7 +43,7 @@ const CreateGroupScreen = () => {
             navigation.goBack();
         } catch (error) {
             console.error("Error creating group:", error);
-            Alert.alert("Failed to create group.");
+            Alert.alert(error.response.data.error);
         }
     };
 
