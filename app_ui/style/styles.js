@@ -935,7 +935,7 @@ const createStyles = (theme) => {
     // groups display -NN
     groupItem: {
       width: '95%',
-      flexDirection: 'row',  // Align text and icon in a row
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingVertical: 20,
@@ -982,7 +982,16 @@ const createStyles = (theme) => {
     },
     groupColorIcon: {
       alignSelf: 'center',
-    }
+    },
+
+    noGroupsText: {
+      fontSize: 40,
+      textAlign: 'center',
+      marginTop: 245,
+      marginBottom: 245,
+      color: theme.black,
+      fontWeight: 'bold',
+    },
   });
 };
 
