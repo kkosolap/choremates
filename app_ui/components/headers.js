@@ -40,7 +40,6 @@ export const ScreenHeader = ({ title, navigation }) => {
       <Text
         style={[styles.title, { maxWidth: '70%' }]}
         numberOfLines={1}
-        ellipsizeMode="tail"
         adjustsFontSizeToFit={true}
       >
         {title}
