@@ -11,9 +11,22 @@ import { completeChore, completeTask, completeGroupChore, completeGroupTask } fr
 
 
 // block for displaying a chore in weekly list
-export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVisibility, visible, refresh }) => {
+export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence, onToggleVisibility, visible, refresh }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+
+  const currentDay = new Date().getDay(); // 0 = Sunday, ..., 6 = Saturday
+  const targetDay = 0; // Sunday (0)
+  const daysUntilSunday = (targetDay - currentDay + 7) % 7;
+
+  const recurrenceTextMap = {
+    "Daily": "11:59pm",
+    "Weekly":
+      daysUntilSunday === 0 ? "11:59pm"
+      : daysUntilSunday === 1 ? "Tomorrow"
+      : `in ${daysUntilSunday} Days`,
+    "Just Once": "never"
+  };
   
   const handleToggleChoreCompletion = (user, chore_name) => {
     completeChore(user, chore_name, tasks)
@@ -77,16 +90,42 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
               <Text style={styles.emptySectionText}>No tasks</Text>
             </View>
           )}
+
+          {/* Show Due Date (if tasks visible and not completed) */}
+          {!completed && (
+            <View style={styles.dueDateContainer}>
+              {recurrence !== "Just Once" ? (
+                <Text style={styles.dueDateText}>Due: {recurrenceTextMap[recurrence]}</Text>
+              ) : (
+                <Text style={styles.dueDateText}>No Due Date</Text>
+              )}
+            </View>
+          )}
         </>
       )}
+
+      
     </TouchableOpacity>
   );
 };
 
-export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, onToggleVisibility, visible, refresh }) => {
+export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, recurrence, onToggleVisibility, visible, refresh }) => {
   const { theme } = useTheme();
   const { groupThemes } = useGroupThemes();
   const styles = createStyles(groupThemes[group_id]);
+
+  const currentDay = new Date().getDay(); // 0 = Sunday, ..., 6 = Saturday
+  const targetDay = 0; // Sunday (0)
+  const daysUntilSunday = (targetDay - currentDay + 7) % 7;
+
+  const recurrenceTextMap = {
+    "Daily": "11:59pm",
+    "Weekly":
+      daysUntilSunday === 0 ? "11:59pm"
+      : daysUntilSunday === 1 ? "Tomorrow"
+      : `in ${daysUntilSunday} Days`,
+    "Just Once": "never"
+  };
 
   const handleToggleChoreCompletion = (group_id, chore_name) => {
     completeGroupChore(group_id, chore_name, tasks)
@@ -148,6 +187,17 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
             // if NO tasks to display
             <View style={styles.taskContainer}>
               <Text style={styles.emptySectionText}>No tasks</Text>
+            </View>
+          )}
+
+          {/* Show Due Date (if tasks visible and not completed) */}
+          {!completed && (
+            <View style={styles.dueDateContainer}>
+              {recurrence !== "Just Once" ? (
+                <Text style={styles.dueDateText}>Due: {recurrenceTextMap[recurrence]}</Text>
+              ) : (
+                <Text style={styles.dueDateText}>No Due Date</Text>
+              )}
             </View>
           )}
         </>

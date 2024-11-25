@@ -160,6 +160,16 @@ const createStyles = (theme) => {
       left: 2, // units from the left
     },
 
+    // date display -MH
+    dateDisplay: {
+      position: 'absolute',
+      top: -5,
+    },
+    dateDisplayText: {
+      fontSize: 18,
+      color: theme.text2,
+    },
+
     // circle button  -MH
     button: {
       justifyContent: 'center',
@@ -223,9 +233,9 @@ const createStyles = (theme) => {
     choreSection: {
       backgroundColor: theme.white,
       width: '100%',
-      height: '100%',
+      height: '95%',
       alignItems: 'center',
-      marginTop: 26,
+      marginTop: 52, // was 26 before adding the date
       paddingVertical: 10,
       borderRadius: 12,
       borderWidth: 2,
@@ -238,7 +248,7 @@ const createStyles = (theme) => {
       alignItems: 'center',
 
       position: 'absolute',
-      top: 10,
+      top: 35, // was 10 before adding the date
       zIndex: 1,
     },
     tabButtonSelected: {
@@ -328,6 +338,16 @@ const createStyles = (theme) => {
       right: 15,
       top: 20,
       zIndex: 1,
+    },
+    dueDateContainer: {
+      width: '100%',
+      paddingRight: 15,
+      paddingVertical: 3,
+    },
+    dueDateText: {
+      fontSize: 17,
+      color: theme.text2,
+      textAlign: 'right',
     },
 
     // tasks  -MH

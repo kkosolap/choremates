@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import createStyles from '../style/styles';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
+import { DisplayDate } from '../components/date.js';
 import { ActiveChoreBlock, ActiveGroupChoreBlock } from '../components/blocks.js';
 import { SectionTabButton } from '../components/buttons.js';
 
@@ -53,11 +54,11 @@ const ChoresDisplay = () => {
   );
 
   // State for grouped personal tasks  -MH
-  const [task_name, setNewTask] = useState('');
   const [personalData, setPersonalData] = useState([]);
   const [groupedPersonalTasksCompleted, setGroupedPersonalTasksCompleted] = useState({});
   const [groupedPersonalTasksToDo, setGroupedPersonalTasksToDo] = useState({});
 
+  // Load personal chores  -MH
   useEffect(() => {
     if (!personalData) return; // safety check for null/undefined personalData
 
@@ -79,6 +80,7 @@ const ChoresDisplay = () => {
       if (!targetGroup[task.chore_name]) {
         targetGroup[task.chore_name] = {
           is_completed: task.chore_is_completed,
+          recurrence: task.chore_recurrence,
           tasks: [],
         };
       }
@@ -103,6 +105,7 @@ const ChoresDisplay = () => {
   const [groupedGroupTasksCompleted, setGroupedGroupTasksCompleted] = useState({});
   const [groupedGroupTasksToDo, setGroupedGroupTasksToDo] = useState({});
 
+  // Load group chores  -MH
   useEffect(() => {
     if (!groupData) return; // safety check for null/undefined groupData
 
@@ -125,6 +128,7 @@ const ChoresDisplay = () => {
         targetGroup[task.group_chore_name] = {
           group_id: task.group_id,
           is_completed: task.chore_is_completed,
+          recurrence: task.chore_recurrence,
           group_tasks: []
         };
       }
@@ -159,7 +163,7 @@ const ChoresDisplay = () => {
   const refresh = async (username) => {
     // get all the personal chore data for the user -KK
     await axios.post(`${API_URL}get-chores-data`, { username }).then((response) => setPersonalData(response.data))
-    .catch((error) => console.error(error)); 
+    .catch((error) => console.error(error));
 
     // get all the group chore ids for the user -KK
     const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username }).catch((error) => console.error(error));
@@ -190,6 +194,8 @@ const ChoresDisplay = () => {
   return (
     <View style={styles.content}>
 
+      <DisplayDate />
+
       <View style={styles.choreSectionTabs}>
         <SectionTabButton
           label="To-Do"
@@ -212,18 +218,21 @@ const ChoresDisplay = () => {
             // If there are Chores To Show
             <>
             {/* personal chores */}
-            {Object.keys(personalChoresToShow).map((chore_name) => (
-              <ActiveChoreBlock
-                user={username}
-                key={chore_name}
-                choreName={chore_name}
-                tasks={personalChoresToShow[chore_name].tasks}
-                completed={personalChoresToShow[chore_name].is_completed}
-                visible={visibleTasks[chore_name]}
-                onToggleVisibility={toggleVisibility}
-                refresh={refresh}
-              />
-            ))}
+            {Object.keys(personalChoresToShow).map((chore_name) => {
+              return (
+                <ActiveChoreBlock
+                  user={username}
+                  key={chore_name}
+                  choreName={chore_name}
+                  tasks={personalChoresToShow[chore_name].tasks}
+                  completed={personalChoresToShow[chore_name].is_completed}
+                  recurrence={personalChoresToShow[chore_name].recurrence}
+                  visible={visibleTasks[chore_name]}
+                  onToggleVisibility={toggleVisibility}
+                  refresh={refresh}
+                />
+              );
+            })}
 
             {/* group chores */}
             {Object.keys(groupChoresToShow).map((group_chore_name) => (
@@ -234,6 +243,7 @@ const ChoresDisplay = () => {
                 choreName={group_chore_name}
                 tasks={groupChoresToShow[group_chore_name].group_tasks}
                 completed={groupChoresToShow[group_chore_name].is_completed}
+                recurrence={groupChoresToShow[group_chore_name].recurrence}
                 visible={visibleTasks[group_chore_name]}
                 onToggleVisibility={toggleVisibility}
                 refresh={refresh}

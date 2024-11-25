@@ -378,7 +378,7 @@ app.post('/get-perms', async (req, res) => {
 // every minute for test purposes - AT
 cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
 cron.schedule('0 0 * * *',  () => { resetAndRotateChores('Daily'); });
-cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); }); // resets every monday
+cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); }); // resets every midnight after Sunday (12am Monday)
 
 // function to handle single user recurrence -AT
 async function resetAndRotateChores(type) {
