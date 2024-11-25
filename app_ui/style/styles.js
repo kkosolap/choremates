@@ -518,17 +518,6 @@ const createStyles = (theme) => {
       fontSize: 16,
       color: theme.text1,
     },
-    rotationSwitchContainer: {
-      width: '100%', // Full width to align with other inputs
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 20, // Space between other elements
-    },
-    rotationSwitchLabel: {
-      fontSize: 16, // Match other label sizes
-      color: theme.text1,
-    },
     taskList: {
       width: '100%',
       marginBottom: 10,
@@ -578,6 +567,12 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    switchContainer: { // for toggling rotation - AT
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginVertical: 16,
     },
 
     // chore details form dropdown -MH

@@ -453,7 +453,7 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
     }
 }
 
-module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser, }; // export for testing purposes - AT
+// module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser, }; // export for testing purposes - AT
 
 /********************************************************** */
 /*             CHORE IMPLEMENTATION BELOW:                  */

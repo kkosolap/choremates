@@ -51,12 +51,7 @@ const NewChoreDisplay = ({ navigation }) => {
   ];
   const initialRec = { label: 'Just Once', value: 'Just Once' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
-
-  // rotation switch - AT
-  const [rotationEnabled, setRotationEnabled] = useState(false);
-  const toggleRotation = () => {
-    setRotationEnabled(!rotationEnabled);
-  }
+  const [rotationEnabled, setRotationEnabled] = useState(false); // set default to rotation off - AT
 
   // group dropdown
   const [groupDropdownData, setGroupDropdownData] = useState([{ label: 'Personal', value: -1 }]);
@@ -124,6 +119,11 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
+  // Function to handle rotation switch toggle - AT
+  const handleRotationToggle = (value) => {
+    setRotationEnabled(value);
+  };
+
   // Add the chore to the database
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
@@ -142,7 +142,7 @@ const NewChoreDisplay = ({ navigation }) => {
           group_chore_name: chore_name,
           assign_to: assign_to.value,
           recurrence: selectedRec.value,
-          rotationEnabled,
+          rotation: rotationEnabled,
           group_id: selectedGroup.value,
           username: username
         });
@@ -156,6 +156,7 @@ const NewChoreDisplay = ({ navigation }) => {
       setChoreName('');
       setNewTask('');
       setSelectedRec(initialRec);
+      setSelectedRotation(false);  // - AT
       setSelectedGroup(initialGroup);
       setTasks([]);
       navigation.goBack();  // exit and go back to home -KK
@@ -230,15 +231,17 @@ const NewChoreDisplay = ({ navigation }) => {
           onSelect={setSelectedRec}
           initialValue={initialRec}
         />
-
-        {/* Rotation Switch - AT */}
-        <View style={styles.rotationSwitchContainer}>
-          <Text style={styles.rotationSwitchLabel}>Enable Rotation</Text>
-          <Switch
-          value={rotationEnabled}
-          onValueChange={toggleRotation}
-          />
-        </View>
+        
+        {/* Conditional Rotation Switch if Recurrence Selected - AT */}
+        {selectedRec !== 'Just Once' && (
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>Enable Rotation</Text>
+            <Switch
+              value={rotationEnabled}
+              onValueChange={handleRotationToggle} // Function to handle toggle change
+            />
+          </View>
+        )}
 
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
