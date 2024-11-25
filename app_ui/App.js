@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
 import { ThemeProvider, useTheme } from './contexts/ThemeProvider.js';
-// import { UserProvider } from './components/usercomponents.js';
+// import { UserProvider } from './contexts/UserContext.js';
 import { LogoutProvider } from './contexts/LogOutProvider';
 import createStyles from './style/styles';
 

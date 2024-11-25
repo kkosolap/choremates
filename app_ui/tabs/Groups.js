@@ -12,7 +12,7 @@ import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import colors from '../style/colors';
 import { TabHeader } from '../components/headers.js';
-import { getGroupColor } from '../components/groupcolor.js';
+import { getGroupColor } from '../functions/groupColor.js';
 
 import axios from 'axios';
 import { API_URL } from '../config.js';

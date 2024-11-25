@@ -1,4 +1,4 @@
-// usercomponents.js
+// UserContext.js
 
 import React, { createContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
@@ -24,7 +24,7 @@ export const UserProvider = ({ children }) => {
         // Fetch user_id from the backend using the stored username
         const response = await fetch(`${API_URL}get-user-id?username=${storedUsername}`);
         const data = await response.json();
-        console.log('UserComponents: ' + data);
+        //console.log('UserComponents: ' + data);
 
 
         if (data.success) {

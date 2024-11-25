@@ -1,15 +1,14 @@
 // blocks.js
 
 import React, { useEffect, useState, useRef } from 'react';
-
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import themes from '../style/colors';
-import { completeChore, completeTask, completeGroupChore, completeGroupTask } from '../components/functions.js';
-import { useGroupColors } from '../components/usegroupcolor';
+import { completeChore, completeTask, completeGroupChore, completeGroupTask } from '../functions/markCompleted.js';
+import { useGroupColors } from '../functions/groupColor.js';
 
 import colors from '../style/colors';
 
