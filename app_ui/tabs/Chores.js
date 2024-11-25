@@ -33,15 +33,9 @@ const ChoresDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
+  //const [groupColors, setGroupColors] = useState({});
+
   const [username, setUsername] = useState(null);
-  
-  const [showToDo, setShowToDo] = useState(true); // tracks whether you're on the To-Do or Completed tab
-
-  const [personalData, setPersonalData] = useState([]);
-  const [groupData, setGroupData] = useState([]);
-  const [task_name, setNewTask] = useState('');  
-  const [groupColors, setGroupColors] = useState({});
-
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -60,7 +54,9 @@ const ChoresDisplay = () => {
     [])
   );
 
-  // State for grouped personal tasks
+  // State for grouped personal tasks  -MH
+  const [task_name, setNewTask] = useState('');
+  const [personalData, setPersonalData] = useState([]);
   const [groupedPersonalTasksCompleted, setGroupedPersonalTasksCompleted] = useState({});
   const [groupedPersonalTasksToDo, setGroupedPersonalTasksToDo] = useState({});
 
@@ -104,7 +100,8 @@ const ChoresDisplay = () => {
     setGroupedPersonalTasksToDo(toDo);
   }, [personalData]); // runs when personalData changes
 
-  // State for grouped group tasks
+  // State for grouped group tasks  -MH
+  const [groupData, setGroupData] = useState([]);
   const [groupedGroupTasksCompleted, setGroupedGroupTasksCompleted] = useState({});
   const [groupedGroupTasksToDo, setGroupedGroupTasksToDo] = useState({});
 
@@ -228,6 +225,7 @@ const ChoresDisplay = () => {
   };
 
   // Check if on To-Do or Completed Tab
+  const [showToDo, setShowToDo] = useState(true); // tracks whether you're on the To-Do or Completed tab
   const personalChoresToShow = showToDo ? groupedPersonalTasksToDo : groupedPersonalTasksCompleted;
   const groupChoresToShow = showToDo ? groupedGroupTasksToDo : groupedGroupTasksCompleted;
   const emptyDisplayText = showToDo ? "No Chores To-Do!" : "No Completed Chores";
