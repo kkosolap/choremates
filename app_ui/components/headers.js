@@ -37,7 +37,14 @@ export const ScreenHeader = ({ title, navigation }) => {
       </TouchableOpacity>
       
       {/* Title */}
-      <Text style={styles.title}>{title}</Text>
+      <Text
+        style={[styles.title, { maxWidth: '70%' }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        adjustsFontSizeToFit={true}
+      >
+        {title}
+      </Text>
     </View>
   );
 };

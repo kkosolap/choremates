@@ -718,6 +718,11 @@ app.post('/create-group', async (req, res) => {
         return res.status(400).json({ error: "Missing group name or username" });
     }
 
+    // check if group name is too long
+    if (group_name.length > 14) {
+        return res.status(400).json({ error: "Group name must be less than 15 characters" });
+    }
+
     const user_id = await getUserId(username);
 
     // insert the new group into group_names

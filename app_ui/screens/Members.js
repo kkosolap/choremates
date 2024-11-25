@@ -49,13 +49,10 @@ const MembersScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
-<ScreenHeader
-  title={`${groupName}'s Members`}
-  navigation={navigation}
-  style={{ flexShrink: 1, maxWidth: '60%' }}
-  numberOfLines={1}
-  adjustsFontSizeToFit={true}
-/>
+      <ScreenHeader
+        title={`${groupName}'s Members`}
+        navigation={navigation}
+      />
 
       <MembersDisplay
         navigation={navigation}
