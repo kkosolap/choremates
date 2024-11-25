@@ -212,22 +212,18 @@ app.post('/logout', (req, res) => {
 /********************************************************** */
 /*                USER IMPLEMENTATION BELOW:                */
 /********************************************************** */
-// get the user's id from their username -KK
+// Get id (user's id) -VA
 app.post('/get-user-id', async (req, res) => {
+    const { username } = req.body;
     try {
-        const { username } = req.body;
-        if (!username) {
-            console.log("API get-user-id: Missing username.");
-            return res.status(400).send("Missing username.");
-        }
-
-        const results = await db.promise().query("SELECT id FROM users WHERE username = ?", [username]);
-        res.status(200).json(results);
+      const user_id = await getUserId(username);  
+      
+      res.json({ id: user_id });  
     } catch (error) {
-        console.error("API get-user-id: Error:", error.message);
-        res.status(500).send("Error getting user id.");
+      console.error('API get-user-id: Error fetching user ID:', error);
+      res.status(500).json({ error: 'Database error' });
     }
-});
+  });
 
 // get the user's username from user_id -KK
 app.post('/get-username', async (req, res) => {
@@ -249,12 +245,14 @@ app.post('/get-username', async (req, res) => {
 // get the user's display name -KK
 app.post('/get-display', async (req, res) => {
     try {
-        const { username } = req.body;
-        if (!username) {
+        let { username, user_id } = req.body;
+        if (!username && !user_id) {
             console.log("API get-display: Missing username.");
             return res.status(400).send("Missing username.");
         }
-        const user_id = await getUserId(username);
+        if(!user_id){
+            user_id = await getUserId(username);
+        }
 
         const [results] = await db.promise().query("SELECT display_name FROM users WHERE id = ?", [user_id]);
         res.status(200).json(results);
@@ -354,18 +352,22 @@ app.post('/update-profile', async (req, res) => {
     }
 });
 
-// Get id (user's id) -VA
-app.post('/get-id', async (req, res) => {
-    const { username } = req.body;
+// returns true if the user has editing rights for the group -KK
+app.post('/get-perms', async (req, res) => {
     try {
-      const user_id = await getUserId(username);  
-      
-      res.json({ id: user_id });  
+        const { username, group_id } = req.body;
+        if(!username || !group_id) {
+            console.log("API get-perms: Missing required fields.");
+            return res.status(400).send("Missing required fields.");
+        }
+
+        const perm = await canModifyChore(username, group_id);
+        res.json(perm);
     } catch (error) {
-      console.error('Error fetching user ID:', error);
-      res.status(500).json({ error: 'Database error' });
+        console.error("API get-perms: Error:", error.message);
+        res.status(500).send("Error getting user permission.");
     }
-  });
+});
   
 
 
@@ -765,7 +767,7 @@ app.get('/get-group-members', (req, res) => {
 
     // Query to retrieve member names for the specified group
     const getGroupMembersQuery = `
-        SELECT users.username, group_members.user_id, group_members.role 
+        SELECT users.username, users.display_name, group_members.user_id, group_members.role 
         FROM group_members 
         JOIN users ON group_members.user_id = users.id 
         WHERE group_members.group_id = ?
@@ -795,7 +797,8 @@ app.post('/get-all-groups-for-user', async (req, res) => {
 
         const query =   `SELECT 
                             group_members.group_id,
-                            group_names.group_name
+                            group_names.group_name,
+                            group_members.can_modify_chore 
                         FROM group_members
                         JOIN group_names ON group_members.group_id = group_names.id
                         WHERE group_members.user_id = ?`

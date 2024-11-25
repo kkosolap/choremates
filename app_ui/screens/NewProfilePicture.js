@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import { ScreenHeader } from '../components/headers.js';
 

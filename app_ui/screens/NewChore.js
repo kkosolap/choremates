@@ -1,11 +1,11 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
@@ -23,7 +23,9 @@ const NewChoreScreen = ({ navigation }) => {
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Add a New Chore" navigation={navigation} />
-      <NewChoreDisplay navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <NewChoreDisplay navigation={navigation} />
+      </ScrollView>
     </View>
   );
 };
@@ -34,6 +36,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const [username, setUsername] = useState(null);
+  const [display, setDisplay] = useState(null);
   const [user_id, setUserID] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
@@ -62,7 +65,7 @@ const NewChoreDisplay = ({ navigation }) => {
 
   // assignment dropdown
   const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
-  const initialAssignment = { label: username, value: user_id };
+  const initialAssignment = { label: display, value: user_id };
   const [assign_to, setAssignment] = useState(null);
 
   const [loading, setLoading] = useState(true); 
@@ -78,35 +81,40 @@ const NewChoreDisplay = ({ navigation }) => {
         }
 
         const userResponse = await axios.post(`${API_URL}get-user-id`, { username: storedUsername });
-        if (userResponse.data[0][0]) {
-          setUserID(userResponse.data[0][0].id);
-        } else {
-          console.error("UI NewChore.js: Failed to fetch user ID.");
-        }
+        setUserID(userResponse.data.id);
+
+        const displayResponse = await axios.post(`${API_URL}get-display`, { user_id: userResponse.data.id });
+        setDisplay(displayResponse.data[0].display_name);
 
         const groupResponse = await axios.post(`${API_URL}get-all-groups-for-user`, { username: storedUsername });
         if (groupResponse && groupResponse.data) {
-          const transformedGroupData = groupResponse.data.map(group => ({
-            label: group.group_name,
-            value: group.group_id,
-          }));
-          setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
 
-          // fetch group members for each group -KK
-          const memberPromises = groupResponse.data.map(async group => {
-            const memberResponse = await axios.get(`${API_URL}get-group-members`, {
-              params: { group_id: group.group_id },
+          const groupsWithPerms = groupResponse.data.filter(group => group.can_modify_chore === 1);
+
+          if (groupsWithPerms.length > 0){
+            const transformedGroupData = groupsWithPerms.map(group => ({
+              label: group.group_name,
+              value: group.group_id,
+            }));
+            
+            setGroupDropdownData([{ label: 'Personal', value: -1 }, ...transformedGroupData]);
+
+            // fetch group members for each group -KK
+            const memberPromises = groupsWithPerms.map(async group => {
+              const memberResponse = await axios.get(`${API_URL}get-group-members`, {
+                params: { group_id: group.group_id },
+              });
+              return {
+                group_id: group.group_id,
+                members: memberResponse.data.map(member => ({
+                  label: member.display_name,
+                  value: member.user_id,
+                })),
+              };
             });
-            return {
-              group_id: group.group_id,
-              members: memberResponse.data.map(member => ({
-                label: member.username,
-                value: member.user_id,
-              })),
-            };
-          });
-          const allGroupMembers = await Promise.all(memberPromises);
-          setAssignmentDropdownData(allGroupMembers);
+            const allGroupMembers = await Promise.all(memberPromises);
+            setAssignmentDropdownData(allGroupMembers);
+          }
         }
         setLoading(false); 
       } catch (error) {
@@ -238,6 +246,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Show task list  -MH */}
         <View style={styles.taskList}>
           <FlatList
+            scrollEnabled={false}
             data={tasks}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (

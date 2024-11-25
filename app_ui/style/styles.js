@@ -214,6 +214,10 @@ const createStyles = (theme) => {
     emptyChoresSection: {
       marginTop: 15,
     },
+    emptyTasksSection: {
+      width: '100%',
+      marginBottom: 12,
+    },
 
     // chores tab sections  -MH
     choreSection: {
@@ -457,13 +461,29 @@ const createStyles = (theme) => {
     },
     choreNameInput: {
       width: '100%',
-      padding: 8,
+      padding: 6,
       borderWidth: 1,
       borderColor: theme.lighter,
       borderRadius: 10,
       marginBottom: 25,
       fontSize: 16,
       color: theme.text1, // color when typing
+    },
+    choreNameInputNoEdit: {
+      width: '100%',
+      padding: 6,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      marginBottom: 25,
+      fontSize: 16,
+      color: theme.text1, // color when typing
+      backgroundColor: theme.desaturated,
+    },
+    choreNameInputText: {
+      fontSize: 16,
+      color: theme.text1,
+      paddingVertical: 4,
     },
     taskNameInput: {
       width: '87%',
@@ -525,14 +545,14 @@ const createStyles = (theme) => {
       right: 15,
     },
     taskItem: {
-      fontSize: 16,
+      fontSize: 18,
       marginLeft: 10,
       marginBottom: 2,
       color: theme.text2,
       width: '80%',
     },
     addChoreButton: {
-      marginTop: 35,
+      marginTop: 25,
       width: '80%',
       height: 60,
       borderRadius: 10,
@@ -551,7 +571,7 @@ const createStyles = (theme) => {
       fontSize: 18,
     },
     deleteChoreButton: {
-      marginTop: 40,
+      marginTop: 25,
       width: '80%',
       height: 40,
       borderRadius: 10,
@@ -574,6 +594,16 @@ const createStyles = (theme) => {
       borderWidth: 1,
       borderColor: theme.lighter,
       borderRadius: 10,
+    },
+    dropdownButtonNoEdit: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      padding: 9,
+      borderWidth: 1,
+      borderColor: theme.lighter,
+      borderRadius: 10,
+      backgroundColor: theme.desaturated,
     },
     dropdownButtonText: {
       fontSize: 16,

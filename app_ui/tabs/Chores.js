@@ -1,12 +1,12 @@
 // Chores.js
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, View, ScrollView, } from 'react-native';
 import * as SecureStore from 'expo-secure-store'; 
 
 import createStyles from '../style/styles';
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
 import { ActiveChoreBlock, ActiveGroupChoreBlock } from '../components/blocks.js';
 import { SectionTabButton } from '../components/buttons.js';
@@ -35,8 +35,6 @@ const ChoresDisplay = () => {
 
   const [username, setUsername] = useState(null);
   
-  const [visibleTasks, setVisibleTasks] = useState({}); // tracks which chores have visible tasks -MH
-  const [editing, setEditing] = useState(null); // tracks which chores are being edited -KK
   const [showToDo, setShowToDo] = useState(true); // tracks whether you're on the To-Do or Completed tab
 
   const [personalData, setPersonalData] = useState([]);
@@ -62,67 +60,98 @@ const ChoresDisplay = () => {
     [])
   );
 
-  const groupedPersonalTasksCompleted = {};
-  const groupedPersonalTasksToDo = {};
+  // State for grouped personal tasks
+  const [groupedPersonalTasksCompleted, setGroupedPersonalTasksCompleted] = useState({});
+  const [groupedPersonalTasksToDo, setGroupedPersonalTasksToDo] = useState({});
 
-  personalData.forEach((task) => {
-    // Safety check for null/undefined tasks
-    if (!task || !task.chore_name) {
-      console.log("Chores.js: found null task in personalData")
-      return
-    };
+  useEffect(() => {
+    if (!personalData) return; // safety check for null/undefined personalData
 
-    // Group based on chore completion
-    const targetGroup = task.chore_is_completed ? groupedPersonalTasksCompleted : groupedPersonalTasksToDo;
+    // temp to store grouped tasks
+    const completed = {};
+    const toDo = {};
 
-    // If the chore name doesn't exist in the target group, initialize it
-    if (!targetGroup[task.chore_name]) {
-      targetGroup[task.chore_name] = {
-        is_completed: task.chore_is_completed,
-        tasks: []
-      };
-    }
+    personalData.forEach((task) => {
+      // safety check for null/undefined tasks
+      if (!task || !task.chore_name) {
+        console.log("Chores.js: found null task in personalData");
+        return;
+      }
 
-    // Only add tasks if task_name is non-null
-    if (task.task_name) {
-      targetGroup[task.chore_name].tasks.push({
-        id: task.id,
-        task: task.task_name,
-        completed: task.task_is_completed });
-    }
-  });
+      // group based on chore completion
+      const targetGroup = task.chore_is_completed ? completed : toDo;
 
-  const groupedGroupTasksCompleted = {};
-  const groupedGroupTasksToDo = {};
+      // if the chore name doesn't exist in the target group, initialize it
+      if (!targetGroup[task.chore_name]) {
+        targetGroup[task.chore_name] = {
+          is_completed: task.chore_is_completed,
+          tasks: [],
+        };
+      }
 
-  groupData.forEach((task) => {
-    // Safety check for null/undefined tasks
-    if (!task || !task.group_chore_name) {
-      console.log("Chores.js: found null task in groupData")
-      return
-    };
+      // only add tasks if task_name is non-null
+      if (task.task_name) {
+        targetGroup[task.chore_name].tasks.push({
+          id: task.id,
+          task: task.task_name,
+          completed: task.task_is_completed,
+        });
+      }
+    });
 
-    // Group based on chore completion
-    const targetGroup = task.chore_is_completed ? groupedGroupTasksCompleted : groupedGroupTasksToDo;
+    // update state with grouped tasks
+    setGroupedPersonalTasksCompleted(completed);
+    setGroupedPersonalTasksToDo(toDo);
+  }, [personalData]); // runs when personalData changes
 
-    // If the chore name doesn't exist in the target group, initialize it
-    if (!targetGroup[task.group_chore_name]) {
-      targetGroup[task.group_chore_name] = {
-        group_id: task.group_id,
-        is_completed: task.chore_is_completed,
-        group_tasks: []
-      };
-    }
+  // State for grouped group tasks
+  const [groupedGroupTasksCompleted, setGroupedGroupTasksCompleted] = useState({});
+  const [groupedGroupTasksToDo, setGroupedGroupTasksToDo] = useState({});
 
-    // Only add tasks if task_name is non-null
-    if (task.group_task_name) {
-      targetGroup[task.group_chore_name].group_tasks.push({
-        id: task.id,
-        task: task.group_task_name,
-        completed: task.task_is_completed });
-    }
-  });
+  useEffect(() => {
+    if (!groupData) return; // safety check for null/undefined groupData
 
+    // temp to store grouped tasks
+    const completed = {};
+    const toDo = {};
+
+    groupData.forEach((task) => {
+      // safety check for null/undefined tasks
+      if (!task || !task.group_chore_name) {
+        console.log("Chores.js: found null task in groupData");
+        return;
+      }
+
+      // group based on chore completion
+      const targetGroup = task.chore_is_completed ? completed : toDo;
+
+      // if the chore name doesn't exist in the target group, initialize it
+      if (!targetGroup[task.group_chore_name]) {
+        targetGroup[task.group_chore_name] = {
+          group_id: task.group_id,
+          is_completed: task.chore_is_completed,
+          group_tasks: []
+        };
+      }
+
+      // only add tasks if task_name is non-null
+      if (task.group_task_name) {
+        targetGroup[task.group_chore_name].group_tasks.push({
+          id: task.id,
+          task: task.group_task_name,
+          completed: task.task_is_completed,
+        });
+      }
+    });
+
+    // update state with grouped tasks
+    setGroupedGroupTasksCompleted(completed);
+    setGroupedGroupTasksToDo(toDo);
+  }, [groupData]); // runs when groupData changes
+
+  // State for visible tasks
+  const [visibleTasks, setVisibleTasks] = useState({}); // tracks which chores have visible tasks -MH
+  const [editing, setEditing] = useState(null); // tracks which chores are being edited -KK
 
   // toggle the visibility of tasks for a chore -KK
   const toggleVisibility = (chore_name) => {

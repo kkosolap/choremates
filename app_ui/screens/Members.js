@@ -6,7 +6,7 @@ import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from 'react-native-vector-icons';
 
 import { ScreenHeader } from '../components/headers.js';
-import { useTheme } from '../style/ThemeProvider.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 
 
@@ -182,7 +182,7 @@ const MembersDisplay = ({ username, navigation }) => {
                   ) : (
                     <Text >No Image</Text>
                   )}
-                  <Text style={styles.memberName}>{item.username}</Text>
+                  <Text style={styles.memberName}>{item.display_name}</Text>
                   {item.role === 'admin' ? (
                     <Ionicons name="star" size={25} color="gold" />
                   // ) : item.role === 'member' ? (

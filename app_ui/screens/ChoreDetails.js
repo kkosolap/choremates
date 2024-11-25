@@ -1,12 +1,12 @@
 // ChoreDetails.js
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
@@ -24,7 +24,9 @@ const ChoreDetailsScreen = ({ navigation }) => {
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Chore Details" navigation={navigation} />
-      <ChoreDetailsDisplay navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ChoreDetailsDisplay navigation={navigation} />
+      </ScrollView>
     </View>
   );
 };
@@ -44,6 +46,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
   const [choreGroup, setChoreGroup] = useState({});
+  const [permission, setPermission] = useState({});
 
   // recurrence dropdown -MH
   const recDropdownData = [
@@ -75,21 +78,21 @@ const ChoreDetailsDisplay = ({navigation}) => {
   
         if (routed_group_id !== -1) {
           // Fetch initial assignment
-          const userResponse = await axios.post(`${API_URL}get-username`, {
+          const displayResponse = await axios.post(`${API_URL}get-display`, {
             user_id: routed_assignment,
           });
-  
-          if (userResponse?.data?.[0]?.username) {
+          
+          if (displayResponse?.data?.[0]?.display_name) {
             setInitialAssignment({
-              label: userResponse.data[0].username,
+              label: displayResponse.data[0].display_name,
               value: routed_assignment,
             });
             setAssignment({
-              label: userResponse.data[0].username,
+              label: displayResponse.data[0].display_name,
               value: routed_assignment,
             });
           } else {
-            console.error("UI ChoreDetails.js: Failed to fetch initial assignment username.");
+            console.error("UI ChoreDetails.js: Failed to fetch initial assignment display name.");
           }
   
           // Fetch group members for the assignment dropdown
@@ -99,14 +102,22 @@ const ChoreDetailsDisplay = ({navigation}) => {
   
           if (memberResponse?.data) {
             const transformedData = memberResponse.data.map((member) => ({
-              label: member.username,
+              label: member.display_name,
               value: member.user_id,
             }));
             setAssignmentDropdownData(transformedData);
           } else {
             console.error("UI ChoreDetails.js: Failed to fetch group members.");
           }
+
+          // get the user's permissions for this chore -KK
+          const perm = await axios.post(`${API_URL}get-perms`, {
+            username: storedUsername,
+            group_id: routed_group_id
+          });
+          setPermission(perm.data);
         }
+        else {  setPermission(1); }
         setLoading(false);
       } catch (error) {
         console.error("UI ChoreDetails.js: Error initializing chore details:", error);
@@ -270,108 +281,203 @@ const ChoreDetailsDisplay = ({navigation}) => {
       <View style={styles.formContainer}>
 
         {/* Chore Name Input */}
-        <Text style={styles.label}>Chore Name:</Text>
-        <TextInput
-          style={styles.choreNameInput}
-          value={chore_name}
-          selectionColor={theme.text2}
-          onChangeText={setChoreName}
-        />
+        {permission === 1 ? (
+          <>
+          {/* editable */}
+          <Text style={styles.label}>Chore Name:</Text>
+          <TextInput
+            style={styles.choreNameInput}
+            value={chore_name}
+            selectionColor={theme.text2}
+            onChangeText={setChoreName}
+          />
+          </>
+        ) : (
+          <>
+          {/* NOT editable */}
+          <Text style={styles.label}>Chore Name:</Text>
+          <View
+            style={styles.choreNameInputNoEdit}
+          >
+            <Text style={styles.choreNameInputText}>{chore_name}</Text>
+          </View>
+          </>
+        )}
 
         {/* Show Group */}
-        <Text style={styles.label}>Group: {choreGroup.label}</Text>
-        <View style={styles.spacer}></View>
-        <View style={styles.spacer}></View>
+        {/* NOT editable */}
+        <Text style={styles.label}>Group:</Text>
+        <View style={styles.dropdownContainer}>
+          <View
+            style={styles.dropdownButtonNoEdit}
+          >
+            <Text style={styles.dropdownButtonText}>{choreGroup.label}</Text>
+          </View>
+        </View>
 
         {/* Assignment Dropdown */}
         {routed_group_id !== -1 && (
           <>
-            <Text style={styles.label}>Assignment:</Text>
-            {initialAssignment && (
-              <Dropdown
-                label="Assign to Member"
-                data={assignmentDropdownData || []}
-                onSelect={setAssignment}
-                initialValue={initialAssignment}
-              />
+            {permission === 1 ? (
+              <>
+                {/* editable */}
+                <Text style={styles.label}>Assignment:</Text>
+                {initialAssignment && (
+                  <Dropdown
+                    label="Assign to Member"
+                    data={assignmentDropdownData || []}
+                    onSelect={setAssignment}
+                    initialValue={initialAssignment}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                {/* NOT editable */}
+                <Text style={styles.label}>Assignment:</Text>
+                <View style={styles.dropdownContainer}>
+                  <View
+                    style={styles.dropdownButtonNoEdit}
+                  >
+                    <Text style={styles.dropdownButtonText}>{initialAssignment.label}</Text>
+                  </View>
+                </View>
+              </> 
             )}
           </>
         )}
+        
 
         {/* Recurrence Dropdown */}
-        <Text style={styles.label}>Recurrence:</Text>
-        <Dropdown
-          label=""
-          data={recDropdownData}
-          onSelect={setSelectedRec}
-          initialValue = {initialRec}
-        />
+        {permission === 1 ? (
+          <>
+            {/* editable */}
+            <Text style={styles.label}>Recurrence:</Text>
+            <Dropdown
+              label=""
+              data={recDropdownData}
+              onSelect={setSelectedRec}
+              initialValue = {initialRec}
+            />
+          </>
+        ) : (
+          <>
+            {/* NOT editable */}
+            <Text style={styles.label}>Recurrence:</Text>
+            <View style={styles.dropdownContainer}>
+              <View
+                style={styles.dropdownButtonNoEdit}
+              >
+                <Text style={styles.dropdownButtonText}>{initialRec.label}</Text>
+              </View>
+            </View>
+          </>
+        )}
 
         {/* Tasks */}
-        <Text style={styles.label}>Tasks:</Text>
-
-        {/* show task list  -MH */}
-        <View style={styles.taskList}>
-          <FlatList
-            data={tasks}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => (
-              <View style={styles.bulletAndTask}>
-                <Icon name={"square-outline"} size={15} color={theme.text2} />
-                <Text style={styles.taskItem}>{item}</Text>
-                <TouchableOpacity
-                  style={styles.newChoreDeleteTask}
-                  onPress={() => deleteTask(index)}
-                >
-                  <Icon name="close-outline" size={24} color={theme.text3} />
-                </TouchableOpacity>
+        {permission === 1 ? (
+          <>
+            {/* editable */}
+            <Text style={styles.label}>Tasks:</Text>
+            {/* Show Task List */}
+            {tasks && tasks.length > 0 ? (
+              <View style={styles.taskList}>
+                <FlatList
+                  scrollEnabled={false}
+                  data={tasks}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item, index }) => (
+                    <View style={styles.bulletAndTask}>
+                      <Icon name={"square-outline"} size={15} color={theme.text2} />
+                      <Text style={styles.taskItem}>{item}</Text>
+                      <TouchableOpacity
+                        style={styles.newChoreDeleteTask}
+                        onPress={() => deleteTask(index)}
+                      >
+                        <Icon name="close-outline" size={24} color={theme.text3} />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
+              </View>
+            ) : (
+              <View style={styles.emptyTasksSection}>
+                <Text style={styles.emptySectionText}> no tasks added</Text>
               </View>
             )}
-          />
-        </View>
 
-        {/* 'Add Task' input and button */}
-        <View style={styles.inputAndButton}>
-          <TextInput
-            style={styles.taskNameInput}
-            placeholder="Add Task . . ."
-            placeholderTextColor={theme.text3}
-            value={newTask}
-            selectionColor={theme.text2}
-            onChangeText={setNewTask}
-            onSubmitEditing={addTask}
-          />
+            {/* Add Task Input and Button */}
+            <View style={styles.inputAndButton}>
+              <TextInput
+                style={styles.taskNameInput}
+                placeholder="Add Task . . ."
+                placeholderTextColor={theme.text3}
+                value={newTask}
+                selectionColor={theme.text2}
+                onChangeText={setNewTask}
+                onSubmitEditing={addTask}
+              />
 
-          {/* add task button  -MH */}
-          <View style={styles.inputButtonContainer}>
-            <TouchableOpacity onPress={addTask}>
-              <Icon name="arrow-forward-circle-outline" size={40} color={theme.main} />
-            </TouchableOpacity>
-          </View>
-        </View>
+              {/* Add Task Button */}
+              <View style={styles.inputButtonContainer}>
+                <TouchableOpacity onPress={addTask}>
+                  <Icon name="arrow-forward-circle-outline" size={40} color={theme.main} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        ) : (
+          <>
+            {/* NOT editable */}
+            <Text style={styles.label}>Tasks:</Text>
+            {/* Show Task List */}
+            {tasks && tasks.length > 0 ? (
+              <FlatList
+                scrollEnabled={false}
+                data={tasks}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <View style={styles.bulletAndTask}>
+                    <Icon name={"square-outline"} size={15} color={theme.text2} />
+                    <Text style={styles.taskItem}>{item}</Text>
+                  </View>
+                )}
+              />
+            ) : (
+              <View style={styles.emptyTasksSection}>
+                <Text style={styles.emptySectionText}> no tasks added</Text>
+              </View>
+            )}
+          </>
+        )}
+        
       </View>
 
       {/* SAVE CHANGES Button */}
-      <View style={styles.centeredContent}>
-        <TouchableOpacity
-          style={styles.addChoreButton}
-          onPress={updateChore}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.addChoreButtonText}>Save Changes</Text>
-        </TouchableOpacity>
-      </View>
+      {permission === 1 && (
+        <View style={styles.centeredContent}>
+          <TouchableOpacity
+            style={styles.addChoreButton}
+            onPress={updateChore}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.addChoreButtonText}>Save Changes</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* DELETE Button */}
-      <View style={styles.centeredContent}>
-        <TouchableOpacity
-          style={styles.deleteChoreButton}
-          onPress={() => deleteChore(routed_chore_name)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
-        </TouchableOpacity>
-      </View>
+      {permission === 1 && (
+        <View style={styles.centeredContent}>
+          <TouchableOpacity
+            style={styles.deleteChoreButton}
+            onPress={() => deleteChore(routed_chore_name)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       </>
     )}
     </View>

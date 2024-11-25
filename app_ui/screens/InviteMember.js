@@ -5,7 +5,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 
-import { useTheme } from '../style/ThemeProvider.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
 import { RegisterHeader } from '../components/headers.js';
 

@@ -8,25 +8,29 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import { ThemeProvider, useTheme } from './style/ThemeProvider';
-// import { UserProvider } from './components/usercomponents.js';
-
-import { LogoutProvider } from './style/LogOutProvider';
+import { ThemeProvider, useTheme } from './contexts/ThemeProvider.js';
+// import { UserProvider } from './contexts/UserContext.js';
+import { LogoutProvider } from './contexts/LogOutProvider';
 import createStyles from './style/styles';
-import Signin from './screens/Signin';
-import Register from './screens/Register';
+
 import HomeScreen from './tabs/Home';
 import ChoresScreen from './tabs/Chores';
 import GroupsScreen from './tabs/Groups';
 import SettingsScreen from './tabs/Settings';
+
+import Signin from './screens/Signin';
+import Register from './screens/Register';
+
 import NewChoreScreen from './screens/NewChore';
 import ChoreDetailsScreen from './screens/ChoreDetails';
-import ChangeProfilePicScreen from './screens/NewProfilePicture';
+
 import GroupInvitations from './screens/GroupInvitations';
 import ManageScreen from './screens/ManageGroup';
 import CreateGroupScreen from './screens/CreateGroup.js';
 import MembersScreen from './screens/Members.js';
 import InviteMemberScreen from './screens/InviteMember.js';
+
+import ChangeProfilePicScreen from './screens/NewProfilePicture';
 
 
 
