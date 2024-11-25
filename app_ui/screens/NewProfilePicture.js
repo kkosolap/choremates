@@ -11,25 +11,31 @@ import { ScreenHeader } from '../components/headers.js';
 import axios from 'axios';
 import { API_URL } from '../config.js';
 
+// Import icons to display options -VA
 const pinkAvatar = require('../icons/pinkAvatar.jpg');
-const blueAvatar = require('../icons/blueAvatar.jpg');
-const purpleAvatar = require('../icons/purpleAvatar.jpg');
-const greenAvatar = require('../icons/greenAvatar.jpg');
-const yellowAvatar = require('../icons/yellowAvatar.jpg');
 const pinkCat = require('../icons/cat_pink.jpg');
-const pinkBee = require('../icons/bee_pink.jpg');
-const blueSlug = require('../icons/slug_blue.jpg');
-const bluePig = require('../icons/pig_blue.jpg');
-const purpleRabbit = require('../icons/rabbit_purple.jpg');
-const purpleMouse = require('../icons/mouse_purple.jpg');
 const pinkSheep = require('../icons/sheep_pink.jpg');
-const purpleFox = require('../icons/fox_purple.jpg');
-const greenDog = require('../icons/dog_green.jpg');
-const greenDuck = require('../icons/duck_green.jpg');
+const pinkBear = require('../icons/bear_pink.jpg');
+
+const yellowAvatar = require('../icons/yellowAvatar.jpg');
+const yellowMouse = require('../icons/mouse_yellow.jpg');
 const yellowFrog = require('../icons/frog_yellow.jpg');
 const yellowTurtle = require('../icons/turtle_yellow.jpg');
-const orangeDino = require('../icons/dino_orange.jpg');
-const orangePigeon = require('../icons/pigeon_orange.jpg');
+
+const greenAvatar = require('../icons/greenAvatar.jpg');
+const greenDog = require('../icons/dog_green.jpg');
+const greenDuck = require('../icons/duck_green.jpg');
+const greenRabbit = require('../icons/rabbit_green.jpg');
+
+const blueAvatar = require('../icons/blueAvatar.jpg');
+const blueSlug = require('../icons/slug_blue.jpg');
+const bluePig = require('../icons/pig_blue.jpg');
+const blueBee = require('../icons/bee_blue.jpg');
+
+const purpleAvatar = require('../icons/purpleAvatar.jpg');
+const purpleFox = require('../icons/fox_purple.jpg');
+const purplePigeon = require('../icons/pigeon_purple.jpg');
+const purpleDino = require('../icons/dino_purple.jpg');
 
 const ChangeProfilePicScreen = ({ navigation }) => {
   const { theme } = useTheme();
@@ -67,82 +73,82 @@ const ChangeProfilePicScreen = ({ navigation }) => {
           <Image source={pinkAvatar} style={styles.pfpImage} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => changePFP(username, 'yellowAvatar')} style={styles.setProfileIcon}>
-          <Image source={yellowAvatar} style={styles.pfpImage} />
-        </TouchableOpacity> 
-
-        <TouchableOpacity onPress={() => changePFP(username, 'greenAvatar')} style={styles.setProfileIcon}>
-          <Image source={greenAvatar} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'blueAvatar')} style={styles.setProfileIcon}>
-          <Image source={blueAvatar} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'purpleAvatar')} style={styles.setProfileIcon}>
-          <Image source={purpleAvatar} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        {/* <TouchableOpacity onPress={() => changePFP(username, 'duck')} style={styles.setProfileIcon}>
-          <Image source={duck} style={styles.pfpImage} />
-        </TouchableOpacity> */}
-
         <TouchableOpacity onPress={() => changePFP(username, 'pinkCat')} style={styles.setProfileIcon}>
           <Image source={pinkCat} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'orangeDino')} style={styles.setProfileIcon}>
-          <Image source={orangeDino} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'yellowFrog')} style={styles.setProfileIcon}>
-          <Image source={yellowFrog} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'greenDog')} style={styles.setProfileIcon}>
-          <Image source={greenDog} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'bluePig')} style={styles.setProfileIcon}>
-          <Image source={bluePig} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'purpleRabbit')} style={styles.setProfileIcon}>
-          <Image source={purpleRabbit} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'pinkBee')} style={styles.setProfileIcon}>
-          <Image source={pinkBee} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'yellowTurtle')} style={styles.setProfileIcon}>
-          <Image source={yellowTurtle} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'greenDuck')} style={styles.setProfileIcon}>
-          <Image source={greenDuck} style={styles.pfpImage} />
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={() => changePFP(username, 'blueSlug')} style={styles.setProfileIcon}>
-          <Image source={blueSlug} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => changePFP(username, 'purpleFox')} style={styles.setProfileIcon}>
-          <Image source={purpleFox} style={styles.pfpImage} />
-        </TouchableOpacity>
-
-
-        <TouchableOpacity onPress={() => changePFP(username, 'purpleMouse')} style={styles.setProfileIcon}>
-          <Image source={purpleMouse} style={styles.pfpImage} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => changePFP(username, 'pinkSheep')} style={styles.setProfileIcon}>
           <Image source={pinkSheep} style={styles.pfpImage} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => changePFP(username, 'orangePigeon')} style={styles.setProfileIcon}>
-          <Image source={orangePigeon} style={styles.pfpImage} />
+        <TouchableOpacity onPress={() => changePFP(username, 'pinkBear')} style={styles.setProfileIcon}>
+          <Image source={pinkBear} style={styles.pfpImage} />
         </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'yellowAvatar')} style={styles.setProfileIcon}>
+          <Image source={yellowAvatar} style={styles.pfpImage} />
+        </TouchableOpacity> 
+
+        <TouchableOpacity onPress={() => changePFP(username, 'yellowTurtle')} style={styles.setProfileIcon}>
+          <Image source={yellowTurtle} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'yellowMouse')} style={styles.setProfileIcon}>
+          <Image source={yellowMouse} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'yellowFrog')} style={styles.setProfileIcon}>
+          <Image source={yellowFrog} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'greenAvatar')} style={styles.setProfileIcon}>
+          <Image source={greenAvatar} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'greenDuck')} style={styles.setProfileIcon}>
+          <Image source={greenDuck} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'greenDog')} style={styles.setProfileIcon}>
+          <Image source={greenDog} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'greenRabbit')} style={styles.setProfileIcon}>
+          <Image source={greenRabbit} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'blueAvatar')} style={styles.setProfileIcon}>
+          <Image source={blueAvatar} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'blueBee')} style={styles.setProfileIcon}>
+          <Image source={blueBee} style={styles.pfpImage} />
+        </TouchableOpacity>
+        
+        <TouchableOpacity onPress={() => changePFP(username, 'blueSlug')} style={styles.setProfileIcon}>
+          <Image source={blueSlug} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'bluePig')} style={styles.setProfileIcon}>
+          <Image source={bluePig} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'purpleAvatar')} style={styles.setProfileIcon}>
+          <Image source={purpleAvatar} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'purpleFox')} style={styles.setProfileIcon}>
+          <Image source={purpleFox} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'purplePigeon')} style={styles.setProfileIcon}>
+          <Image source={purplePigeon} style={styles.pfpImage} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => changePFP(username, 'purpleDino')} style={styles.setProfileIcon}>
+          <Image source={purpleDino} style={styles.pfpImage} />
+        </TouchableOpacity>
+
 
         {/* duplicate as placeholder -VA */}
 
@@ -157,4 +163,3 @@ const ChangeProfilePicScreen = ({ navigation }) => {
 }
 
 export default ChangeProfilePicScreen;
-
