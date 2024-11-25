@@ -425,7 +425,7 @@ async function resetAndRotateGroupUserChores(type) {
             console.error("Error resetting chore:", error);
         }
     }
-    return 1;
+    //return 1;
 }
 
 async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
