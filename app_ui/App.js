@@ -8,7 +8,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
 
-import { ThemeProvider, useTheme } from './contexts/ThemeProvider.js';
+import { ThemeProvider, useTheme } from './contexts/ThemeProvider';
+import { GroupThemeProvider } from './contexts/GroupThemeProvider';
 // import { UserProvider } from './contexts/UserContext.js';
 import { LogoutProvider } from './contexts/LogOutProvider';
 import createStyles from './style/styles';
@@ -123,18 +124,19 @@ const App = () => {
   };
 
   return (
-    // <UserProvider>
-
+    //<UserProvider>
       <ThemeProvider username={username}>
-        <LogoutProvider handleLogout={handleLogout}>
+      <GroupThemeProvider username={username}>
+      <LogoutProvider handleLogout={handleLogout}>
+
           <NavigationContainer>
-            {/* Call useTheme here to ensure it's within the provider -MH */}
             <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
           </NavigationContainer>
-        </LogoutProvider>
-      </ThemeProvider>
 
-    // </UserProvider>
+      </LogoutProvider>
+      </GroupThemeProvider>
+      </ThemeProvider>
+    //</UserProvider>
 
   );
 };

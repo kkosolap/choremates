@@ -33,8 +33,6 @@ const ChoresDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
-  //const [groupColors, setGroupColors] = useState({});
-
   const [username, setUsername] = useState(null);
 
   // calls refresh whenever the screen is in focus -KK
@@ -148,7 +146,6 @@ const ChoresDisplay = () => {
 
   // State for visible tasks
   const [visibleTasks, setVisibleTasks] = useState({}); // tracks which chores have visible tasks -MH
-  const [editing, setEditing] = useState(null); // tracks which chores are being edited -KK
 
   // toggle the visibility of tasks for a chore -KK
   const toggleVisibility = (chore_name) => {
@@ -156,48 +153,6 @@ const ChoresDisplay = () => {
       ...prevState,
       [chore_name]: !prevState[chore_name],
     }));
-
-    // set edit to null when toggling visibility -MH
-    setEditing(null);
-  };
-
-  // add task button -KK
-  const addTask = (chore_name) => {
-    axios.post(`${API_URL}add-task`, { chore_name, task_name, username}).then((response) => {
-      setNewTask('');          // reset the input -KK
-      refresh(username);       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  const addGroupTask = (group_chore_name, group_id) => {
-    axios.post(`${API_URL}add-group-task`, { 
-      group_chore_name, 
-      group_task_name: task_name, 
-      group_id,
-      username: username
-    }).then((response) => {
-      setNewTask('');          // reset the input -KK
-      refresh(username);       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  // delete task button -KK
-  const deleteTask = async (chore_name, task_name) => {
-    await axios.post(`${API_URL}delete-task`, { chore_name, task_name, username}).then((response) => {
-        refresh(username);     // refresh task list after updating -KK
-      })
-      .catch((error) => console.error(error));
-  };
-
-  const deleteGroupTask = async (group_chore_name, group_task_name, group_id) => {
-    await axios.post(`${API_URL}delete-group-task`, { 
-      group_chore_name, 
-      group_task_name, 
-      group_id,
-      username: username
-    }).then(refresh(username)).catch((error) => console.error(error)); // refresh task list after updating -KK
   };
 
   // fetch the task list for display -KK
@@ -266,12 +221,6 @@ const ChoresDisplay = () => {
                 completed={personalChoresToShow[chore_name].is_completed}
                 visible={visibleTasks[chore_name]}
                 onToggleVisibility={toggleVisibility}
-                onEdit={() => setEditing(editing === chore_name ? null : chore_name)}
-                onDelete={deleteTask}
-                isEditing={editing === chore_name}
-                newTask={task_name}
-                setNewTask={setNewTask}
-                onAddTask={addTask}
                 refresh={refresh}
               />
             ))}
@@ -287,12 +236,6 @@ const ChoresDisplay = () => {
                 completed={groupChoresToShow[group_chore_name].is_completed}
                 visible={visibleTasks[group_chore_name]}
                 onToggleVisibility={toggleVisibility}
-                onEdit={() => setEditing(editing === group_chore_name ? null : group_chore_name)}
-                onDelete={deleteGroupTask}
-                isEditing={editing === group_chore_name}
-                newTask={task_name}
-                setNewTask={setNewTask}
-                onAddTask={addGroupTask}
                 refresh={refresh}
               />
             ))}

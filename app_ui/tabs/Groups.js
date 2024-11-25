@@ -1,7 +1,7 @@
 // Groups.js
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Text, View, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
+import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Popover from 'react-native-popover-view';
@@ -9,10 +9,10 @@ import Popover from 'react-native-popover-view';
 import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
+import { useGroupThemes } from '../contexts/GroupThemeProvider';
 import createStyles from '../style/styles.js';
 import colors from '../style/colors';
 import { TabHeader } from '../components/headers.js';
-import { getGroupColor } from '../functions/groupColor.js';
 
 import axios from 'axios';
 import { API_URL } from '../config.js';
@@ -84,6 +84,7 @@ const GroupsScreen = () => {
 const GroupsDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { groupThemes, changeGroupTheme } = useGroupThemes();
 
   const navigation = useNavigation();
   const [username, setUsername] = useState(null);
@@ -91,21 +92,20 @@ const GroupsDisplay = () => {
 
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [groupColors, setGroupColors] = useState({});
   const popoverButtonRef = useRef(null);
 
 
-    const fetchGroups = async (username) => {
-      try {
-        const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
-          username: username,
-        });
-        setGroups(response.data);
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-        Alert.alert("Failed to load groups.");
-      }
-    };
+  const fetchGroups = async (username) => {
+    try {
+      const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
+        username: username,
+      });
+      setGroups(response.data);
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+      Alert.alert("Failed to load groups.");
+    }
+  };
 
   // fetch username and group
   useEffect(() => {
@@ -120,21 +120,13 @@ const GroupsDisplay = () => {
     };
     getUsername();
   }, []);
-
-  useEffect(() => {
-    const fetchGroupColors = async () => {
-      if (username && groups.length > 0) {
-        const colorMap = {};
-        for (const group of groups) {
-          const color = await getGroupColor(username, group);
-          colorMap[group.group_id] = color;
-        }
-        setGroupColors(colorMap);
-      }
-    };
-    fetchGroupColors();
-  }, [username, groups]);
   
+  const handleEllipsisPress = (group, event) => {
+    event.stopPropagation(); // prevents triggering navigation
+    setSelectedGroup(group);
+    setPopoverVisible(true);
+  };
+
   // Function to handle color change -VA
   const handleColorChange = async (newColor) => {
     if (selectedGroup && username) {
@@ -142,30 +134,10 @@ const GroupsDisplay = () => {
     }
     setPopoverVisible(false);
   };
-  
-  const handleEllipsisPress = (group, event) => {
-    event.stopPropagation(); // Prevents triggering navigation
-    setSelectedGroup(group);
-    setPopoverVisible(true);
-  };
 
   const updateGroupColor = async (username, groupId, newColor) => {
     try {
-      const response = await axios.post(`${API_URL}update-group-color`, {
-        username: username,
-        group_id: groupId,
-        group_color: newColor
-      });
-  
-      if (response.data.success) {
-        setGroupColors((prevColors) => ({
-          ...prevColors,
-          [groupId]: newColor,
-        }));
-      } else {
-        console.error("Failed to update group color:", response.data.error);
-        Alert.alert("Error", "Failed to update group color.");
-      }
+      changeGroupTheme(username, groupId, newColor);
     } catch (error) {
       console.error("Error updating group color:", error);
       Alert.alert("Error", "An error occurred while updating the group color.");
@@ -187,31 +159,11 @@ const GroupsDisplay = () => {
         data={groups}
         keyExtractor={(item) => item.group_id.toString()}
         renderItem={({ item }) => {
-
-          const borderColors = {
-            yellow: colors.yellow.main,
-            green: colors.green.main,
-            blue: colors.blue.main,
-            purple: colors.purple.main,
-            pink: colors.pink.main,
-          };
-          const backgroundColors= {
-            yellow: colors.yellow.lighter,
-            green: colors.green.lighter,
-            blue: colors.blue.lighter,
-            purple: colors.purple.lighter,
-            pink: colors.pink.lighter,
-          };
-          
-          const groupColor = groupColors[item.group_id] || colors.green.lighter;
-          const backgroundColor = backgroundColors[groupColor] || colors.purple.lighter;
-          const borderColor = borderColors[groupColor] || colors.purple.main;
+          const styles = createStyles(groupThemes[item.group_id]);
           
           return (
             <View
-              style={[styles.groupItem, {
-                backgroundColor: backgroundColor,
-                borderColor: borderColor }]}
+              style={styles.groupItem}
             >
               {/* Group Item */}
               <TouchableOpacity

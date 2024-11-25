@@ -11,7 +11,7 @@ import * as SecureStore from 'expo-secure-store';
 import createStyles from '../style/styles';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
-import { ChoreBlock, GroupChoreBlock } from '../components/blocks.js';
+import { HomeChoreBlock, HomeGroupChoreBlock } from '../components/blocks.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -299,7 +299,7 @@ const HomeDisplay = () => {
               // Group WITH Chores
               <View style={styles.homeChoresSection}>
                 {Object.keys(groupedPersonalTasks).map((chore_name) => (
-                  <ChoreBlock
+                  <HomeChoreBlock
                     key={chore_name}
                     choreName={chore_name}
                     tasks={groupedPersonalTasks[chore_name].tasks}
@@ -365,7 +365,7 @@ const HomeDisplay = () => {
                 // Group WITH Chores
                 <View style={styles.homeChoresSection}>
                   {Object.keys(groupedGroupTasks[group_id].chores).map((group_chore_name) => (
-                    <GroupChoreBlock
+                    <HomeGroupChoreBlock
                       key={group_chore_name}
                       choreName={group_chore_name}
                       tasks={groupedGroupTasks[group_id].chores[group_chore_name].group_tasks}

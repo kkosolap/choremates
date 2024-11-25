@@ -1493,36 +1493,44 @@ app.post('/match-group-task', async (req, res) => {
     }
 });
 
-app.get('/get-group-color', async (req, res) => {
+// get all saved group color themes for a specific user -MH
+app.get('/get-group-themes', async (req, res) => {
     try {
-      const { user_id, group_id } = req.query;
-  
-      if (!user_id || !group_id) {
-        console.log("API get-group-color: Missing user_id or group_id");
-        return res.status(400).json({ error: "Missing user_id or group_id" });
-      }
-
-      const [rows] = await db.promise().query(
-        "SELECT group_color FROM group_members WHERE user_id = ? AND group_id = ?",
-        [user_id, group_id]
-      );
-  
-      if (rows.length > 0) {
-        res.json({ group_color: rows[0].group_color });
-      } else {
-        res.status(404).json({ error: "Group color not found" });
-      }
+        const { username } = req.query;
+        if (!username) {
+            console.log("API get-group-themes: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+        const user_id = await getUserId(username);
+    
+        if (!user_id) {
+            console.log("API get-group-themes: Missing user_id");
+            return res.status(400).json({ error: "Missing user_id" });
+        }
+    
+        // Fetch group themes for the user
+        const [rows] = await db.promise().query(
+            `SELECT group_id, group_color AS theme
+            FROM group_members
+            WHERE user_id = ?`,
+            [user_id]
+        );
+    
+        if (rows.length > 0) {
+            res.json(rows); // Return found themes [{ group_id, theme }]
+          } else {
+            res.json([]); // Return empty array if no data found
+          }
     } catch (error) {
-      console.error("API get-group-color: Error fetching group color:", error.message);
-      res.status(500).json({ error: `Internal server error: ${error.message}` });
+        console.error("API get-group-themes: Error fetching group themes:", error.message);
+        res.status(500).json({ error: `Internal server error: ${error.message}` });
     }
-  });
+});
 
-app.post('/update-group-color', async (req, res) => {
+// change a user's color theme for a specific group  -VA
+app.post('/update-group-theme', async (req, res) => {
     const { username, group_id, group_color } = req.body;
-    // console.log("Request Body:", req.body);  // Add this to debug
-    // console.log('Received:', username, group_id, group_color);
-  
+
     // Validate input
     if (!username || !group_id || !group_color) {
       return res.status(400).json({ success: false, error: 'Missing parameters' });
@@ -1550,7 +1558,7 @@ app.post('/update-group-color', async (req, res) => {
       console.error('Error updating group color:', error);
       return res.status(500).json({ success: false, error: 'Internal server error' });
     }
-  });
+});
 
 
 // keep this at the very bottom of the file -KK

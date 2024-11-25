@@ -1,16 +1,18 @@
 // ThemeProvider.js
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+
 import themes from '../style/colors';
+
 import axios from 'axios';
 import { API_URL } from '../config';
 
-// create a context
+// Create a context
 const ThemeContext = createContext();
 
-// provider component
+// Provider component
 export const ThemeProvider = ({ children, username }) => {
-  // state to hold the current theme; default to purple
+  // State to hold the current theme; default to purple
   const [currentTheme, setCurrentTheme] = useState(themes.purple);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export const ThemeProvider = ({ children, username }) => {
     }
   }, [username]);
 
-  // gets the user's theme from the database -KK
+  // Gets the user's personal theme from the database -KK
   const getTheme = async (username) => {
     try {
       const response = await axios.post(`${API_URL}get-theme`, { username });
@@ -34,7 +36,7 @@ export const ThemeProvider = ({ children, username }) => {
     }
   };
 
-  // changes the theme when palette is pressed in settings -KK
+  // Changes the theme when palette is pressed in settings -KK
   const changeTheme = async (username, theme) => {
     if (themes[theme]) {
       try {
@@ -55,5 +57,4 @@ export const ThemeProvider = ({ children, username }) => {
   );
 };
 
-// custom hook to use the theme in any component
 export const useTheme = () => useContext(ThemeContext);
