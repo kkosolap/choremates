@@ -1,10 +1,6 @@
 // styles.js
 
 import { StyleSheet, Dimensions } from 'react-native';
-import themes from './colors';
-// Added for future reference -VA
-// const { height } = Dimensions.get('window');
-
 
 // function to create styles based on the theme  -MH
 const createStyles = (theme) => {
@@ -201,6 +197,7 @@ const createStyles = (theme) => {
     groupLabelChevron: {
       position: 'absolute',
       left: 2,
+      color: theme.main,
     },
     homeChoresSection: {
       flex: 1,
