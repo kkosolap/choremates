@@ -568,11 +568,37 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-    switchContainer: { // for toggling rotation - AT
+
+    // switch to toggle rotation - AT
+    switchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      marginVertical: 16,
+      marginVertical: 10,
+    },
+    switchLabel: {
+      fontSize: 16,
+      color: theme.black,
+      marginRight: 10,
+    },
+    switchWrapper: {
+      width: 50,
+      height: 30,
+      justifyContent: 'center',
+    },
+    switchTrack: {
+      width: 50,
+      height: 30,
+      borderRadius: 15,
+      backgroundColor: theme.inactive,
+      position: 'relative',
+    },
+    switchThumb: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: theme.background,
+      position: 'absolute',
+      top: 2,
     },
 
     // chore details form dropdown -MH

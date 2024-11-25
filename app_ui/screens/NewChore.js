@@ -9,6 +9,7 @@ import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
+import Switch from '../components/switch.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
