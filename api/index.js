@@ -415,8 +415,9 @@ async function resetAndRotateGroupUserChores(type) {
         try{
             await db.promise().query(query, [chore.id]);
 
-            // should only be calling rotate when the chores are reset each week
-            if (type === 'Weekly' || type === 'Daily' || type === 'Every Minute') { // only handles weekly recurrence right now, need to do daily recurrence reset every week - AT
+            // only rotate if rotationEnabled
+            if (chore.rotationEnabled) {
+                // all chores rotate when they recur (daily rotate daily, weekly rotate weekly, etc)
                 await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
             }
 
@@ -512,11 +513,14 @@ app.post('/get-chores-data', async (req, res) => {
 // add a new chore for the user -KK
 app.post('/add-chore', async (req, res) => {
     try {
-        const { chore_name, username, recurrence } = req.body;
+        const { chore_name, username, recurrence, rotationEnabled } = req.body;
         if (!chore_name || !username || !recurrence) {
             console.log("API add-chore: Missing chore, username, or recurrence.");
             return res.status(400).send("Missing chore, username, or recurrence.");
         }
+
+        // check if rotationEnabled is valid - AT
+        const isRotationEnabled = rotationEnabled ? 1 : 0; // default is 0
 
         const user_id = await getUserId(username);
         const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, chore_name]);
@@ -525,8 +529,8 @@ app.post('/add-chore', async (req, res) => {
             return res.status(400).send("This chore already exists!");
         }
 
-        const query = "INSERT INTO chores (user_id, chore_name, recurrence) VALUES (?, ?, ?)";
-        await db.promise().query(query, [user_id, chore_name, recurrence]);
+        const query = "INSERT INTO chores (user_id, chore_name, recurrence, rotationEnabled) VALUES (?, ?, ?, ?)";
+        await db.promise().query(query, [user_id, chore_name, recurrence, isRotationEnabled]);
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add-chore: Error:", error.message);
