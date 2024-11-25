@@ -146,6 +146,8 @@ const AppContent = ({ isLoggedIn, handleSignin }) => {
   const { theme } = useTheme(); // Get the theme inside the provider
   const styles = createStyles(theme);
 
+  registerNNPushToken(24995, 'a4dDhYc3u0gBaOiHrJRubu');
+
   return (
     // Will only display if user is logged in
     <>
