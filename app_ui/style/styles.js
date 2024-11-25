@@ -983,7 +983,6 @@ const createStyles = (theme) => {
     groupColorIcon: {
       alignSelf: 'center',
     },
-
     noGroupsText: {
       fontSize: 40,
       textAlign: 'center',
@@ -992,6 +991,11 @@ const createStyles = (theme) => {
       color: theme.black,
       fontWeight: 'bold',
     },
+    groupSize: {
+      fontSize: 13,
+      color: theme.gray,
+      marginTop: 5,
+    }
   });
 };
 

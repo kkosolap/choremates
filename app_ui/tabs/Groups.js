@@ -93,6 +93,7 @@ const GroupsDisplay = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [groupColors, setGroupColors] = useState({});
   const popoverButtonRef = useRef(null);
+  const [groupSizes, setGroupSizes] = useState({});
 
 
   const fetchGroups = async (username) => {
@@ -101,6 +102,17 @@ const GroupsDisplay = () => {
         username: username,
       });
       setGroups(response.data);
+
+      // get group size for each group -NN
+      response.data.forEach(async (group) => {
+        const groupSizeResponse = await axios.get(`${API_URL}get-group-size`, {
+          params: { group_id: group.group_id },
+        });
+        setGroupSizes((prevSizes) => ({
+          ...prevSizes,
+          [group.group_id]: groupSizeResponse.data.member_count,
+        }));
+      });
     } catch (error) {
       console.error("Error fetching groups:", error);
       Alert.alert(error.response.data.error);
@@ -191,6 +203,7 @@ const GroupsDisplay = () => {
           data={groups}
           keyExtractor={(item) => item.group_id.toString()}
           renderItem={({ item }) => {
+            const groupSize = groupSizes[item.group_id];
 
             const borderColors = {
               yellow: colors.yellow.main,
@@ -229,6 +242,7 @@ const GroupsDisplay = () => {
                   }
                 >
                   <Text style={styles.groupName}>{item.group_name}</Text>
+                  <Text style={styles.groupSize}>{`${groupSize} members`}</Text>
                 </TouchableOpacity>
 
                 {/* Ellipsis Button */}
