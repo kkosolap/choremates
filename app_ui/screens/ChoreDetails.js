@@ -10,6 +10,7 @@ import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
+import Switch from '../components/switch.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -39,7 +40,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // get current chore details from parameters -MH
   const route = useRoute();
-  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id, routed_assignment } = route.params;
+  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id, routed_assignment, routed_rotation } = route.params;
 
   const [username, setUsername] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
@@ -57,6 +58,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
   ];
   const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
+  const [rotationEnabled, setRotationEnabled] = useState(routed_rotation || false);
+  
 
   // assignment dropdown data
   const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
@@ -116,6 +119,16 @@ const ChoreDetailsDisplay = ({navigation}) => {
             group_id: routed_group_id
           });
           setPermission(perm.data);
+
+          // Fetch the chore details and its rotation_enabled value from the backend - AT
+          const choreDetailsResponse = await axios.post(`${API_URL}get-group-chores-data`, {
+            chore_name: routed_chore_name,
+            group_id: routed_group_id,
+          });
+
+          if (choreDetailsResponse?.data) {
+            setRotationEnabled(choreDetailsResponse.data.rotation_enabled);
+          }
         }
         else {  setPermission(1); }
         setLoading(false);
@@ -210,6 +223,31 @@ const ChoreDetailsDisplay = ({navigation}) => {
     }
   };
 
+  // Function to handle rotation switch toggle - AT
+  const handleRotationToggle = async (value) => {
+    try {
+      // Update the local state immediately
+      setRotationEnabled(value);
+  
+      // Only make an API call if the chore is part of a group and is not a "Just Once" recurrence
+      if (selectedRec.value !== 'Just Once' && choreGroup.label !== 'Personal') {
+        await axios.post(`${API_URL}update-group-chore`, {
+          old_chore_name: routed_chore_name,  // original chore name
+          new_chore_name: chore_name,  // updated chore name from input
+          group_id: choreGroup.value,  // group id
+          recurrence: selectedRec.value,  // recurrence type
+          rotation_enabled: value,  // the updated rotation_enabled value
+          assign_to: assign_to.value,  // assigned user
+          username: username  // current username
+        });
+
+      }
+    } catch (error) {
+      console.error('Error updating rotation_enabled:', error);
+    }
+  };
+  
+
   // Update the chore in the database
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
@@ -227,10 +265,13 @@ const ChoreDetailsDisplay = ({navigation}) => {
             new_chore_name: chore_name,  // updated chore name from input
             group_id: choreGroup.value,
             recurrence: selectedRec.value,
+            rotation_enabled: rotationEnabled,
             assign_to: assign_to.value,
             username: username
           });
         }
+        //console.log('APP UI cheking value of rotation enabled: ', response.data.rotation_enabled);
+        //setRotationEnabled(response.data.rotation_enabled);
 
         // add/remove tasks in database to match list in edit details window
         await updateTasksInDatabase();
@@ -373,6 +414,32 @@ const ChoreDetailsDisplay = ({navigation}) => {
             </View>
           </>
         )}
+
+        {/* Rotation Switch - AT */}
+        {selectedRec.value !== 'Just Once' && permission === 1 ? (
+          <>
+            {/* Editable */}
+            <View style={styles.switchContainer}>
+              <Text style={styles.label}>Enable Rotation:</Text>
+              <Switch
+                isOn={rotationEnabled}
+                onToggle={handleRotationToggle}
+              />
+            </View>
+          </>
+        ) : (selectedRec.value !== 'Just Once') ? (
+          <>
+            {/* Not editable */}
+            <View style={styles.switchContainer}>
+              <Text style={styles.label}>Enable Rotation:</Text>
+              <Switch
+                isOn={rotationEnabled}
+                onToggle={() => {}} // You can also disable the toggle if needed
+                disabled
+              />
+            </View>
+          </>
+        ) : null}
 
         {/* Tasks */}
         {permission === 1 ? (

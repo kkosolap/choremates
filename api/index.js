@@ -406,7 +406,7 @@ async function resetSingleUserChores(type) {
 
 async function resetAndRotateGroupUserChores(type) {
     //console.log('in resetAndRotateGroupUserChores');
-    const query = `SELECT id, group_id, assigned_to, is_completed, rotationEnabled FROM group_chores WHERE recurrence = ?`;
+    const query = `SELECT id, group_id, assigned_to, is_completed, rotation_enabled FROM group_chores WHERE recurrence = ?`;
     const [groupChores] = await db.promise().query(query, [type]);
     //console.log('after query');
 
@@ -417,7 +417,7 @@ async function resetAndRotateGroupUserChores(type) {
 
             // only rotate if rotationEnabled
             //console.log('what is rotationEnabled value: ', chore.rotationEnabled);
-            if (chore.rotationEnabled) {
+            if (chore.rotation_enabled) {
                 // all chores rotate when they recur (daily rotate daily, weekly rotate weekly, etc)
                 await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
             }
@@ -1266,7 +1266,7 @@ app.post('/get-group-name', async (req, res) => {
 app.post('/add-group-chore', async (req, res) => {
     try {
         // username (user who's trying to add this group chore) --EL
-        const { group_chore_name, group_id, assign_to, recurrence, username, rotationEnabled } = req.body;
+        const { group_chore_name, group_id, assign_to, recurrence, username, rotation_enabled } = req.body;
         if (!group_chore_name || !group_id || !assign_to || !recurrence || !username) {
             console.log("API add-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
@@ -1275,9 +1275,9 @@ app.post('/add-group-chore', async (req, res) => {
         //console.log("rotationEnabled value: ", rotationEnabled);
 
         // check if rotationEnabled is valid - AT
-        console.log("rotEnabled before process: ", rotationEnabled);
-        const isRotationEnabled = rotationEnabled ? 1 : 0; // default is 0
-        console.log("Processed chore, rotationEnabled:", group_chore_name, isRotationEnabled);
+        //console.log("rotEnabled before process: ", rotation_enabled);
+        const isRotationEnabled = rotation_enabled ? 1 : 0; // default is 0
+        //console.log("Processed chore, rotationEnabled:", group_chore_name, isRotationEnabled);
         
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {
@@ -1285,7 +1285,7 @@ app.post('/add-group-chore', async (req, res) => {
             return res.status(400).send("This chore already exists for this group!");
         }
 
-        const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to, rotationEnabled) VALUES (?, ?, ?, ?, ?)";
+        const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to, rotation_enabled) VALUES (?, ?, ?, ?, ?)";
         await db.promise().query(query, [group_id, group_chore_name, recurrence, assign_to, isRotationEnabled]);
         res.status(200).json({ message: "Chore added to group successfully." });
     } catch (error) {
@@ -1298,7 +1298,7 @@ app.post('/add-group-chore', async (req, res) => {
 app.post('/update-group-chore', async (req, res) => {
     try {
         // username (user who's trying to update this group chore) --EL
-        const { old_chore_name, new_chore_name, group_id, recurrence, assign_to, username } = req.body;
+        const { old_chore_name, new_chore_name, group_id, recurrence, assign_to, username, rotation_enabled } = req.body;
         if (!old_chore_name || !new_chore_name || !group_id || !recurrence || !assign_to || !username) {
             console.log("API update-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
@@ -1316,10 +1316,10 @@ app.post('/update-group-chore', async (req, res) => {
         // Update the chore details in the database
         const query = `
             UPDATE group_chores
-            SET group_chore_name = ?, recurrence = ?, assigned_to = ?
+            SET group_chore_name = ?, recurrence = ?, assigned_to = ?, rotation_enabled = ?
             WHERE id = ?
         `;
-        await db.promise().query(query, [new_chore_name, recurrence, assign_to, group_chore_id ]);
+        await db.promise().query(query, [new_chore_name, recurrence, assign_to, rotation_enabled, group_chore_id ]);
 
         res.status(200).json({ message: "Chore updated successfully." });
     } catch (error) {
