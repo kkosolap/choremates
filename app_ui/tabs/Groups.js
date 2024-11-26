@@ -154,7 +154,7 @@ const GroupsDisplay = () => {
   );
 
   return (
-    <View style={styles.content}>
+    <View style={styles.groupDisplayContent}>
       <FlatList
         data={groups}
         keyExtractor={(item) => item.group_id.toString()}

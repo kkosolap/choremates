@@ -802,7 +802,6 @@ const createStyles = (theme) => {
     manageButton: {
       position: 'absolute',
       width: '80%',
-      bottom: 100,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
@@ -980,6 +979,17 @@ const createStyles = (theme) => {
     },
     
     // groups display -NN
+
+    // added so groups won't cut off like normal content styling  -MH
+    groupDisplayContent: {
+      flex: 1,
+      width: 400,
+      paddingLeft: 10,
+      alignItems: 'center',
+      justifyContent: 'flex-start',  // Start content at the top
+      paddingTop: 10,
+      paddingBottom: 40,
+    },
     groupItem: {
       width: '95%',
       flexDirection: 'row',  // Align text and icon in a row
