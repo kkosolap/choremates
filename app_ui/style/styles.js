@@ -584,6 +584,7 @@ const createStyles = (theme) => {
       width: 50,
       height: 30,
       justifyContent: 'center',
+      backgroundColor: theme.gray,
     },
     switchTrack: {
       width: 50,

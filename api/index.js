@@ -513,14 +513,11 @@ app.post('/get-chores-data', async (req, res) => {
 // add a new chore for the user -KK
 app.post('/add-chore', async (req, res) => {
     try {
-        const { chore_name, username, recurrence, rotationEnabled } = req.body;
+        const { chore_name, username, recurrence } = req.body;
         if (!chore_name || !username || !recurrence) {
             console.log("API add-chore: Missing chore, username, or recurrence.");
             return res.status(400).send("Missing chore, username, or recurrence.");
         }
-
-        // check if rotationEnabled is valid - AT
-        const isRotationEnabled = rotationEnabled ? 1 : 0; // default is 0
 
         const user_id = await getUserId(username);
         const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, chore_name]);
@@ -529,8 +526,8 @@ app.post('/add-chore', async (req, res) => {
             return res.status(400).send("This chore already exists!");
         }
 
-        const query = "INSERT INTO chores (user_id, chore_name, recurrence, rotationEnabled) VALUES (?, ?, ?, ?)";
-        await db.promise().query(query, [user_id, chore_name, recurrence, isRotationEnabled]);
+        const query = "INSERT INTO chores (user_id, chore_name, recurrence) VALUES (?, ?, ?)";
+        await db.promise().query(query, [user_id, chore_name, recurrence]);
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add-chore: Error:", error.message);
@@ -1268,11 +1265,14 @@ app.post('/get-group-name', async (req, res) => {
 app.post('/add-group-chore', async (req, res) => {
     try {
         // username (user who's trying to add this group chore) --EL
-        const { group_chore_name, group_id, assign_to, recurrence, username } = req.body;
+        const { group_chore_name, group_id, assign_to, recurrence, username, rotationEnabled } = req.body;
         if (!group_chore_name || !group_id || !assign_to || !recurrence || !username) {
             console.log("API add-group-chore: Missing required fields.");
             return res.status(400).send("Missing required fields.");
         }  
+
+        // check if rotationEnabled is valid - AT
+        const isRotationEnabled = rotationEnabled ? 1 : 0; // default is 0
 
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {
@@ -1280,8 +1280,8 @@ app.post('/add-group-chore', async (req, res) => {
             return res.status(400).send("This chore already exists for this group!");
         }
 
-        const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to) VALUES (?, ?, ?, ?)";
-        await db.promise().query(query, [group_id, group_chore_name, recurrence, assign_to]);
+        const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to, rotationEnabled) VALUES (?, ?, ?, ?, ?)";
+        await db.promise().query(query, [group_id, group_chore_name, recurrence, assign_to, isRotationEnabled]);
         res.status(200).json({ message: "Chore added to group successfully." });
     } catch (error) {
         console.error("API add-group-chore: Error:", error.message);

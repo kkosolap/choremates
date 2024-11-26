@@ -123,6 +123,7 @@ const NewChoreDisplay = ({ navigation }) => {
   // Function to handle rotation switch toggle - AT
   const handleRotationToggle = (value) => {
     setRotationEnabled(value);
+    console.log('Rotation enabled:', value);
   };
 
   // Add the chore to the database
@@ -143,7 +144,7 @@ const NewChoreDisplay = ({ navigation }) => {
           group_chore_name: chore_name,
           assign_to: assign_to.value,
           recurrence: selectedRec.value,
-          rotation: rotationEnabled,
+          rotation: (selectedRec.value !== 'Just Once' && rotationEnabled) ? true : false, // Only enable rotation if recurrence exists,
           group_id: selectedGroup.value,
           username: username
         });
@@ -157,7 +158,7 @@ const NewChoreDisplay = ({ navigation }) => {
       setChoreName('');
       setNewTask('');
       setSelectedRec(initialRec);
-      setSelectedRotation(false);  // - AT
+      setRotationEnabled(false);  // - AT
       setSelectedGroup(initialGroup);
       setTasks([]);
       navigation.goBack();  // exit and go back to home -KK
@@ -234,12 +235,13 @@ const NewChoreDisplay = ({ navigation }) => {
         />
         
         {/* Conditional Rotation Switch if Recurrence Selected - AT */}
-        {selectedRec !== 'Just Once' && (
+        {selectedGroup.value !== -1 && selectedRec.value !== 'Just Once' && (
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Enable Rotation</Text>
             <Switch
-              value={rotationEnabled}
-              onValueChange={handleRotationToggle} // Function to handle toggle change
+              isOn={rotationEnabled}
+              onToggle={handleRotationToggle} // Function to handle toggle change
+              //label="Enable Rotation"
             />
           </View>
         )}
