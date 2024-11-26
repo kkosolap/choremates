@@ -735,6 +735,11 @@ app.post('/create-group', async (req, res) => {
         return res.status(400).json({ error: "Missing group name or username" });
     }
 
+    // check if group name is too long
+    if (group_name.length > 14) {
+        return res.status(400).json({ error: "Group name must be less than 15 characters" });
+    }
+
     const user_id = await getUserId(username);
 
     // insert the new group into group_names
@@ -782,6 +787,37 @@ app.get('/get-group-members', (req, res) => {
     });
 });
 
+// get number of members in a group -EL
+// input: group_id
+// output: {member_count: integer}
+app.get('/get-group-size', (req, res) => {
+    const { group_id } = req.query;
+
+    if (!group_id) {
+        return res.status(400).json({ error: "Group ID is required" });
+    }
+
+    // query to count the number of members in the group
+    const countMembersQuery = `
+        SELECT COUNT(*) AS member_count 
+        FROM group_members 
+        WHERE group_id = ?
+    `;
+
+    db.query(countMembersQuery, [group_id], (err, results) => {
+        if (err) {
+            console.error("API get-group-size: Error retrieving member count: ", err.message);
+            return res.status(500).json({ error: "Failed to retrieve group member count" });
+        }
+
+        // return the count of members
+        res.status(200).json({ member_count: results[0].member_count });
+    });
+});
+
+
+
+
 // returns the id and name of all the groups that the user is a member/admin of -KK
 // input: username
 // output: group_id, group_name 
@@ -813,41 +849,80 @@ app.post('/get-all-groups-for-user', async (req, res) => {
 });
 
 // send an invitation, only 'admin' can invite -EL
-// input: inviter_name, invitee_name, group_id
+// input: inviter_name (username), invitee_name (username), group_id
 app.post('/send-invite', async (req, res) => {
     const { inviter_name, invitee_name, group_id } = req.body;
 
-    const inviter_id = await getUserId(inviter_name);
-    const invitee_id = await getUserId(invitee_name);
+    try {
+        // query to fetch user_id
+        const userIdQuery = "SELECT id FROM users WHERE username = ?";
 
-    // check if inviter is an admin in the group
-    const adminCheckQuery = `
-        SELECT role FROM group_members 
-        WHERE user_id = ? AND group_id = ? AND role = 'admin'
-    `;
+        // check if inviter exists
+        const [inviterResults] = await db.promise().query(userIdQuery, [inviter_name]);
 
-    db.query(adminCheckQuery, [inviter_id, group_id], (err, results) => {
-        if (err) {
-            console.error("API send-invite: Error checking admin role when inviting: ", err.message);
-            return res.status(500).json({ error: "Failed to verify inviter's role" });
+        if (inviterResults.length === 0) {
+            console.error("API send-invite: Inviter does not exist");
+            return res.status(404).json({ error: `Inviter '${inviter_name}' does not exist` });
         }
-        if (results.length === 0) {
+        const inviter_id = inviterResults[0].id;
+
+        // check if invitee exists
+        const [inviteeResults] = await db.promise().query(userIdQuery, [invitee_name]);
+
+        if (inviteeResults.length === 0) {
+            console.error("API send-invite: Invitee does not exist");
+            return res.status(404).json({ error: `Invitee '${invitee_name}' does not exist` });
+        }
+        const invitee_id = inviteeResults[0].id;
+
+        // check if the inviter is an admin in the group
+        const adminCheckQuery = `
+            SELECT role FROM group_members 
+            WHERE user_id = ? AND group_id = ? AND role = 'admin'
+        `;
+
+        const [adminResults] = await db.promise().query(adminCheckQuery, [inviter_id, group_id]);
+
+        if (adminResults.length === 0) {
             return res.status(403).json({ error: "Only admins can invite members to the group" });
         }
 
-        // insert invitation into group_invitations table
+        // check if the invitee is already in the group
+        const checkMemberQuery = `
+            SELECT * FROM group_members 
+            WHERE user_id = ? AND group_id = ?
+        `;
+        const [memberResults] = await db.promise().query(checkMemberQuery, [invitee_id, group_id]);
+
+        if (memberResults.length > 0) {
+            console.error("API send-invite: Invitee is already in the group");
+            return res.status(400).json({ error: "User already in the group" });
+        }
+
+        // check if there is a pending invitation for the invitee
+        const checkInvitationQuery = `
+            SELECT * FROM group_invitations 
+            WHERE invitee_id = ? AND group_id = ? AND status = 'pending'
+        `;
+        const [invitationResults] = await db.promise().query(checkInvitationQuery, [invitee_id, group_id]);
+
+        if (invitationResults.length > 0) {
+            console.error("API send-invite: Invitee already has a pending invitation from the group");
+            return res.status(400).json({ error: "This user already has a pending invitation from the group" });
+        }
+
+        // insert the invitation into the group_invitations table
         const insertInvitationQuery = `
             INSERT INTO group_invitations (inviter_id, invitee_id, group_id, status)
             VALUES (?, ?, ?, 'pending')
         `;
-        db.query(insertInvitationQuery, [inviter_id, invitee_id, group_id], (err, result) => {
-            if (err) {
-                console.error("API send-invite: Error creating invitation: ", err.message);
-                return res.status(500).json({ error: "Failed to send invitation" });
-            }
-            res.status(200).json({ message: "Invitation sent successfully" });
-        });
-    });
+        await db.promise().query(insertInvitationQuery, [inviter_id, invitee_id, group_id]);
+
+        res.status(200).json({ message: "Invitation sent successfully" });
+    } catch (error) {
+        console.error("API send-invite: Unexpected error: ", error.message);
+        res.status(500).json({ error: "An unexpected error occurred" });
+    }
 });
 
 // get received pending invitations for a specific user -EL

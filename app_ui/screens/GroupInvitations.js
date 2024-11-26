@@ -24,14 +24,35 @@ const GroupInvitations = ({ navigation, route }) => {
           params: { username },
         });
         if (res.status === 200) {
-          setInvitations(res.data);
+
+          // append group name to invitation -NN
+          const invitationsWithNames = await Promise.all(
+            res.data.map(async (invitation) => {
+              try {
+                const groupNameRes = await axios.post(`${API_URL}get-group-name`, {
+                  group_id: invitation.group_id,
+                });
+                return {
+                  ...invitation,
+                  group_name: groupNameRes.data.group_name || "Unknown Group",
+                };
+              } catch (error) {
+                console.error("Error fetching group name:", error);
+                return {
+                  ...invitation,
+                  group_name: "Unknown Group",
+                };
+              }
+            })
+          );
+          setInvitations(invitationsWithNames);
         }
       } catch (error) {
         console.error("Error fetching invitations:", error);
-        Alert.alert("Failed to load invitations.");
+        Alert.alert(error.response.data.error);
       }
     };
-    
+
     fetchInvitations();
   }, []);
 
@@ -48,7 +69,7 @@ const GroupInvitations = ({ navigation, route }) => {
       }
     } catch (error) {
       console.error(`Failed to ${response} invitation:`, error);
-      Alert.alert(`Failed to ${response} invitation.`);
+      Alert.alert(error.response.data.error);
     }
   };
 
@@ -62,7 +83,7 @@ const GroupInvitations = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.invitationItem}>
-            <Text style={styles.invitationText}>Group ID: {item.id}</Text>
+            <Text style={styles.invitationText}>Group Name: {item.group_name}</Text>
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 
