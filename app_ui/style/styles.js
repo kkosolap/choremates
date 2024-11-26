@@ -987,7 +987,7 @@ const createStyles = (theme) => {
       paddingLeft: 10,
       alignItems: 'center',
       justifyContent: 'flex-start',  // Start content at the top
-      paddingTop: 10,
+      // paddingTop: 10,
       paddingBottom: 40,
     },
     groupItem: {
@@ -998,7 +998,7 @@ const createStyles = (theme) => {
       paddingVertical: 20,
       paddingHorizontal: 20,
       marginTop: 10,
-      marginBottom: 15,
+      marginBottom: 13,
       borderWidth: 2,
       borderRadius: 10,
       backgroundColor: theme.lighter,
