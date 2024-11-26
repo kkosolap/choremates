@@ -3,20 +3,17 @@
 import React, { useState, useCallback } from 'react';
 import { Text, View, Image, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
 
-import colors from '../style/colors';
 import createStyles from '../style/styles';
 import LogoutButton from '../components/logout'; 
+import { API_URL } from '../config';
 import { TabHeader } from '../components/headers.js';
-import { SettingsButton, ThemeButton } from '../components/buttons.js';
+import { ThemeButton } from '../components/buttons.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { useLogout } from '../contexts/LogOutProvider';
-
-import axios from 'axios';
-import { API_URL } from '../config';
 
 // header and page content
 const SettingsScreen = () => {
@@ -161,33 +158,6 @@ const SettingsDisplay = () => {
           <ThemeButton color='green' user={username}/>
           <ThemeButton color='blue' user={username}/>
           <ThemeButton color='purple' user={username}/>
-        </View>
-      </View>
-
-      {/* Notifications */}
-      <View style={styles.contentSection}>
-        <Text style={styles.sectionHeading}>Notifications</Text>
-        <View style={styles.horizontalLine}></View>
-
-        <View style={styles.notificationContainer}>
-          {/* Currently doesn't account for any onPress actions needed */}
-          <SettingsButton
-            label="Notification Setting 1"
-            iconName="notifications"
-            onClick={() => console.log("button 1 clicked")}
-          />
-
-          <SettingsButton
-            label="Notification Setting 2"
-            iconName="calendar"
-            onClick={() => console.log("button 2 clicked")}
-          />
-
-          <SettingsButton
-            label="Notification Setting 3"
-            iconName="alarm"
-            onClick={() => console.log("button 3 clicked")}
-          />
         </View>
       </View>
 
