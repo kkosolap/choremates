@@ -26,9 +26,13 @@ const Signin = ({ onSignin }) => {
       await SecureStore.setItemAsync('token', token); // Store the token securely
       await SecureStore.setItemAsync('username', username); // Store username securely
       onSignin(username); // Update the logged-in state
-    } catch (message) {
-      // console.error('Login Error:', error);
-      Alert.alert(message.response.data.message);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        Alert.alert("Invalid Username or Password");
+      } else {
+        Alert.alert("An error occurred. Please try again.");
+        console.error('Login Error:', error);
+      }
     }
   };
 
