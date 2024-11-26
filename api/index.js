@@ -522,7 +522,7 @@ app.post('/add-chore', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-chore: Duplicate chore name.");
-            return res.status(400).send("This chore already exists!");
+            return res.status(400).json({ message: `Cannot create chore ${chore_name}. This chore already exists!` });
         }
 
         const query = "INSERT INTO chores (user_id, chore_name, recurrence) VALUES (?, ?, ?)";
@@ -530,7 +530,7 @@ app.post('/add-chore', async (req, res) => {
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add-chore: Error:", error.message);
-        res.status(500).send("An error occurred while adding the chore.");
+        res.status(500).json({ message: 'An internal server error occurred.' });
     }
 });
 
@@ -544,6 +544,14 @@ app.post('/update-chore', async (req, res) => {
         }
 
         const user_id = await getUserId(username);
+
+        if (old_chore_name != new_chore_name) { 
+            const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, new_chore_name]);
+            if (duplicate.length > 0) {
+                console.log("API add-chore: Duplicate chore name.");
+                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists!` });
+            }
+        }
         
         // Update the chore details in the database
         const query = `
@@ -638,10 +646,11 @@ app.post('/add-task', async (req, res) => {
 
         const user_id = await getUserId(username);
         const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        
         const [duplicate] = await db.promise().query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id]);
         if (duplicate.length > 0) {
             console.log("API add-task: Duplicate task name.");
-            return res.status(400).send("This task already exists!");
+            return res.status(400).json({ message: `Cannot create task ${task_name}. This task already exists for this chore!` });
         }
 
         // add the task to the database -KK
@@ -654,7 +663,7 @@ app.post('/add-task', async (req, res) => {
         res.status(200).json({ message: "Changed completion successfully." });
     } catch (error) {
         console.error("API add-task: Error:", error.message);
-        res.status(500).send("An error occurred while adding the task.");
+        res.status(500).json({ message: 'An internal server error occurred.' });
     }
 });
    
@@ -1348,7 +1357,7 @@ app.post('/add-group-chore', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-group-chore: Duplicate chore name.");
-            return res.status(400).send("This chore already exists for this group!");
+            return res.status(400).json({ message: `Cannot create chore ${group_chore_name}. This chore already exists for this group!` });
         }
 
         const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to) VALUES (?, ?, ?, ?)";
@@ -1356,7 +1365,7 @@ app.post('/add-group-chore', async (req, res) => {
         res.status(200).json({ message: "Chore added to group successfully." });
     } catch (error) {
         console.error("API add-group-chore: Error:", error.message);
-        res.status(500).send("An error occurred while adding the chore to the group.");
+        res.status(500).json({ message: 'An internal server error occurred.' });
     }
 });
 
@@ -1378,6 +1387,14 @@ app.post('/update-group-chore', async (req, res) => {
         }
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(old_chore_name, group_id);
+
+        if (old_chore_name != new_chore_name){ 
+            const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, new_chore_name]);
+            if (duplicate.length > 0) {
+                console.log("API update-group-chore: Duplicate chore name.");
+                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists for this group!` });
+            }
+        }
 
         // Update the chore details in the database
         const query = `
