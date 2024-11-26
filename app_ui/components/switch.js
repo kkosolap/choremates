@@ -49,7 +49,7 @@ const Switch = ({ isOn, onToggle, label, disabled }) => {
         <Animated.View
           style={[
             styles.switchTrack,
-            { backgroundColor: interpolatedBackgroundColor },
+            switchState ? styles.switchActiveTrack : {},
           ]}
         >
           <Animated.View

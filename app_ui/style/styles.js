@@ -573,33 +573,40 @@ const createStyles = (theme) => {
     switchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'space-between', // Ensures label and switch are at opposite edges
       marginVertical: 10,
+      //paddingHorizontal: 10, // Adds spacing on both sides
     },
     switchLabel: {
       fontSize: 16,
-      color: theme.black,
-      marginRight: 10,
+      fontWeight: '500',
+      lineHeight: 25,
+      textAlignVertical: 'center',
+      color: theme.text, // Dynamic text color based on theme
     },
     switchWrapper: {
-      width: 50,
-      height: 30,
+      width: 50, // Width of the switch
+      height: 25, // Height of the switch
+      borderRadius: 25, // Circular ends
       justifyContent: 'center',
-      backgroundColor: theme.gray,
+      paddingHorizontal: 3, // Space for thumb movement
     },
     switchTrack: {
-      width: 50,
-      height: 30,
-      borderRadius: 15,
-      backgroundColor: theme.inactive,
-      position: 'relative',
+      flex: 1,
+      borderRadius: 25, // Match the switch wrapper for consistency
+      backgroundColor: '#ccc',
+      justifyContent: 'center', // Center the thumb vertically
+    },
+    switchActiveTrack: {
+      backgroundColor: '#4CAF50', // Green for active state
     },
     switchThumb: {
-      width: 26,
-      height: 26,
-      borderRadius: 13,
-      backgroundColor: theme.background,
-      position: 'absolute',
-      top: 2,
+      width: 20, // Size of the thumb
+      height: 20,
+      borderRadius: 10, // Fully circular thumb
+      backgroundColor: '#fff', // White thumb for contrast
+      elevation: 2, // Subtle shadow for a 3D effect
+      position: 'absolute', // Allow smooth sliding
     },
 
     // chore details form dropdown -MH

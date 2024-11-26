@@ -431,7 +431,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           <>
             {/* Editable */}
             <View style={styles.switchContainer}>
-              <Text style={styles.label}>Enable Rotation:</Text>
+              <Text style={styles.label}>Enable Rotation </Text>
               <Switch
                 isOn={rotationEnabled}
                 onToggle={handleRotationToggle}
@@ -442,7 +442,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           <>
             {/* Not editable */}
             <View style={styles.switchContainer}>
-              <Text style={styles.label}>Enable Rotation:</Text>
+              <Text style={styles.label}>Enable Rotation </Text>
               <Switch
                 isOn={rotationEnabled}
                 onToggle={() => {}} // You can also disable the toggle if needed

@@ -256,7 +256,7 @@ const NewChoreDisplay = ({ navigation }) => {
         {/* Conditional Rotation Switch if Recurrence Selected - AT */}
         {selectedGroup.value !== -1 && selectedRec.value !== 'Just Once' && (
           <View style={styles.switchContainer}>
-            <Text style={styles.label}>Enable Rotation</Text>
+            <Text style={styles.label}>Enable Rotation </Text>
             <Switch
               isOn={rotationEnabled}
               onToggle={handleRotationToggle} // Function to handle toggle change
