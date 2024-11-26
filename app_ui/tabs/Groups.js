@@ -92,6 +92,7 @@ const GroupsDisplay = () => {
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const popoverButtonRef = useRef(null);
+  const [groupSizes, setGroupSizes] = useState({});
 
 
   const fetchGroups = async (username) => {
@@ -100,9 +101,20 @@ const GroupsDisplay = () => {
         username: username,
       });
       setGroups(response.data);
+
+      // get group size for each group -NN
+      response.data.forEach(async (group) => {
+        const groupSizeResponse = await axios.get(`${API_URL}get-group-size`, {
+          params: { group_id: group.group_id },
+        });
+        setGroupSizes((prevSizes) => ({
+          ...prevSizes,
+          [group.group_id]: groupSizeResponse.data.member_count,
+        }));
+      });
     } catch (error) {
       console.error("Error fetching groups:", error);
-      Alert.alert("Failed to load groups.");
+      Alert.alert(error.response.data.error);
     }
   };
 
@@ -154,81 +166,88 @@ const GroupsDisplay = () => {
 
   return (
     <View style={styles.groupDisplayContent}>
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item.group_id.toString()}
-        renderItem={({ item }) => {
-          // Default to theme's color (for new groups that need to be initialized)
-          const styles = createStyles(groupThemes[item.group_id] || theme);
+      {/* If there are no groups - NN */}
+      {groups.length === 0 ? (
+        <Text style={styles.noGroupsText}>No Groups</Text>
+      ) : (
+        <FlatList
+          data={groups}
+          keyExtractor={(item) => item.group_id.toString()}
+          renderItem={({ item }) => {
+            const groupSize = groupSizes[item.group_id];
+            // Default to theme's color (for new groups that need to be initialized)
+            const styles = createStyles(groupThemes[item.group_id] || theme);
 
-          
-          return (
-            <View
-              style={styles.groupItem}
-            >
-              {/* Group Item */}
-              <TouchableOpacity
-                style={styles.groupItemTouchable} // or groupItem
-                onPress={() =>
-                  navigation.navigate('Members', {
-                    groupName: item.group_name,
-                    groupId: item.group_id,
-                    username: username,
-                  })
-                }
+            
+            return (
+              <View
+                style={styles.groupItem}
               >
-                <Text style={styles.groupName}>{item.group_name}</Text>
-              </TouchableOpacity>
-
-              {/* Ellipsis Button */}
-              <TouchableOpacity
-                onPress={(event) => handleEllipsisPress(item, event)}
-                style={styles.groupColorPicker}
-              >
-                <Icon name="ellipsis-vertical" size={28} />
-              </TouchableOpacity>
-
-              {/* Popover Menu */}
-              {selectedGroup && selectedGroup.group_id === item.group_id && (
-                <Popover
-                  isVisible={popoverVisible}
-                  onRequestClose={() => setPopoverVisible(false)}
-                  from={() => popoverButtonRef.current}
-                  popoverStyle={styles.popover}
+                {/* Group Item */}
+                <TouchableOpacity
+                  style={styles.groupItemTouchable} // or groupItem
+                  onPress={() =>
+                    navigation.navigate('Members', {
+                      groupName: item.group_name,
+                      groupId: item.group_id,
+                      username: username,
+                    })
+                  }
                 >
-                  <View style={styles.menuContainer}>
-                    <Text style={styles.groupName}>Change Group Color</Text>
-                    <View style={styles.iconGrid}>
-                      {['blue', 'green', 'pink', 'yellow', 'purple'].map((colorChoice, index) => {
-                        const iconColors = {
-                          blue: colors.blue.main,
-                          green: colors.green.main,
-                          pink: colors.pink.main,
-                          yellow: colors.yellow.main,
-                          purple: colors.purple.main,
-                        };
-                        
-                        const iconColor = iconColors[colorChoice];
+                  <Text style={styles.groupName}>{item.group_name}</Text>
+                  <Text style={styles.groupSize}>{`${groupSize} members`}</Text>
+                </TouchableOpacity>
 
-                        return (
-                          <TouchableOpacity
-                            key={index}
-                            onPress={() => handleColorChange(colorChoice)}
-                            style={styles.menuItem}
-                          >
-                            <Icon name="brush" size={24} color={iconColor} style={styles.groupColorIcon} />
-                          </TouchableOpacity>
-                        );
-                      })}
+                {/* Ellipsis Button */}
+                <TouchableOpacity
+                  onPress={(event) => handleEllipsisPress(item, event)}
+                  style={styles.groupColorPicker}
+                >
+                  <Icon name="ellipsis-vertical" size={28} />
+                </TouchableOpacity>
+
+                {/* Popover Menu */}
+                {selectedGroup && selectedGroup.group_id === item.group_id && (
+                  <Popover
+                    isVisible={popoverVisible}
+                    onRequestClose={() => setPopoverVisible(false)}
+                    from={() => popoverButtonRef.current}
+                    popoverStyle={styles.popover}
+                  >
+                    <View style={styles.menuContainer}>
+                      <Text style={styles.groupName}>Change Group Color</Text>
+                      <View style={styles.iconGrid}>
+                        {['blue', 'green', 'pink', 'yellow', 'purple'].map((colorChoice, index) => {
+                          const iconColors = {
+                            blue: colors.blue.main,
+                            green: colors.green.main,
+                            pink: colors.pink.main,
+                            yellow: colors.yellow.main,
+                            purple: colors.purple.main,
+                          };
+                          
+                          const iconColor = iconColors[colorChoice];
+
+                          return (
+                            <TouchableOpacity
+                              key={index}
+                              onPress={() => handleColorChange(colorChoice)}
+                              style={styles.menuItem}
+                            >
+                              <Icon name="brush" size={24} color={iconColor} style={styles.groupColorIcon} />
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
                     </View>
-                  </View>
-                </Popover>
-              )}
-            </View>
-          );
-        }}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+                  </Popover>
+                )}
+              </View>
+            );
+          }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
 
       <TouchableOpacity 
         style={styles.manageCreateButton} 

@@ -25,7 +25,7 @@ const Register = ({ navigation }) => {
       navigation.navigate('Sign in');
     } catch (error) {
       console.error('Registration Error:', error);
-      Alert.alert('Error', error.response?.data?.message || 'Registration failed');
+      Alert.alert(error.response.data.error);
     }
   };
 

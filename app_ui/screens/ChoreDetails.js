@@ -207,6 +207,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
     } catch (error) {
       console.error("Error updating tasks in database:", error);
+      Alert.alert("Error: ", error.response.data.message);
     }
   };
 
@@ -240,6 +241,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
     } catch (error) {
         console.error("Error updating chore:", error);
+        Alert.alert("Error: ", error.response.data.message);
     }
   };
 

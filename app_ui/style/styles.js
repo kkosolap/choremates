@@ -87,7 +87,7 @@ const createStyles = (theme) => {
     },
     horizontalLine: {
       borderTopColor: theme.lighter,
-      borderTopWidth: 1,
+      borderTopWidth: 2,
       width: '100%',
       height: 0,
       padding: 0,
@@ -992,7 +992,7 @@ const createStyles = (theme) => {
     },
     groupItem: {
       width: '95%',
-      flexDirection: 'row',  // Align text and icon in a row
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingVertical: 20,
@@ -1046,6 +1046,19 @@ const createStyles = (theme) => {
     mainColorFinder: {
       color: theme.main,
     },
+    noGroupsText: {
+      fontSize: 40,
+      textAlign: 'center',
+      marginTop: 245,
+      marginBottom: 245,
+      color: theme.black,
+      fontWeight: 'bold',
+    },
+    groupSize: {
+      fontSize: 13,
+      color: theme.gray,
+      marginTop: 5,
+    }
   });
 };
 
