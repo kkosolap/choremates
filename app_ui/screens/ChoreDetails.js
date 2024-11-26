@@ -98,6 +98,22 @@ const ChoreDetailsDisplay = ({navigation}) => {
             console.error("UI ChoreDetails.js: Failed to fetch initial assignment display name.");
           }
   
+          /*
+          // Fetch the chore details including rotation_enabled
+          const choreDetailsResponse = await axios.post(`${API_URL}get-chore-details`, {
+            chore_name: routed_chore_name,
+            group_id: routed_group_id,
+          });
+
+          if (choreDetailsResponse?.data) {
+            // Set rotationEnabled to match the value from the backend
+            setRotationEnabled(choreDetailsResponse.data.rotation_enabled);
+          } else {
+            console.error("UI ChoreDetails.js: Failed to fetch chore details.");
+          }
+          */
+
+
           // Fetch group members for the assignment dropdown
           const memberResponse = await axios.get(`${API_URL}get-group-members`, {
             params: { group_id: routed_group_id },
@@ -120,15 +136,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
           });
           setPermission(perm.data);
 
-          // Fetch the chore details and its rotation_enabled value from the backend - AT
-          const choreDetailsResponse = await axios.post(`${API_URL}get-group-chores-data`, {
-            chore_name: routed_chore_name,
-            group_id: routed_group_id,
-          });
-
-          if (choreDetailsResponse?.data) {
-            setRotationEnabled(choreDetailsResponse.data.rotation_enabled);
-          }
         }
         else {  setPermission(1); }
         setLoading(false);
@@ -232,13 +239,13 @@ const ChoreDetailsDisplay = ({navigation}) => {
       // Only make an API call if the chore is part of a group and is not a "Just Once" recurrence
       if (selectedRec.value !== 'Just Once' && choreGroup.label !== 'Personal') {
         await axios.post(`${API_URL}update-group-chore`, {
-          old_chore_name: routed_chore_name,  // original chore name
-          new_chore_name: chore_name,  // updated chore name from input
-          group_id: choreGroup.value,  // group id
-          recurrence: selectedRec.value,  // recurrence type
-          rotation_enabled: value,  // the updated rotation_enabled value
-          assign_to: assign_to.value,  // assigned user
-          username: username  // current username
+          old_chore_name: routed_chore_name,  
+          new_chore_name: chore_name,  
+          group_id: choreGroup.value,  
+          recurrence: selectedRec.value,  
+          rotation_enabled: value,  
+          assign_to: assign_to.value,  
+          username: username 
         });
 
       }
