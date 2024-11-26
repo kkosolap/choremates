@@ -1,6 +1,6 @@
 // Members.js -NN
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from 'react-native-vector-icons';

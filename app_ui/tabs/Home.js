@@ -47,9 +47,9 @@ const HomeDisplay = () => {
   // list of a user's groups
   const [groupList, setGroupList] = useState([]);
 
-  // Get user's groups
+  // Get user's groups and Collapse State -VA
   useEffect(() => {
-    const getGroups = async () => {
+    const getGroupsAndInitializeCollapseState = async () => {
       if (!username) return; // Ensure the username is set before making the API call
   
       try {
@@ -59,15 +59,25 @@ const HomeDisplay = () => {
             name: group.group_name,
             id: group.group_id,
           }));
+          
           setGroupList([...transformedData]);
+  
+          // Initialize collapse state for each group once group data is fetched
+          const initialCollapsedState = transformedData.reduce((acc, group) => {
+            acc[group.id] = true; // Default collapsed state is true for every group
+            return acc;
+          }, {});
+  
+          setGroupCollapsed(initialCollapsedState);
         }
       } catch (error) {
         console.error(error);
       }
     };
   
-    getGroups();
+    getGroupsAndInitializeCollapseState();
   }, [username]);
+  
 
   // track which sections are collapsed -MH
   const [isPersonalCollapsed, setPersonalCollapsed] = useState(true);
@@ -82,18 +92,6 @@ const HomeDisplay = () => {
     }));
   };
   const groupCollapsedInitialized = useRef(false);
-
-  useEffect(() => {
-    if (!groupCollapsedInitialized.current && groupList.length > 0) {
-      // Set initial collapse state for each group in groupList to true
-      const initialCollapsedState = groupList.reduce((acc, group) => {
-        acc[group.id] = true; // Default collapsed state is true for every group
-        return acc;
-      }, {});
-      setGroupCollapsed(initialCollapsedState);
-      groupCollapsedInitialized.current = true; // Mark as initialized
-    }
-  }, [groupList]);
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(

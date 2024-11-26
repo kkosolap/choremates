@@ -812,7 +812,7 @@ const createStyles = (theme) => {
     manageCreateButtonText: {
       color: theme.white,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 18,
     },
     backPageButton: {
       padding: 10,
@@ -1032,7 +1032,10 @@ const createStyles = (theme) => {
     },
     groupColorIcon: {
       alignSelf: 'center',
-    }
+    },
+    mainColorFinder: {
+      color: theme.main,
+    },
   });
 };
 

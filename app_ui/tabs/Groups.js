@@ -159,7 +159,9 @@ const GroupsDisplay = () => {
         data={groups}
         keyExtractor={(item) => item.group_id.toString()}
         renderItem={({ item }) => {
-          const styles = createStyles(groupThemes[item.group_id]);
+          // Default to theme's color (for new groups that need to be initialized)
+          const styles = createStyles(groupThemes[item.group_id] || theme);
+
           
           return (
             <View
@@ -184,7 +186,7 @@ const GroupsDisplay = () => {
                 onPress={(event) => handleEllipsisPress(item, event)}
                 style={styles.groupColorPicker}
               >
-                <Icon name="ellipsis-vertical" size={24} color="#000" />
+                <Icon name="ellipsis-vertical" size={28} />
               </TouchableOpacity>
 
               {/* Popover Menu */}
