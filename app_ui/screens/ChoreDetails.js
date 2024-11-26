@@ -5,6 +5,7 @@ import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'r
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
@@ -97,22 +98,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
           } else {
             console.error("UI ChoreDetails.js: Failed to fetch initial assignment display name.");
           }
-  
-          /*
-          // Fetch the chore details including rotation_enabled
-          const choreDetailsResponse = await axios.post(`${API_URL}get-chore-details`, {
-            chore_name: routed_chore_name,
-            group_id: routed_group_id,
-          });
-
-          if (choreDetailsResponse?.data) {
-            // Set rotationEnabled to match the value from the backend
-            setRotationEnabled(choreDetailsResponse.data.rotation_enabled);
-          } else {
-            console.error("UI ChoreDetails.js: Failed to fetch chore details.");
-          }
-          */
-
 
           // Fetch group members for the assignment dropdown
           const memberResponse = await axios.get(`${API_URL}get-group-members`, {
@@ -173,6 +158,22 @@ const ChoreDetailsDisplay = ({navigation}) => {
     setChoreName(routed_chore_name);
     setTasks(routed_tasks);
   }, [routed_chore_name, routed_tasks]);
+
+  // setting rotation state for chore - AT
+  useEffect(() => {
+    const loadRotationState = async () => {
+      try {
+        const savedValue = await AsyncStorage.getItem(`rotationEnabled_${routed_chore_name}`);
+        if (savedValue !== null) {
+          setRotationEnabled(JSON.parse(savedValue));
+        }
+      } catch (error) {
+        console.error('Error loading rotationEnabled state:', error);
+      }
+    };
+
+    loadRotationState();
+  }, [routed_chore_name]);
 
   // Get the existing tasks for the chore from the database -MH
   const getExistingTasks = async () => {
@@ -236,6 +237,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
       // Update the local state immediately
       setRotationEnabled(value);
   
+      // save state of toggle even when switch screens
+      await AsyncStorage.setItem(`rotationEnabled_${routed_chore_name}`, JSON.stringify(value));
+
       // Only make an API call if the chore is part of a group and is not a "Just Once" recurrence
       if (selectedRec.value !== 'Just Once' && choreGroup.label !== 'Personal') {
         await axios.post(`${API_URL}update-group-chore`, {

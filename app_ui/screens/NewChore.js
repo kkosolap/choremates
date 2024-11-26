@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
@@ -120,9 +121,26 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
+  // setting rotation state for chore - AT
+  useEffect(() => {
+    const loadRotationState = async () => {
+      try {
+        const savedValue = await AsyncStorage.getItem(`rotationEnabled_${chore_name}`);
+        if (savedValue !== null) {
+          setRotationEnabled(JSON.parse(savedValue));
+        }
+      } catch (error) {
+        console.error('Error loading rotationEnabled state:', error);
+      }
+    };
+
+    loadRotationState();
+  }, [chore_name]);
+
   // Function to handle rotation switch toggle - AT
-  const handleRotationToggle = (value) => {
+  const handleRotationToggle = async (value) => {
     setRotationEnabled(value);
+    await AsyncStorage.setItem(`rotationEnabled_${chore_name}`, JSON.stringify(value));
     console.log('Rotation enabled:', value);
   };
 
