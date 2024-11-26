@@ -19,6 +19,7 @@ const yellowTheme = {
   lighter: '#E3D190',
   lightest: '#F2E0B4',
   desaturated: '#EDE9DA',
+  name: "yellow",
 };
 
 const greenTheme = {
@@ -27,6 +28,7 @@ const greenTheme = {
   lighter: '#84CD86',
   lightest: '#A3E1A5',
   desaturated: '#C7DFD2',
+  name: "green",
 };
 
 const blueTheme = {
@@ -35,6 +37,7 @@ const blueTheme = {
   lighter: '#89C9E9',
   lightest: '#A2DEFC',
   desaturated: '#D2E0E8',
+  name: "blue",
 };
 
 const purpleTheme = {
@@ -43,6 +46,7 @@ const purpleTheme = {
   lighter: '#98AAED',
   lightest: '#B6C8F7',
   desaturated: '#DADFED',
+  name: "purple",
 };
 
 const pinkTheme = {
@@ -51,6 +55,7 @@ const pinkTheme = {
   lighter: '#ED98C7',
   lightest: '#F0B8D7',
   desaturated: '#EDDAE5',
+  name: "pink",
 };
 
 // all themes

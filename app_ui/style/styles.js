@@ -87,7 +87,7 @@ const createStyles = (theme) => {
     },
     horizontalLine: {
       borderTopColor: theme.lighter,
-      borderTopWidth: 1,
+      borderTopWidth: 2,
       width: '100%',
       height: 0,
       padding: 0,
