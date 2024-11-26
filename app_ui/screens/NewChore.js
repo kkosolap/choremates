@@ -140,11 +140,12 @@ const NewChoreDisplay = ({ navigation }) => {
         ));
       }else{
         // add the group chore to the database -KK
+        console.log('rotationEnabled: ', rotationEnabled);
         await axios.post(`${API_URL}add-group-chore`, { 
           group_chore_name: chore_name,
           assign_to: assign_to.value,
           recurrence: selectedRec.value,
-          rotation: (selectedRec.value !== 'Just Once' && rotationEnabled) ? true : false, // Only enable rotation if recurrence exists,
+          rotationEnabled: rotationEnabled,
           group_id: selectedGroup.value,
           username: username
         });
