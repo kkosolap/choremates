@@ -5,17 +5,16 @@ import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Popover from 'react-native-popover-view';
-
 import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
 
+import colors from '../style/colors';
+import createStyles from '../style/styles';
+import { API_URL } from '../config';
+import { TabHeader } from '../components/headers';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { useGroupThemes } from '../contexts/GroupThemeProvider';
-import createStyles from '../style/styles.js';
-import colors from '../style/colors';
-import { TabHeader } from '../components/headers.js';
 
-import axios from 'axios';
-import { API_URL } from '../config.js';
 
 
 // groups screen & invite button - NN
@@ -166,10 +165,10 @@ const GroupsDisplay = () => {
   );
 
   return (
-    <View style={styles.content}>
+    <View style={styles.groupDisplayContent}>
       {/* If there are no groups - NN */}
       {groups.length === 0 ? (
-        <Text style={styles.noGroupsText}>No Groups</Text>
+        <Text style={styles.noGroupsText}>Create or Join a Group to View Groups</Text>
       ) : (
         <FlatList
           data={groups}

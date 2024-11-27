@@ -6,6 +6,7 @@ import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -83,19 +84,20 @@ const GroupInvitations = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.invitationItem}>
-            <Text style={styles.invitationText}>Group Name: {item.group_name}</Text>
+              <Text style={styles.invitationText}>Incoming Invite: </Text>
+              <Text style={styles.invitationGroupText}>{item.group_name}</Text>
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 
                 onPress={() => handleResponse(item.id, 'accepted')}
               >
-                <Text style={styles.buttonText}>Accept</Text>
+                <Icon name="checkmark-outline" style={styles.buttonText} size={24} />
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.declineButton} 
                 onPress={() => handleResponse(item.id, 'rejected')}
               >
-                <Text style={styles.buttonText}>Decline</Text>
+                <Icon name="close-outline" style={styles.buttonText} size={24} />
               </TouchableOpacity>
             </View>
           </View>

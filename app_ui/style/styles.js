@@ -843,7 +843,6 @@ const createStyles = (theme) => {
     manageButton: {
       position: 'absolute',
       width: '80%',
-      bottom: 100,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
@@ -944,22 +943,37 @@ const createStyles = (theme) => {
     invitationItem: {
       marginVertical: 15,
       padding: 15,
-      borderWidth: 1,
-      borderColor: theme.gray,
-      borderRadius: 8,
-      alignSelf: 'center'
+      paddingVertical: 20,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      backgroundColor: theme.desaturated,
+      width:350,
+    },
+    invitationTextContainer:{
+      flexDirection: 'row',
+      // justifyContent: 'space-between',
+
     },
     invitationText: {
-      fontSize: 16,
-      marginBottom: 10,
+      fontSize: 18,
+      paddingVertical: 2,
+      fontWeight: '500',
+      color: theme.text2,
+    },
+    invitationGroupText:{
+      fontSize: 24,
+      marginBottom: 12,
+      paddingVertical: 4,
+      fontWeight: '500',
+      color: theme.text2,
+      // textAlign: 'right',
     },
     invitationButtonContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      width: '85%'
     },
     acceptButton: {
-      backgroundColor: '#0b6623',
+      backgroundColor: '#73a662',
       padding: 10,
       borderRadius: 5,
     },
@@ -1021,6 +1035,17 @@ const createStyles = (theme) => {
     },
     
     // groups display -NN
+
+    // added so groups won't cut off like normal content styling  -MH
+    groupDisplayContent: {
+      flex: 1,
+      width: 400,
+      paddingLeft: 10,
+      alignItems: 'center',
+      justifyContent: 'flex-start',  // Start content at the top
+      // paddingTop: 10,
+      paddingBottom: 40,
+    },
     groupItem: {
       width: '95%',
       flexDirection: 'row',
@@ -1029,7 +1054,7 @@ const createStyles = (theme) => {
       paddingVertical: 20,
       paddingHorizontal: 20,
       marginTop: 10,
-      marginBottom: 15,
+      marginBottom: 13,
       borderWidth: 2,
       borderRadius: 10,
       backgroundColor: theme.lighter,
@@ -1078,12 +1103,12 @@ const createStyles = (theme) => {
       color: theme.main,
     },
     noGroupsText: {
-      fontSize: 40,
+      width: '95%',
+      fontSize: 18,
+      fontWeight: '400',
+      color: theme.text2,
       textAlign: 'center',
-      marginTop: 245,
-      marginBottom: 245,
-      color: theme.black,
-      fontWeight: 'bold',
+      paddingVertical: 293,
     },
     groupSize: {
       fontSize: 13,
