@@ -121,6 +121,7 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
+  /*
   // setting rotation state for chore - AT
   useEffect(() => {
     const loadRotationState = async () => {
@@ -136,8 +137,9 @@ const NewChoreDisplay = ({ navigation }) => {
 
     loadRotationState();
   }, [chore_name]);
+  */
 
-  // Function to handle rotation switch toggle - AT
+  // Function to handle rotation switch toggle , saves state to send to ChoreDetails - AT
   const handleRotationToggle = async (value) => {
     setRotationEnabled(value);
     await AsyncStorage.setItem(`rotationEnabled_${chore_name}`, JSON.stringify(value));
