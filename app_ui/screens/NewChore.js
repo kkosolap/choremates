@@ -168,6 +168,7 @@ const NewChoreDisplay = ({ navigation }) => {
             assign_to: assign_to.value,
             recurrence: selectedRec.value,
             group_id: selectedGroup.value,
+            rotation_enabled: rotationEnabled,
             username: username
           });
 
