@@ -50,7 +50,8 @@ const Switch = ({ isOn, onToggle, label, disabled }) => {
           style={[
             styles.switchTrack,
             switchState ? styles.switchActiveTrack : {},
-            disabled ? styles.switchActiveTrackDisabled : {},
+            disabled ? styles.switchTrackDisabled : {},
+            disabled && switchState ? styles.switchActiveTrackDisabled : {},
           ]}
         >
           <Animated.View

@@ -612,6 +612,9 @@ const createStyles = (theme) => {
       backgroundColor: theme.desaturated,
       justifyContent: 'center', // Center the thumb vertically
     },
+    switchTrackDisabled: {
+      backgroundColor: theme.lightGray, // active state but not editable
+    },
     switchActiveTrack: {
       backgroundColor: theme.main,
     },
