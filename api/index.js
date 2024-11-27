@@ -405,10 +405,8 @@ async function resetSingleUserChores(type) {
 }
 
 async function resetAndRotateGroupUserChores(type) {
-    //console.log('in resetAndRotateGroupUserChores');
     const query = `SELECT id, group_id, assigned_to, is_completed, rotation_enabled FROM group_chores WHERE recurrence = ?`;
     const [groupChores] = await db.promise().query(query, [type]);
-    //console.log('after query');
 
     for (const chore of groupChores) {
         const query = `UPDATE group_chores SET is_completed = false WHERE id = ?`;
@@ -416,7 +414,6 @@ async function resetAndRotateGroupUserChores(type) {
             await db.promise().query(query, [chore.id]);
 
             // only rotate if rotationEnabled
-            //console.log('what is rotationEnabled value: ', chore.rotationEnabled);
             if (chore.rotation_enabled) {
                 // all chores rotate when they recur (daily rotate daily, weekly rotate weekly, etc)
                 await rotateChoreToNextUser(chore.group_id, chore.id, chore.assigned_to);
@@ -426,7 +423,6 @@ async function resetAndRotateGroupUserChores(type) {
             console.error("Error resetting chore:", error);
         }
     }
-    //return 1;
 }
 
 async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
@@ -449,13 +445,10 @@ async function rotateChoreToNextUser(group_id, chore_id, current_assigned_to) {
         const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
         await db.promise().query(updateQuery, [nextUser.user_id, chore_id]);
 
-        //console.log(`Group chore ${chore_id} rotated to new user: ${nextUser.id}`);
     } catch (error) {
         console.error("Error rotating group chore to the next user:", error);
     }
 }
-
-// module.exports = { resetAndRotateGroupUserChores, rotateChoreToNextUser, }; // export for testing purposes - AT
 
 /********************************************************** */
 /*             CHORE IMPLEMENTATION BELOW:                  */
@@ -1356,12 +1349,9 @@ app.post('/add-group-chore', async (req, res) => {
             return res.status(400).send("Missing required fields.");
         }  
         
-        //console.log("rotationEnabled value: ", rotationEnabled);
 
         // check if rotationEnabled is valid - AT
-        //console.log("rotEnabled before process: ", rotation_enabled);
         const isRotationEnabled = rotation_enabled ? 1 : 0; // default is 0
-        //console.log("Processed chore, rotationEnabled:", group_chore_name, isRotationEnabled);
         
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {

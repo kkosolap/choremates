@@ -121,29 +121,10 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
-  /*
-  // setting rotation state for chore - AT
-  useEffect(() => {
-    const loadRotationState = async () => {
-      try {
-        const savedValue = await AsyncStorage.getItem(`rotationEnabled_${chore_name}`);
-        if (savedValue !== null) {
-          setRotationEnabled(JSON.parse(savedValue));
-        }
-      } catch (error) {
-        console.error('Error loading rotationEnabled state:', error);
-      }
-    };
-
-    loadRotationState();
-  }, [chore_name]);
-  */
-
   // Function to handle rotation switch toggle , saves state to send to ChoreDetails - AT
   const handleRotationToggle = async (value) => {
     setRotationEnabled(value);
     await AsyncStorage.setItem(`rotationEnabled_${chore_name}`, JSON.stringify(value));
-    console.log('Rotation enabled:', value);
   };
 
   // Add the chore to the database

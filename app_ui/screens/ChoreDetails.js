@@ -236,17 +236,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // Function to handle rotation switch toggle - AT
   const handleRotationToggle = async (value) => {
-    /*
-    try {
-      // Update the local state immediately
-      setRotationEnabled(value);
-  
-      // save state of toggle even when switch screens
-      await AsyncStorage.setItem(`rotationEnabled_${routed_chore_name}`, JSON.stringify(value));
-    } catch (error) {
-      console.error('Error updating rotation_enabled:', error);
-    }*/
-      setRotationEnabled(value); // Update only local state
+      setRotationEnabled(value); // Update only local state... only saves when update is hit
   };
   
 
@@ -273,6 +263,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           });
         }
 
+        // gets and saves the rotation state - AT 
         await AsyncStorage.setItem(`rotationEnabled_${routed_chore_name}`, JSON.stringify(rotationEnabled));
 
         // add/remove tasks in database to match list in edit details window
