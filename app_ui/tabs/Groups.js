@@ -168,7 +168,7 @@ const GroupsDisplay = () => {
     <View style={styles.groupDisplayContent}>
       {/* If there are no groups - NN */}
       {groups.length === 0 ? (
-        <Text style={styles.noGroupsText}>No Groups</Text>
+        <Text style={styles.noGroupsText}>Create or Join a Group to View Groups</Text>
       ) : (
         <FlatList
           data={groups}
