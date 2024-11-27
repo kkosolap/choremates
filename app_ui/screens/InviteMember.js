@@ -54,7 +54,7 @@ const InviteMemberScreen = () => {
           setInviteeName('');
         } catch (error) {
           console.error("Error sending invitation:", error);
-          Alert.alert("Failed to send invitation.");
+          Alert.alert(error.response.data.error);
         }
       };
 

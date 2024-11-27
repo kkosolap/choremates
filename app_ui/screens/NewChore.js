@@ -1,7 +1,7 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -151,26 +151,32 @@ const NewChoreDisplay = ({ navigation }) => {
     try {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
-        await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence: selectedRec.value });
-        // loop through tasks and add each one to the db -KK
-        await Promise.all(tasks.map(task_name =>
-          axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
-        ));
+        try{
+          await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence: selectedRec.value });
+          // loop through tasks and add each one to the db -KK
+          await Promise.all(tasks.map(task_name =>
+            axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
+          ));
+        } catch (error) {
+            Alert.alert("Error: ", error.response.data.message);
+        }
       }else{
         // add the group chore to the database -KK
-        console.log('rotationEnabled: ', rotationEnabled);
-        await axios.post(`${API_URL}add-group-chore`, { 
-          group_chore_name: chore_name,
-          assign_to: assign_to.value,
-          recurrence: selectedRec.value,
-          rotation_enabled: rotationEnabled,
-          group_id: selectedGroup.value,
-          username: username
-        });
+        try{
+          await axios.post(`${API_URL}add-group-chore`, { 
+            group_chore_name: chore_name,
+            assign_to: assign_to.value,
+            recurrence: selectedRec.value,
+            group_id: selectedGroup.value,
+            username: username
+          });
 
-        await Promise.all(tasks.map(group_task_name =>
-          axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value, username: username })
-        ));
+          await Promise.all(tasks.map(group_task_name =>
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value, username: username })
+          ));
+        } catch (error) {
+          Alert.alert("Error: ", error.response.data.message);
+        }
       }
 
       // reset everything -KK

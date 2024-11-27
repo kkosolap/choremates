@@ -1,21 +1,32 @@
 // blocks.js
 
-import React, { useEffect, useState, useRef } from 'react';
-import { Text, View, TouchableOpacity, TextInput } from 'react-native';
+import React from 'react';
+import { Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
+import { useGroupThemes } from '../contexts/GroupThemeProvider';
 import createStyles from '../style/styles';
-import themes from '../style/colors';
 import { completeChore, completeTask, completeGroupChore, completeGroupTask } from '../functions/markCompleted.js';
-import { useGroupColors } from '../functions/groupColor.js';
 
-import colors from '../style/colors';
 
 // block for displaying a chore in weekly list
-export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
+export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence, onToggleVisibility, visible, refresh }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+
+  const currentDay = new Date().getDay(); // 0 = Sunday, ..., 6 = Saturday
+  const targetDay = 0; // Sunday (0)
+  const daysUntilSunday = (targetDay - currentDay + 7) % 7;
+
+  const recurrenceTextMap = {
+    "Daily": "11:59pm",
+    "Weekly":
+      daysUntilSunday === 0 ? "11:59pm"
+      : daysUntilSunday === 1 ? "Tomorrow"
+      : `in ${daysUntilSunday} Days`,
+    "Just Once": "never"
+  };
   
   const handleToggleChoreCompletion = (user, chore_name) => {
     completeChore(user, chore_name, tasks)
@@ -46,73 +57,75 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, onToggleVi
       {/* Chore Title */}
       <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
 
-      {/* Conditionally render Edit pencil if tasks visible */}
+      {/* Render tasks if visible  -MH */}
       {visible && (
-        <TouchableOpacity
-          style={styles.editChoreButton}
-          onPress={() => onEdit(choreName)}
-        >
-          <Icon name="pencil" size={22} color={theme.text3} />
-        </TouchableOpacity>
-      )}
+        <>
+          {tasks.length > 0 ? (
+            // if there are tasks to display
+            tasks.map(({ id, task, completed }) => (
+              <View key={id} style={styles.taskContainer}>
+                <View style={styles.taskAndCheck}>
+                  {/* Checkbox */}
+                  <TouchableOpacity
+                    style={styles.taskCheck}
+                    onPress={() => handleToggleTaskCompletion(user, choreName, task)}
+                  >
+                    <Icon
+                      name={completed ? "checkbox-outline" : "square-outline"}
+                      size={24}
+                      color={completed ? theme.text3 : theme.text1}
+                    />
+                  </TouchableOpacity>
 
-      {/* Render tasks if visible */}
-      {visible && tasks.length > 0 && tasks.map(({ id, task, completed }) => (
-        <View key={id} style={styles.taskContainer}>
-          <View style={styles.taskAndCheck}>
-            {/* checkbox */}
-            <TouchableOpacity
-              style={styles.taskCheck}
-              onPress={() => handleToggleTaskCompletion(user, choreName, task)}
-            >
-              <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.text3 : theme.text1} />
-            </TouchableOpacity> 
-
-            {/* task text */}
-            <Text style={[styles.taskText, completed && styles.taskTextCompleted]}>
-              {task}
-            </Text>
-          </View>
-
-          {/* delete button */}
-          {isEditing && (
-            <TouchableOpacity
-              onPress={() => onDelete(choreName, task)}
-            >
-              <Icon name="close-outline" size={24} color={theme.text3} />
-            </TouchableOpacity>
+                  {/* Task Text */}
+                  <Text style={[styles.taskText, completed && styles.taskTextCompleted]}>
+                    {task}
+                  </Text>
+                </View>
+              </View>
+            ))
+          ) : (
+            // if NO tasks to display
+            <View style={styles.taskContainer}>
+              <Text style={styles.emptySectionText}>No tasks</Text>
+            </View>
           )}
-        </View>
-      ))}
 
-      {/* Input for adding a task if editing */}
-      {visible && isEditing && (
-        <View style={styles.addTaskContainer}>
-          <TextInput
-            style={styles.addTaskInput}
-            placeholder="add a new task . . ."
-            placeholderTextColor={theme.text3}
-            value={newTask}
-            onChangeText={setNewTask}
-            selectionColor={theme.text2}
-            onSubmitEditing={() => onAddTask(choreName)}
-          />
-
-          <TouchableOpacity
-            onPress={() => onAddTask(choreName)}
-          >
-            <Icon name="arrow-forward-circle-outline" size={30} color={theme.text3} />
-          </TouchableOpacity>
-          
-        </View>
+          {/* Show Due Date (if tasks visible and not completed) */}
+          {!completed && (
+            <View style={styles.dueDateContainer}>
+              {recurrence !== "Just Once" ? (
+                <Text style={styles.dueDateText}>Due: {recurrenceTextMap[recurrence]}</Text>
+              ) : (
+                <Text style={styles.dueDateText}>No Due Date</Text>
+              )}
+            </View>
+          )}
+        </>
       )}
+
+      
     </TouchableOpacity>
   );
 };
 
-export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, onToggleVisibility, visible, onEdit, onDelete, isEditing, newTask, setNewTask, onAddTask, refresh }) => {
+export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, recurrence, onToggleVisibility, visible, refresh }) => {
   const { theme } = useTheme();
-  const styles = createStyles(themes)
+  const { groupThemes } = useGroupThemes();
+  const styles = createStyles(groupThemes[group_id]);
+
+  const currentDay = new Date().getDay(); // 0 = Sunday, ..., 6 = Saturday
+  const targetDay = 0; // Sunday (0)
+  const daysUntilSunday = (targetDay - currentDay + 7) % 7;
+
+  const recurrenceTextMap = {
+    "Daily": "11:59pm",
+    "Weekly":
+      daysUntilSunday === 0 ? "11:59pm"
+      : daysUntilSunday === 1 ? "Tomorrow"
+      : `in ${daysUntilSunday} Days`,
+    "Just Once": "never"
+  };
 
   const handleToggleChoreCompletion = (group_id, chore_name) => {
     completeGroupChore(group_id, chore_name, tasks)
@@ -126,35 +139,9 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
       .catch((error) => console.error("Error toggling task:", error));
   };
 
-  const { groupColors } = useGroupColors(user);
-
-  const groupColor = groupColors[group_id];
-
-  const desaturatedColors = {
-    yellow: colors.yellow.desaturated,
-    green: colors.green.desaturated,
-    blue: colors.blue.desaturated,
-    purple: colors.purple.desaturated,
-    pink: colors.pink.desaturated,
-  };
-
-  const lighterColors = {
-    yellow: colors.yellow.lighter,
-    green: colors.green.lighter,
-    blue: colors.blue.lighter,
-    purple: colors.purple.lighter,
-    pink: colors.pink.lighter,
-  };
-
-  const notCompletedColor = lighterColors[groupColor] || colors.purple.lighter;
-  const completedColor = desaturatedColors[groupColor] || colors.purple.desaturated;
-
   return (
     <TouchableOpacity
-      style={[
-        completed ? styles.choreBlockCompleted : styles.choreBlock,
-        { backgroundColor: completed ? completedColor : notCompletedColor}
-      ]}
+      style={completed ? styles.choreBlockCompleted : styles.choreBlock}
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
@@ -169,72 +156,58 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
       {/* Chore Title */}
       <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
 
-      {/* Conditionally render Edit pencil if tasks visible */}
-      {visible && (
-        <TouchableOpacity
-          style={styles.editChoreButton}
-          onPress={() => onEdit(choreName)}
-        >
-          <Icon name="pencil" size={22} color={theme.text3} />
-        </TouchableOpacity>
-      )}
-
       {/* Render tasks if visible */}
-      {visible && tasks.length > 0 && tasks.map(({ id, task, completed }) => (
-        <View key={id} style={styles.taskContainer}>
-          <View style={styles.taskAndCheck}>
-            {/* checkbox */}
-            <TouchableOpacity
-              style={styles.taskCheck}
-              onPress={() => handleToggleTaskCompletion(group_id, choreName, task)}
-            >
-              <Icon name={completed ? "checkbox-outline" : "square-outline"} size={24} color={completed ? theme.text3 : theme.text1} />
-            </TouchableOpacity> 
+      {visible && (
+        <>
+          {tasks.length > 0 ? (
+            // if there are tasks to display
+            tasks.map(({ id, task, completed }) => (
+              <View key={id} style={styles.taskContainer}>
+                <View style={styles.taskAndCheck}>
+                  {/* Checkbox */}
+                  <TouchableOpacity
+                    style={styles.taskCheck}
+                    onPress={() => handleToggleTaskCompletion(group_id, choreName, task)}
+                  >
+                    <Icon
+                      name={completed ? "checkbox-outline" : "square-outline"}
+                      size={24}
+                      color={completed ? theme.text3 : theme.text1}
+                    />
+                  </TouchableOpacity>
 
-            {/* task text */}
-            <Text style={[styles.taskText, completed && styles.taskTextCompleted]}>
-              {task}
-            </Text>
-          </View>
-
-          {/* delete button */}
-          {isEditing && (
-            <TouchableOpacity
-              onPress={() => onDelete(choreName, task, group_id)}
-            >
-              <Icon name="close-outline" size={24} color={theme.text3} />
-            </TouchableOpacity>
+                  {/* Task Text */}
+                  <Text style={[styles.taskText, completed && styles.taskTextCompleted]}>
+                    {task}
+                  </Text>
+                </View>
+              </View>
+            ))
+          ) : (
+            // if NO tasks to display
+            <View style={styles.taskContainer}>
+              <Text style={styles.emptySectionText}>No tasks</Text>
+            </View>
           )}
-        </View>
-      ))}
 
-      {/* Input for adding a task if editing */}
-      {visible && isEditing && (
-        <View style={styles.addTaskContainer}>
-          <TextInput
-            style={styles.addTaskInput}
-            placeholder="add a new task . . ."
-            placeholderTextColor={theme.text3}
-            value={newTask}
-            onChangeText={setNewTask}
-            selectionColor={theme.text2}
-            onSubmitEditing={() => onAddTask(choreName, group_id)}
-          />
-
-          <TouchableOpacity
-            onPress={() => onAddTask(choreName, group_id)}
-          >
-            <Icon name="arrow-forward-circle-outline" size={30} color={theme.text3} />
-          </TouchableOpacity>
-          
-        </View>
+          {/* Show Due Date (if tasks visible and not completed) */}
+          {!completed && (
+            <View style={styles.dueDateContainer}>
+              {recurrence !== "Just Once" ? (
+                <Text style={styles.dueDateText}>Due: {recurrenceTextMap[recurrence]}</Text>
+              ) : (
+                <Text style={styles.dueDateText}>No Due Date</Text>
+              )}
+            </View>
+          )}
+        </>
       )}
     </TouchableOpacity>
   );
 };
 
 // block for displaying a chore on home page
-export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence }) => {
+export const HomeChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
@@ -259,37 +232,13 @@ export const ChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence })
 };
 
 // block for displaying group chores on home page
-export const GroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence, user, group_id }) => {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
-
-  const { groupColors } = useGroupColors(user);
-  const groupColor = groupColors[group_id];
-
-  const lighterColors = {
-    yellow: colors.yellow.lighter,
-    green: colors.green.lighter,
-    blue: colors.blue.lighter,
-    purple: colors.purple.lighter,
-    pink: colors.pink.lighter,
-  };
-  const lightestColors = {
-    yellow: colors.yellow.lightest,
-    green: colors.green.lightest,
-    blue: colors.blue.lightest,
-    purple: colors.purple.lightest,
-    pink: colors.pink.lightest,
-  };
-
-  const lightestColor = lightestColors[groupColor] || colors.purple.lighter;
-  const lighterColor = lighterColors[groupColor] || colors.purple.lighter;
+export const HomeGroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence, user, group_id }) => {
+  const { groupThemes } = useGroupThemes();
+  const styles = createStyles(groupThemes[group_id]);
 
   return (
     <TouchableOpacity
-      style={[
-        styles.homeChoreBlock,
-        { backgroundColor: groupColor ? lightestColor : theme.lightest, borderColor:  groupColor ? lighterColor : theme.lighter}
-      ]}   
+      style={styles.homeChoreBlock}
       onPress={() => onOpenChoreDetails(
         choreName,
         tasks

@@ -378,7 +378,7 @@ app.post('/get-perms', async (req, res) => {
 // every minute for test purposes - AT
 cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
 cron.schedule('0 0 * * *',  () => { resetAndRotateChores('Daily'); });
-cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); }); // resets every monday
+cron.schedule('0 0 * * 1',  () => { resetAndRotateChores('Weekly'); }); // resets every midnight after Sunday (12am Monday)
 
 // function to handle single user recurrence -AT
 async function resetAndRotateChores(type) {
@@ -524,7 +524,7 @@ app.post('/add-chore', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-chore: Duplicate chore name.");
-            return res.status(400).send("This chore already exists!");
+            return res.status(400).json({ message: `Cannot create chore ${chore_name}. This chore already exists!` });
         }
 
         const query = "INSERT INTO chores (user_id, chore_name, recurrence) VALUES (?, ?, ?)";
@@ -532,7 +532,7 @@ app.post('/add-chore', async (req, res) => {
         res.status(200).json({ message: "Chore added successfully." });
     } catch (error) {
         console.error("API add-chore: Error:", error.message);
-        res.status(500).send("An error occurred while adding the chore.");
+        res.status(500).json({ message: 'An internal server error occurred.' });
     }
 });
 
@@ -546,6 +546,14 @@ app.post('/update-chore', async (req, res) => {
         }
 
         const user_id = await getUserId(username);
+
+        if (old_chore_name != new_chore_name) { 
+            const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, new_chore_name]);
+            if (duplicate.length > 0) {
+                console.log("API add-chore: Duplicate chore name.");
+                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists!` });
+            }
+        }
         
         // Update the chore details in the database
         const query = `
@@ -640,10 +648,11 @@ app.post('/add-task', async (req, res) => {
 
         const user_id = await getUserId(username);
         const { chore_id, is_completed } = await getChoreIdAndCompletionStatus(chore_name, user_id);
+        
         const [duplicate] = await db.promise().query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id]);
         if (duplicate.length > 0) {
             console.log("API add-task: Duplicate task name.");
-            return res.status(400).send("This task already exists!");
+            return res.status(400).json({ message: `Cannot create task ${task_name}. This task already exists for this chore!` });
         }
 
         // add the task to the database -KK
@@ -656,7 +665,7 @@ app.post('/add-task', async (req, res) => {
         res.status(200).json({ message: "Changed completion successfully." });
     } catch (error) {
         console.error("API add-task: Error:", error.message);
-        res.status(500).send("An error occurred while adding the task.");
+        res.status(500).json({ message: 'An internal server error occurred.' });
     }
 });
    
@@ -737,6 +746,11 @@ app.post('/create-group', async (req, res) => {
         return res.status(400).json({ error: "Missing group name or username" });
     }
 
+    // check if group name is too long
+    if (group_name.length > 14) {
+        return res.status(400).json({ error: "Group name must be less than 15 characters" });
+    }
+
     const user_id = await getUserId(username);
 
     // insert the new group into group_names
@@ -784,6 +798,37 @@ app.get('/get-group-members', (req, res) => {
     });
 });
 
+// get number of members in a group -EL
+// input: group_id
+// output: {member_count: integer}
+app.get('/get-group-size', (req, res) => {
+    const { group_id } = req.query;
+
+    if (!group_id) {
+        return res.status(400).json({ error: "Group ID is required" });
+    }
+
+    // query to count the number of members in the group
+    const countMembersQuery = `
+        SELECT COUNT(*) AS member_count 
+        FROM group_members 
+        WHERE group_id = ?
+    `;
+
+    db.query(countMembersQuery, [group_id], (err, results) => {
+        if (err) {
+            console.error("API get-group-size: Error retrieving member count: ", err.message);
+            return res.status(500).json({ error: "Failed to retrieve group member count" });
+        }
+
+        // return the count of members
+        res.status(200).json({ member_count: results[0].member_count });
+    });
+});
+
+
+
+
 // returns the id and name of all the groups that the user is a member/admin of -KK
 // input: username
 // output: group_id, group_name 
@@ -815,41 +860,80 @@ app.post('/get-all-groups-for-user', async (req, res) => {
 });
 
 // send an invitation, only 'admin' can invite -EL
-// input: inviter_name, invitee_name, group_id
+// input: inviter_name (username), invitee_name (username), group_id
 app.post('/send-invite', async (req, res) => {
     const { inviter_name, invitee_name, group_id } = req.body;
 
-    const inviter_id = await getUserId(inviter_name);
-    const invitee_id = await getUserId(invitee_name);
+    try {
+        // query to fetch user_id
+        const userIdQuery = "SELECT id FROM users WHERE username = ?";
 
-    // check if inviter is an admin in the group
-    const adminCheckQuery = `
-        SELECT role FROM group_members 
-        WHERE user_id = ? AND group_id = ? AND role = 'admin'
-    `;
+        // check if inviter exists
+        const [inviterResults] = await db.promise().query(userIdQuery, [inviter_name]);
 
-    db.query(adminCheckQuery, [inviter_id, group_id], (err, results) => {
-        if (err) {
-            console.error("API send-invite: Error checking admin role when inviting: ", err.message);
-            return res.status(500).json({ error: "Failed to verify inviter's role" });
+        if (inviterResults.length === 0) {
+            console.error("API send-invite: Inviter does not exist");
+            return res.status(404).json({ error: `Inviter '${inviter_name}' does not exist` });
         }
-        if (results.length === 0) {
+        const inviter_id = inviterResults[0].id;
+
+        // check if invitee exists
+        const [inviteeResults] = await db.promise().query(userIdQuery, [invitee_name]);
+
+        if (inviteeResults.length === 0) {
+            console.error("API send-invite: Invitee does not exist");
+            return res.status(404).json({ error: `Invitee '${invitee_name}' does not exist` });
+        }
+        const invitee_id = inviteeResults[0].id;
+
+        // check if the inviter is an admin in the group
+        const adminCheckQuery = `
+            SELECT role FROM group_members 
+            WHERE user_id = ? AND group_id = ? AND role = 'admin'
+        `;
+
+        const [adminResults] = await db.promise().query(adminCheckQuery, [inviter_id, group_id]);
+
+        if (adminResults.length === 0) {
             return res.status(403).json({ error: "Only admins can invite members to the group" });
         }
 
-        // insert invitation into group_invitations table
+        // check if the invitee is already in the group
+        const checkMemberQuery = `
+            SELECT * FROM group_members 
+            WHERE user_id = ? AND group_id = ?
+        `;
+        const [memberResults] = await db.promise().query(checkMemberQuery, [invitee_id, group_id]);
+
+        if (memberResults.length > 0) {
+            console.error("API send-invite: Invitee is already in the group");
+            return res.status(400).json({ error: "User already in the group" });
+        }
+
+        // check if there is a pending invitation for the invitee
+        const checkInvitationQuery = `
+            SELECT * FROM group_invitations 
+            WHERE invitee_id = ? AND group_id = ? AND status = 'pending'
+        `;
+        const [invitationResults] = await db.promise().query(checkInvitationQuery, [invitee_id, group_id]);
+
+        if (invitationResults.length > 0) {
+            console.error("API send-invite: Invitee already has a pending invitation from the group");
+            return res.status(400).json({ error: "This user already has a pending invitation from the group" });
+        }
+
+        // insert the invitation into the group_invitations table
         const insertInvitationQuery = `
             INSERT INTO group_invitations (inviter_id, invitee_id, group_id, status)
             VALUES (?, ?, ?, 'pending')
         `;
-        db.query(insertInvitationQuery, [inviter_id, invitee_id, group_id], (err, result) => {
-            if (err) {
-                console.error("API send-invite: Error creating invitation: ", err.message);
-                return res.status(500).json({ error: "Failed to send invitation" });
-            }
-            res.status(200).json({ message: "Invitation sent successfully" });
-        });
-    });
+        await db.promise().query(insertInvitationQuery, [inviter_id, invitee_id, group_id]);
+
+        res.status(200).json({ message: "Invitation sent successfully" });
+    } catch (error) {
+        console.error("API send-invite: Unexpected error: ", error.message);
+        res.status(500).json({ error: "An unexpected error occurred" });
+    }
 });
 
 // get received pending invitations for a specific user -EL
@@ -1282,7 +1366,7 @@ app.post('/add-group-chore', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-group-chore: Duplicate chore name.");
-            return res.status(400).send("This chore already exists for this group!");
+            return res.status(400).json({ message: `Cannot create chore ${group_chore_name}. This chore already exists for this group!` });
         }
 
         const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to, rotation_enabled) VALUES (?, ?, ?, ?, ?)";
@@ -1290,7 +1374,7 @@ app.post('/add-group-chore', async (req, res) => {
         res.status(200).json({ message: "Chore added to group successfully." });
     } catch (error) {
         console.error("API add-group-chore: Error:", error.message);
-        res.status(500).send("An error occurred while adding the chore to the group.");
+        res.status(500).json({ message: 'An internal server error occurred.' });
     }
 });
 
@@ -1312,6 +1396,14 @@ app.post('/update-group-chore', async (req, res) => {
         }
 
         const { group_chore_id } = await getGroupChoreIdAndCompletionStatus(old_chore_name, group_id);
+
+        if (old_chore_name != new_chore_name){ 
+            const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, new_chore_name]);
+            if (duplicate.length > 0) {
+                console.log("API update-group-chore: Duplicate chore name.");
+                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists for this group!` });
+            }
+        }
 
         // Update the chore details in the database
         const query = `
@@ -1502,36 +1594,44 @@ app.post('/match-group-task', async (req, res) => {
     }
 });
 
-app.get('/get-group-color', async (req, res) => {
+// get all saved group color themes for a specific user -MH
+app.get('/get-group-themes', async (req, res) => {
     try {
-      const { user_id, group_id } = req.query;
-  
-      if (!user_id || !group_id) {
-        console.log("API get-group-color: Missing user_id or group_id");
-        return res.status(400).json({ error: "Missing user_id or group_id" });
-      }
-
-      const [rows] = await db.promise().query(
-        "SELECT group_color FROM group_members WHERE user_id = ? AND group_id = ?",
-        [user_id, group_id]
-      );
-  
-      if (rows.length > 0) {
-        res.json({ group_color: rows[0].group_color });
-      } else {
-        res.status(404).json({ error: "Group color not found" });
-      }
+        const { username } = req.query;
+        if (!username) {
+            console.log("API get-group-themes: Missing username.");
+            return res.status(400).send("Missing username.");
+        }
+        const user_id = await getUserId(username);
+    
+        if (!user_id) {
+            console.log("API get-group-themes: Missing user_id");
+            return res.status(400).json({ error: "Missing user_id" });
+        }
+    
+        // Fetch group themes for the user
+        const [rows] = await db.promise().query(
+            `SELECT group_id, group_color AS theme
+            FROM group_members
+            WHERE user_id = ?`,
+            [user_id]
+        );
+    
+        if (rows.length > 0) {
+            res.json(rows); // Return found themes [{ group_id, theme }]
+          } else {
+            res.json([]); // Return empty array if no data found
+          }
     } catch (error) {
-      console.error("API get-group-color: Error fetching group color:", error.message);
-      res.status(500).json({ error: `Internal server error: ${error.message}` });
+        console.error("API get-group-themes: Error fetching group themes:", error.message);
+        res.status(500).json({ error: `Internal server error: ${error.message}` });
     }
-  });
+});
 
-app.post('/update-group-color', async (req, res) => {
+// change a user's color theme for a specific group  -VA
+app.post('/update-group-theme', async (req, res) => {
     const { username, group_id, group_color } = req.body;
-    // console.log("Request Body:", req.body);  // Add this to debug
-    // console.log('Received:', username, group_id, group_color);
-  
+
     // Validate input
     if (!username || !group_id || !group_color) {
       return res.status(400).json({ success: false, error: 'Missing parameters' });
@@ -1559,7 +1659,7 @@ app.post('/update-group-color', async (req, res) => {
       console.error('Error updating group color:', error);
       return res.status(500).json({ success: false, error: 'Internal server error' });
     }
-  });
+});
 
 
 // keep this at the very bottom of the file -KK

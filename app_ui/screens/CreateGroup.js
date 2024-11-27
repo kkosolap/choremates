@@ -7,6 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
+import { useGroupThemes } from '../contexts/GroupThemeProvider';
 import { RegisterHeader } from '../components/headers.js';
 
 import axios from 'axios';
@@ -17,7 +18,10 @@ import { API_URL } from '../config.js';
 const CreateGroupScreen = () => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    const { changeGroupTheme } = useGroupThemes();
+
     const navigation = useNavigation();
+
     const [groupName, setGroupName] = useState('');
     const [username, setUsername] = useState(null);
 
@@ -34,20 +38,19 @@ const CreateGroupScreen = () => {
     }, []);
 
     const handleCreateGroup = async () => {
-        if (!groupName) {
-            Alert.alert('Please enter a group name');
-            return;
-        }
         try {
             const response = await axios.post(`${API_URL}create-group`, {
                 group_name: groupName,
                 username: username,
             });
             Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
+            
+            changeGroupTheme(username, response.data.group_id, theme.name); // set default group color to current theme  -MH
+            
             navigation.goBack();
         } catch (error) {
             console.error("Error creating group:", error);
-            Alert.alert("Failed to create group.");
+            Alert.alert(error.response.data.error);
         }
     };
 

@@ -71,7 +71,7 @@ const ManageDisplay = ({ navigation }) => {
             })
             .catch((error) => {
               console.error("Error removing member: ", error);
-              alert("Failed to remove the member.");
+              alert(error.response.data.error);
             });
           },
         },
@@ -104,7 +104,7 @@ const ManageDisplay = ({ navigation }) => {
               })
               .catch((error) => {
                 console.error("Error disbanding group: ", error);
-                alert("Failed to disband the group.");
+                alert(error.response.data.error);
               });
           },
         },
@@ -125,7 +125,7 @@ const ManageDisplay = ({ navigation }) => {
     })
     .catch((error) => {
       console.error("Error updating permission: ", error);
-      alert("Failed to update permission.");
+      alert(error.response.data.error);
     });
   };
 

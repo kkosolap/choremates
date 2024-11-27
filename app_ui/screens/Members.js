@@ -1,6 +1,6 @@
 // Members.js -NN
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from 'react-native-vector-icons';
@@ -16,28 +16,30 @@ import { API_URL } from '../config.js';
 
 // used to reference image paths stored locally
 const avatarMap = {
-  // to  be remove
-  duck: require('../icons/duck.jpg'),
-
   pinkAvatar: require('../icons/pinkAvatar.jpg'),
-  blueAvatar: require('../icons/blueAvatar.jpg'),
-  purpleAvatar: require('../icons/purpleAvatar.jpg'),
-  greenAvatar: require('../icons/greenAvatar.jpg'),
-  yellowAvatar: require('../icons/yellowAvatar.jpg'),
   pinkCat: require('../icons/cat_pink.jpg'),
-  pinkBee: require('../icons/bee_pink.jpg'),
-  blueSlug: require('../icons/slug_blue.jpg'),
-  bluePig: require('../icons/pig_blue.jpg'),
-  purpleRabbit: require('../icons/rabbit_purple.jpg'),
-  purpleMouse: require('../icons/mouse_purple.jpg'),
   pinkSheep: require('../icons/sheep_pink.jpg'),
-  purpleFox: require('../icons/fox_purple.jpg'),
-  greenDog: require('../icons/dog_green.jpg'),
-  greenDuck: require('../icons/duck_green.jpg'),
+  pinkBear: require('../icons/bear_pink.jpg'),
+
+  yellowAvatar: require('../icons/yellowAvatar.jpg'),
+  yellowMouse: require('../icons/mouse_yellow.jpg'),
   yellowFrog: require('../icons/frog_yellow.jpg'),
   yellowTurtle: require('../icons/turtle_yellow.jpg'),
-  orangeDino: require('../icons/dino_orange.jpg'),
-  orangePigeon: require('../icons/pigeon_orange.jpg'),
+
+  greenAvatar: require('../icons/greenAvatar.jpg'),
+  greenDog: require('../icons/dog_green.jpg'),
+  greenDuck: require('../icons/duck_green.jpg'),
+  greenRabbit: require('../icons/rabbit_green.jpg'),
+
+  blueAvatar: require('../icons/blueAvatar.jpg'),
+  blueSlug: require('../icons/slug_blue.jpg'),
+  bluePig: require('../icons/pig_blue.jpg'),
+  blueBee: require('../icons/bee_blue.jpg'),
+
+  purpleAvatar: require('../icons/purpleAvatar.jpg'),
+  purpleFox: require('../icons/fox_purple.jpg'),
+  purplePigeon: require('../icons/pigeon_purple.jpg'),
+  purpleDino: require('../icons/dino_purple.jpg'),
 };
 
 const MembersScreen = ({ navigation }) => {
@@ -49,13 +51,10 @@ const MembersScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
-<ScreenHeader
-  title={`${groupName}'s Members`}
-  navigation={navigation}
-  style={{ flexShrink: 1, maxWidth: '60%' }}
-  numberOfLines={1}
-  adjustsFontSizeToFit={true}
-/>
+      <ScreenHeader
+        title={`${groupName}'s Members`}
+        navigation={navigation}
+      />
 
       <MembersDisplay
         navigation={navigation}
@@ -110,7 +109,7 @@ const MembersDisplay = ({ username, navigation }) => {
             setIsAdmin(true);
           }
         } catch (error) {
-          Alert.alert('Error retrieving group members: ' + error.message);
+          Alert.alert(error.response.data.error);
         }
       };
 

@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import createStyles from '../style/styles';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
+import { DisplayDate } from '../components/date.js';
 import { ActiveChoreBlock, ActiveGroupChoreBlock } from '../components/blocks.js';
 import { SectionTabButton } from '../components/buttons.js';
 
@@ -34,14 +35,6 @@ const ChoresDisplay = () => {
   const styles = createStyles(theme);
 
   const [username, setUsername] = useState(null);
-  
-  const [showToDo, setShowToDo] = useState(true); // tracks whether you're on the To-Do or Completed tab
-
-  const [personalData, setPersonalData] = useState([]);
-  const [groupData, setGroupData] = useState([]);
-  const [task_name, setNewTask] = useState('');  
-  const [groupColors, setGroupColors] = useState({});
-
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -60,10 +53,12 @@ const ChoresDisplay = () => {
     [])
   );
 
-  // State for grouped personal tasks
+  // State for grouped personal tasks  -MH
+  const [personalData, setPersonalData] = useState([]);
   const [groupedPersonalTasksCompleted, setGroupedPersonalTasksCompleted] = useState({});
   const [groupedPersonalTasksToDo, setGroupedPersonalTasksToDo] = useState({});
 
+  // Load personal chores  -MH
   useEffect(() => {
     if (!personalData) return; // safety check for null/undefined personalData
 
@@ -85,6 +80,7 @@ const ChoresDisplay = () => {
       if (!targetGroup[task.chore_name]) {
         targetGroup[task.chore_name] = {
           is_completed: task.chore_is_completed,
+          recurrence: task.chore_recurrence,
           tasks: [],
         };
       }
@@ -104,10 +100,12 @@ const ChoresDisplay = () => {
     setGroupedPersonalTasksToDo(toDo);
   }, [personalData]); // runs when personalData changes
 
-  // State for grouped group tasks
+  // State for grouped group tasks  -MH
+  const [groupData, setGroupData] = useState([]);
   const [groupedGroupTasksCompleted, setGroupedGroupTasksCompleted] = useState({});
   const [groupedGroupTasksToDo, setGroupedGroupTasksToDo] = useState({});
 
+  // Load group chores  -MH
   useEffect(() => {
     if (!groupData) return; // safety check for null/undefined groupData
 
@@ -130,6 +128,7 @@ const ChoresDisplay = () => {
         targetGroup[task.group_chore_name] = {
           group_id: task.group_id,
           is_completed: task.chore_is_completed,
+          recurrence: task.chore_recurrence,
           group_tasks: []
         };
       }
@@ -151,7 +150,6 @@ const ChoresDisplay = () => {
 
   // State for visible tasks
   const [visibleTasks, setVisibleTasks] = useState({}); // tracks which chores have visible tasks -MH
-  const [editing, setEditing] = useState(null); // tracks which chores are being edited -KK
 
   // toggle the visibility of tasks for a chore -KK
   const toggleVisibility = (chore_name) => {
@@ -159,55 +157,13 @@ const ChoresDisplay = () => {
       ...prevState,
       [chore_name]: !prevState[chore_name],
     }));
-
-    // set edit to null when toggling visibility -MH
-    setEditing(null);
-  };
-
-  // add task button -KK
-  const addTask = (chore_name) => {
-    axios.post(`${API_URL}add-task`, { chore_name, task_name, username}).then((response) => {
-      setNewTask('');          // reset the input -KK
-      refresh(username);       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  const addGroupTask = (group_chore_name, group_id) => {
-    axios.post(`${API_URL}add-group-task`, { 
-      group_chore_name, 
-      group_task_name: task_name, 
-      group_id,
-      username: username
-    }).then((response) => {
-      setNewTask('');          // reset the input -KK
-      refresh(username);       // refresh ltask list after updating -KK
-    })
-    .catch((error) => console.error(error));
-  };
-
-  // delete task button -KK
-  const deleteTask = async (chore_name, task_name) => {
-    await axios.post(`${API_URL}delete-task`, { chore_name, task_name, username}).then((response) => {
-        refresh(username);     // refresh task list after updating -KK
-      })
-      .catch((error) => console.error(error));
-  };
-
-  const deleteGroupTask = async (group_chore_name, group_task_name, group_id) => {
-    await axios.post(`${API_URL}delete-group-task`, { 
-      group_chore_name, 
-      group_task_name, 
-      group_id,
-      username: username
-    }).then(refresh(username)).catch((error) => console.error(error)); // refresh task list after updating -KK
   };
 
   // fetch the task list for display -KK
   const refresh = async (username) => {
     // get all the personal chore data for the user -KK
     await axios.post(`${API_URL}get-chores-data`, { username }).then((response) => setPersonalData(response.data))
-    .catch((error) => console.error(error)); 
+    .catch((error) => console.error(error));
 
     // get all the group chore ids for the user -KK
     const response = await axios.post(`${API_URL}get-all-groups-for-user`, { username }).catch((error) => console.error(error));
@@ -228,6 +184,7 @@ const ChoresDisplay = () => {
   };
 
   // Check if on To-Do or Completed Tab
+  const [showToDo, setShowToDo] = useState(true); // tracks whether you're on the To-Do or Completed tab
   const personalChoresToShow = showToDo ? groupedPersonalTasksToDo : groupedPersonalTasksCompleted;
   const groupChoresToShow = showToDo ? groupedGroupTasksToDo : groupedGroupTasksCompleted;
   const emptyDisplayText = showToDo ? "No Chores To-Do!" : "No Completed Chores";
@@ -236,6 +193,8 @@ const ChoresDisplay = () => {
   // page content -MH
   return (
     <View style={styles.content}>
+
+      <DisplayDate />
 
       <View style={styles.choreSectionTabs}>
         <SectionTabButton
@@ -259,24 +218,21 @@ const ChoresDisplay = () => {
             // If there are Chores To Show
             <>
             {/* personal chores */}
-            {Object.keys(personalChoresToShow).map((chore_name) => (
-              <ActiveChoreBlock
-                user={username}
-                key={chore_name}
-                choreName={chore_name}
-                tasks={personalChoresToShow[chore_name].tasks}
-                completed={personalChoresToShow[chore_name].is_completed}
-                visible={visibleTasks[chore_name]}
-                onToggleVisibility={toggleVisibility}
-                onEdit={() => setEditing(editing === chore_name ? null : chore_name)}
-                onDelete={deleteTask}
-                isEditing={editing === chore_name}
-                newTask={task_name}
-                setNewTask={setNewTask}
-                onAddTask={addTask}
-                refresh={refresh}
-              />
-            ))}
+            {Object.keys(personalChoresToShow).map((chore_name) => {
+              return (
+                <ActiveChoreBlock
+                  user={username}
+                  key={chore_name}
+                  choreName={chore_name}
+                  tasks={personalChoresToShow[chore_name].tasks}
+                  completed={personalChoresToShow[chore_name].is_completed}
+                  recurrence={personalChoresToShow[chore_name].recurrence}
+                  visible={visibleTasks[chore_name]}
+                  onToggleVisibility={toggleVisibility}
+                  refresh={refresh}
+                />
+              );
+            })}
 
             {/* group chores */}
             {Object.keys(groupChoresToShow).map((group_chore_name) => (
@@ -287,14 +243,9 @@ const ChoresDisplay = () => {
                 choreName={group_chore_name}
                 tasks={groupChoresToShow[group_chore_name].group_tasks}
                 completed={groupChoresToShow[group_chore_name].is_completed}
+                recurrence={groupChoresToShow[group_chore_name].recurrence}
                 visible={visibleTasks[group_chore_name]}
                 onToggleVisibility={toggleVisibility}
-                onEdit={() => setEditing(editing === group_chore_name ? null : group_chore_name)}
-                onDelete={deleteGroupTask}
-                isEditing={editing === group_chore_name}
-                newTask={task_name}
-                setNewTask={setNewTask}
-                onAddTask={addGroupTask}
                 refresh={refresh}
               />
             ))}
