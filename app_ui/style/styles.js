@@ -435,6 +435,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
+      marginTop: 5,
     },
     logoutButtonText: {
       color: theme.white,
@@ -558,7 +559,7 @@ const createStyles = (theme) => {
       width: '80%',
     },
     addChoreButton: {
-      marginTop: 25,
+      marginTop: 15,
       width: '80%',
       height: 60,
       borderRadius: 10,
@@ -577,7 +578,7 @@ const createStyles = (theme) => {
       fontSize: 18,
     },
     deleteChoreButton: {
-      marginTop: 25,
+      marginTop: 15,
       width: '80%',
       height: 40,
       borderRadius: 10,
@@ -589,10 +590,7 @@ const createStyles = (theme) => {
     // switch to toggle rotation - AT
     switchContainer: {
       flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between', // Ensures label and switch are at opposite edges
-      marginVertical: 10,
-      //paddingHorizontal: 10, // Adds spacing on both sides
+      marginBottom: 12,
     },
     switchLabel: {
       fontSize: 16,
@@ -611,17 +609,20 @@ const createStyles = (theme) => {
     switchTrack: {
       flex: 1,
       borderRadius: 25, // Match the switch wrapper for consistency
-      backgroundColor: '#ccc',
+      backgroundColor: theme.desaturated,
       justifyContent: 'center', // Center the thumb vertically
     },
     switchActiveTrack: {
-      backgroundColor: '#4CAF50', // Green for active state
+      backgroundColor: theme.main,
+    },
+    switchActiveTrackDisabled: {
+      backgroundColor: theme.gray, // active state but not editable
     },
     switchThumb: {
       width: 20, // Size of the thumb
       height: 20,
       borderRadius: 10, // Fully circular thumb
-      backgroundColor: '#fff', // White thumb for contrast
+      backgroundColor: theme.white, // White thumb for contrast
       elevation: 2, // Subtle shadow for a 3D effect
       position: 'absolute', // Allow smooth sliding
     },

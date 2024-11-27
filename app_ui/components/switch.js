@@ -41,7 +41,7 @@ const Switch = ({ isOn, onToggle, label, disabled }) => {
     <View style={styles.switchContainer}>
       {label && <Text style={styles.switchLabel}>{label}</Text>}
       <TouchableOpacity
-        activeOpacity={0.7}
+        activeOpacity={0.8}
         onPress={toggleSwitch}
         disabled={disabled}
         style={styles.switchWrapper}
@@ -50,6 +50,7 @@ const Switch = ({ isOn, onToggle, label, disabled }) => {
           style={[
             styles.switchTrack,
             switchState ? styles.switchActiveTrack : {},
+            disabled ? styles.switchActiveTrackDisabled : {},
           ]}
         >
           <Animated.View

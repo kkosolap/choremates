@@ -169,6 +169,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
         if (savedValue !== null) {
           setRotationEnabled(savedValue ? JSON.parse(savedValue) : false);
         }
+        else {
+          setRotationEnabled(false); // if no value exists, set a default value
+        }
       } catch (error) {
         console.error('Error loading rotationEnabled state:', error);
       }
@@ -414,7 +417,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           <>
             {/* Editable */}
             <View style={styles.switchContainer}>
-              <Text style={styles.label}>Enable Rotation </Text>
+              <Text style={styles.label}>Rotate Assignment: </Text>
               <Switch
                 isOn={rotationEnabled}
                 onToggle={handleRotationToggle}
@@ -425,7 +428,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           <>
             {/* Not editable */}
             <View style={styles.switchContainer}>
-              <Text style={styles.label}>Enable Rotation </Text>
+              <Text style={styles.label}>Rotate Assignment: </Text>
               <Switch
                 isOn={rotationEnabled}
                 onToggle={() => {}} // You can also disable the toggle if needed
