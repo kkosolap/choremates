@@ -59,7 +59,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
   ];
   const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
-  const [rotationEnabled, setRotationEnabled] = useState(routed_rotation || false);
+  
+  // rotation state - AT
+  const [rotationEnabled, setRotationEnabled] = useState(routed_rotation);
   
 
   // assignment dropdown data
@@ -165,7 +167,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
       try {
         const savedValue = await AsyncStorage.getItem(`rotationEnabled_${routed_chore_name}`);
         if (savedValue !== null) {
-          setRotationEnabled(JSON.parse(savedValue));
+          setRotationEnabled(savedValue ? JSON.parse(savedValue) : false);
         }
       } catch (error) {
         console.error('Error loading rotationEnabled state:', error);
@@ -233,29 +235,17 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // Function to handle rotation switch toggle - AT
   const handleRotationToggle = async (value) => {
+    /*
     try {
       // Update the local state immediately
       setRotationEnabled(value);
   
       // save state of toggle even when switch screens
       await AsyncStorage.setItem(`rotationEnabled_${routed_chore_name}`, JSON.stringify(value));
-
-      // Only make an API call if the chore is part of a group and is not a "Just Once" recurrence
-      if (selectedRec.value !== 'Just Once' && choreGroup.label !== 'Personal') {
-        await axios.post(`${API_URL}update-group-chore`, {
-          old_chore_name: routed_chore_name,  
-          new_chore_name: chore_name,  
-          group_id: choreGroup.value,  
-          recurrence: selectedRec.value,  
-          rotation_enabled: value,  
-          assign_to: assign_to.value,  
-          username: username 
-        });
-
-      }
     } catch (error) {
       console.error('Error updating rotation_enabled:', error);
-    }
+    }*/
+      setRotationEnabled(value); // Update only local state
   };
   
 
@@ -281,8 +271,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
             username: username
           });
         }
-        //console.log('APP UI cheking value of rotation enabled: ', response.data.rotation_enabled);
-        //setRotationEnabled(response.data.rotation_enabled);
+
+        await AsyncStorage.setItem(`rotationEnabled_${routed_chore_name}`, JSON.stringify(rotationEnabled));
 
         // add/remove tasks in database to match list in edit details window
         await updateTasksInDatabase();

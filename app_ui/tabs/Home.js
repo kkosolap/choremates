@@ -134,13 +134,14 @@ const HomeDisplay = () => {
   };
 
   // open ChoreDetails page above current page
-  const openChoreDetails = (chore_name, grouped_tasks, recurrence, group_id, assigned_to) => {
+  const openChoreDetails = (chore_name, grouped_tasks, recurrence, group_id, assigned_to, rotation_enabled) => {
     navigation.navigate('ChoreDetails', {
       routed_chore_name: chore_name,
       routed_tasks: grouped_tasks,
       routed_recurrence: recurrence,
       routed_group_id: group_id,
-      routed_assignment: assigned_to
+      routed_assignment: assigned_to,
+      routed_rotation: rotation_enabled
     });
   };
 
