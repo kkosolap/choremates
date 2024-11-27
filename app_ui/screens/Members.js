@@ -52,7 +52,7 @@ const MembersScreen = ({ navigation }) => {
   return (
     <View style={styles.screen}>
       <ScreenHeader
-        title={`${groupName}'s Members`}
+        title={`${groupName}`}
         navigation={navigation}
       />
 
@@ -166,28 +166,30 @@ const MembersDisplay = ({ username, navigation }) => {
     <View style={styles.content}>
       <FlatList
           data={members}
+          style={styles.membersList}
+          contentContainerStyle={[styles.centeredContent, styles.memberListPadding]}
           keyExtractor={(item) => item.username}
           renderItem={({ item }) => (
-              <View style={styles.memberItem}>
-                  {item.profilePic ? (
-                    <Image
-                      source={
-                        avatarMap[item.profilePic]
-                          ? avatarMap[item.profilePic]
-                          : { uri: item.profilePic }
-                      }
-                      style={styles.profileImage}
-                    />
-                  ) : (
-                    <Text >No Image</Text>
-                  )}
-                  <Text style={styles.memberName}>{item.display_name}</Text>
-                  {item.role === 'admin' ? (
-                    <Ionicons name="star" size={25} color="gold" />
-                  // ) : item.role === 'member' ? (
-                  //   <Ionicons name="eye" size={25} color="white" />
-                  ) : null}
-              </View>
+            <View style={styles.memberItem}>
+                {item.profilePic ? (
+                  <Image
+                    source={
+                      avatarMap[item.profilePic]
+                        ? avatarMap[item.profilePic]
+                        : { uri: item.profilePic }
+                    }
+                    style={styles.profileImage}
+                  />
+                ) : (
+                  <Text >No Image</Text>
+                )}
+                <Text style={styles.memberName}>{item.display_name}</Text>
+                {item.role === 'admin' ? (
+                  <Ionicons name="star" size={28} color={theme.white} />
+                // ) : item.role === 'member' ? (
+                //   <Ionicons name="eye" size={25} color="white" />
+                ) : null}
+            </View>
           )}
       />
 
@@ -195,30 +197,32 @@ const MembersDisplay = ({ username, navigation }) => {
         // if admin show invite button
         <TouchableOpacity
           style={styles.inviteButton}
+          activeOpacity={0.8}
           onPress={handleInviteMember}
         >
-          <Text style={styles.manageCreateButtonText}>Invite Member</Text>
+          <Text style={styles.inviteButtonText}>Invite Member</Text>
         </TouchableOpacity>
       )}
 
       {isAdmin ? (
         // if admin show group button
         <TouchableOpacity
-          style={styles.manageCreateButton}
+          style={styles.manageGroupButton}
+          activeOpacity={0.8}
           onPress={handleManageGroup}
         >
-          <Text style={styles.manageCreateButtonText}>Manage Group</Text>
+          <Text style={styles.manageGroupButtonText}>Manage Group</Text>
         </TouchableOpacity>
       ) : (
         // if not show leave group
         <TouchableOpacity
-          style={styles.logoutButton}
+          style={styles.leaveGroupButton}
+          activeOpacity={0.8}
           onPress={() => {
-            console.log('Leave Group button pressed');
             handleLeaveGroup();
           }}
         >
-          <Text style={styles.manageCreateButtonText}>Leave Group</Text>
+          <Text style={styles.manageGroupButtonText}>Leave Group</Text>
         </TouchableOpacity>
       )}
     </View>

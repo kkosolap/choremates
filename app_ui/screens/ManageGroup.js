@@ -166,12 +166,12 @@ const ManageDisplay = ({ navigation }) => {
       />
       <TouchableOpacity
           style={styles.logoutButton}
+          activeOpacity={0.8}
           onPress={() => {
-            console.log('Disband Group button pressed');
             handleDisbandGroup();
           }}
         >
-          <Text style={styles.manageCreateButtonText}>Disband Group</Text>
+          <Text style={styles.manageGroupButtonText}>Disband Group</Text>
       </TouchableOpacity>
     </View>
   );

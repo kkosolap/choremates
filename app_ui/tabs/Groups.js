@@ -180,23 +180,22 @@ const GroupsDisplay = () => {
 
             
             return (
-              <View
+              <TouchableOpacity
                 style={styles.groupItem}
+                activeOpacity={0.8}
+                onPress={() =>
+                  navigation.navigate('Members', {
+                    groupName: item.group_name,
+                    groupId: item.group_id,
+                    username: username,
+                  })
+                }
               >
                 {/* Group Item */}
-                <TouchableOpacity
-                  style={styles.groupItemTouchable} // or groupItem
-                  onPress={() =>
-                    navigation.navigate('Members', {
-                      groupName: item.group_name,
-                      groupId: item.group_id,
-                      username: username,
-                    })
-                  }
-                >
+                <View>
                   <Text style={styles.groupName}>{item.group_name}</Text>
                   <Text style={styles.groupSize}>{`${groupSize} members`}</Text>
-                </TouchableOpacity>
+                </View>
 
                 {/* Ellipsis Button */}
                 <TouchableOpacity
@@ -242,7 +241,7 @@ const GroupsDisplay = () => {
                     </View>
                   </Popover>
                 )}
-              </View>
+              </TouchableOpacity>
             );
           }}
           contentContainerStyle={{ paddingBottom: 20 }}
@@ -250,10 +249,11 @@ const GroupsDisplay = () => {
       )}
 
       <TouchableOpacity 
-        style={styles.manageCreateButton} 
+        style={styles.createGroupButton}
+        activeOpacity={0.8}
         onPress={() => navigation.navigate('CreateGroup')}
       >
-        <Text style={styles.manageCreateButtonText}>+ Create Group</Text>
+        <Text style={styles.createGroupButtonText}>+ Create Group</Text>
       </TouchableOpacity>
     </View>
   );

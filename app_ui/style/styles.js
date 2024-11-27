@@ -840,16 +840,54 @@ const createStyles = (theme) => {
     },
 
     // members page -NN
-    manageButton: {
-      position: 'absolute',
+    membersList: {
+      width: '100%',
+      backgroundColor: theme.white,
+      marginBottom: 90,
+      borderWidth: 2,
+      borderColor: theme.lightest,
+      borderRadius: 15,
+    },
+    memberListPadding: {
+      paddingTop: 10,
+    },
+    manageGroupButton: {
       width: '80%',
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      position: 'absolute',
+      bottom: 50,
     },
-    manageCreateButtonText: {
+    manageGroupButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 20,
+    },
+    leaveGroupButton: {
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.red,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 70,
+    },
+    inviteButton: {
+      width: '50%',
+      paddingVertical: 10,
+      marginBottom: 10,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 100,
+    },
+    inviteButtonText: {
       color: theme.white,
       fontWeight: 'bold',
       fontSize: 18,
@@ -874,15 +912,12 @@ const createStyles = (theme) => {
     // members card - NN
     memberItem: {
       flexDirection: 'row',
-      justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 20,
-      marginVertical: 15,
-      borderColor: theme.gray,
-      borderWidth: 1,
-      borderRadius: 20,
-      width: 350, 
-      alignSelf: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 13,
+      marginBottom: 15,
+      borderRadius: 30,
+      width: 370, 
       backgroundColor: theme.lighter,
     },
     memberName: {
@@ -897,10 +932,10 @@ const createStyles = (theme) => {
       fontSize: 20,
     },
     profileImage: {
-      width: 40,
-      height: 40,
-      borderRadius: 25,
-      marginRight: 10,
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      marginRight: 5,
     },
 
     // manage members screen - NN
@@ -987,32 +1022,31 @@ const createStyles = (theme) => {
     },
 
     // create/invite button & pop-up - NN
-    manageCreateButton: {
-      marginTop:20,
+    createGroupButton: {
       width: '80%',
+      marginLeft: '10%',
+      marginTop: 20,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
     },
-    inviteButton: {
-      width: '35%',
-      height: 50,
-      borderRadius: 10,
-      backgroundColor: theme.main,
-      justifyContent: 'center',
-      alignItems: 'center',
+    createGroupButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 20,
     },
     groupInviteeInput: {
       width: '85%',
       height: 40,
       paddingHorizontal: 10,
       borderRadius: 5,
-      borderColor: theme.gray,
+      borderColor: theme.main,
       borderWidth: 1,
       marginBottom: 20,
-      backgroundColor: theme.lightGray,
+      backgroundColor: theme.white,
+      color: theme.text1,
     },
     submitButton: {
       width: '85%',
@@ -1025,7 +1059,7 @@ const createStyles = (theme) => {
     submitButtonText: {
       color: theme.white,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 18,
     },
     closeButton: {
       position: 'absolute',
@@ -1039,20 +1073,19 @@ const createStyles = (theme) => {
     // added so groups won't cut off like normal content styling  -MH
     groupDisplayContent: {
       flex: 1,
-      width: 400,
-      paddingLeft: 10,
-      alignItems: 'center',
+      width: '95%',
+      alignItems: 'stretch',
       justifyContent: 'flex-start',  // Start content at the top
-      // paddingTop: 10,
-      paddingBottom: 40,
+      paddingTop: 20,
+      paddingBottom: 50,
     },
     groupItem: {
-      width: '95%',
+      width: '92%',
+      marginLeft: '4%', // adjust based on above setting to center
       flexDirection: 'row',
-      alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 20,
-      paddingHorizontal: 20,
+      paddingVertical: 12,
+      paddingHorizontal: 15,
       marginTop: 10,
       marginBottom: 13,
       borderWidth: 2,
@@ -1064,6 +1097,11 @@ const createStyles = (theme) => {
       fontSize: 25,
       fontWeight: 'bold',
       flexShrink: 1,
+    },
+    groupSize: {
+      fontSize: 13,
+      color: theme.text2,
+      marginTop: 5,
     },
     groupColorPicker: {
       justifyContent: 'center',
@@ -1110,11 +1148,6 @@ const createStyles = (theme) => {
       textAlign: 'center',
       paddingVertical: 293,
     },
-    groupSize: {
-      fontSize: 13,
-      color: theme.gray,
-      marginTop: 5,
-    }
   });
 };
 
