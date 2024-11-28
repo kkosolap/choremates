@@ -2,7 +2,7 @@
 
 require('dotenv').config(); 
 
-const { app } = require('./index'); 
+const app = require('./index'); 
 
 const PORT = 3000;
 const API_URL = process.env.API_URL;
