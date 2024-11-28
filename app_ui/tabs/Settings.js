@@ -1,7 +1,7 @@
 // Settings.js
 
 import React, { useState, useCallback } from 'react';
-import { Text, View, Image, TextInput, TouchableOpacity, ScrollView} from 'react-native';
+import { Text, View, Image, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
@@ -108,6 +108,26 @@ const SettingsDisplay = () => {
     navigation.navigate('ChangeProfilePic');
   };
 
+  const confirmLogout = () => {
+    Alert.alert(
+      "Log Out",
+      "Confirm you want to log out of your account",
+      [
+        {
+          text: "Stay Signed In",
+          style: "cancel",
+        },
+        {
+          text: "Log Out",
+          onPress: () => {
+            handleLogout();
+          },
+          style: "destructive",       // only displays in iOS -VA
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <View style={styles.content}>
@@ -166,7 +186,7 @@ const SettingsDisplay = () => {
         <Text style={styles.sectionHeading}>Account</Text>
         <View style={styles.horizontalLine}></View>
 
-        <LogoutButton onLogout={handleLogout} />
+        <LogoutButton onLogout={confirmLogout} />
       </View>
     </View>
   );

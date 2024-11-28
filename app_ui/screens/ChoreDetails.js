@@ -4,15 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
 
-import { useTheme } from '../contexts/ThemeProvider.js';
+import { API_URL } from '../config';
 import createStyles from '../style/styles';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
-
-import axios from 'axios';
-import { API_URL } from '../config';
 
 
 // header and page content
@@ -207,7 +207,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
     } catch (error) {
       console.error("Error updating tasks in database:", error);
-      Alert.alert("Error: ", error.response.data.message);
+      Toast.show({
+        type: 'error',
+        text1: `Error updating tasks`,
+        text2: error.response?.data?.message || 'An unexpected error occurred',
+      });
     }
   };
 
@@ -241,7 +245,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
     } catch (error) {
         console.error("Error updating chore:", error);
-        Alert.alert("Error: ", error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: `Error updating chore`,
+          text2: error.response?.data?.message || 'An unexpected error occurred',
+        });
     }
   };
 

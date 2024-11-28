@@ -1,16 +1,15 @@
 // GroupInvitations.js - NN
 
 import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
-
-import { useTheme } from '../contexts/ThemeProvider.js';
-import createStyles from '../style/styles';
-import { ScreenHeader } from '../components/headers.js';
+import { Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import Toast from 'react-native-toast-message';
 import axios from 'axios';
-import { API_URL } from '../config';
 
+import { API_URL } from '../config';
+import createStyles from '../style/styles';
+import { useTheme } from '../contexts/ThemeProvider.js';
+import { ScreenHeader } from '../components/headers.js';
 
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
@@ -50,7 +49,7 @@ const GroupInvitations = ({ navigation, route }) => {
         }
       } catch (error) {
         console.error("Error fetching invitations:", error);
-        Alert.alert(error.response.data.error);
+
       }
     };
 
@@ -65,12 +64,31 @@ const GroupInvitations = ({ navigation, route }) => {
       });
       
       if (res.status === 200) {
-        Alert.alert(`Invitation ${response}ed successfully.`);
+        if(response == 'accepted'){
+          Toast.show({
+            type: 'success',
+            text1: 'Joined Group',
+            text2: `Invitation ${response} successfully`,
+          });
+        }
+        else if(response == 'rejected'){
+          Toast.show({
+            type: 'log',
+            text1: `Invitation ${response}`,
+            text2: `Declined to join group`,
+          });
+        }
+        
         navigation.goBack();
+
       }
     } catch (error) {
       console.error(`Failed to ${response} invitation:`, error);
-      Alert.alert(error.response.data.error);
+      Toast.show({
+        type: 'error',
+        text1: `Failed to ${response} invitation`,
+        text2: error.response?.data?.error || 'An unexpected error occurred',
+      });
     }
   };
 

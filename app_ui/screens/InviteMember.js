@@ -1,18 +1,16 @@
 // InviteMember.js -NN
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import * as SecureStore from 'expo-secure-store';
-
-import { useTheme } from '../contexts/ThemeProvider.js';
-import createStyles from '../style/styles.js';
-import { RegisterHeader } from '../components/headers.js';
-
-import axios from 'axios';
-import { API_URL } from '../config.js';
-
 import Toast from 'react-native-toast-message';
+import * as SecureStore from 'expo-secure-store';
+import axios from 'axios';
+
+import { API_URL } from '../config.js';
+import createStyles from '../style/styles.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
+import { RegisterHeader } from '../components/headers.js';
 
 // for inviting members -NN
 const InviteMemberScreen = () => {
@@ -29,7 +27,6 @@ const InviteMemberScreen = () => {
       const storedUsername = await SecureStore.getItemAsync('username');
       if (storedUsername) {
         setUsername(storedUsername);
-        //console.log(username);
       } else {
         console.error("UI Member.js: Username not found in SecureStore.");
       }

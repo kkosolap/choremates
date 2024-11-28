@@ -5,13 +5,14 @@ import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Delete from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
-import { useTheme } from '../contexts/ThemeProvider.js';
+import { API_URL } from '../config.js';
 import createStyles from '../style/styles.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import { ScreenHeader } from '../components/headers.js';
 
-import axios from 'axios';
-import { API_URL } from '../config.js';
 
 
 const ManageScreen = ({ navigation, route }) => {
@@ -66,12 +67,15 @@ const ManageDisplay = ({ navigation }) => {
                 setMembers((prevMembers) =>
                   prevMembers.filter((member) => member.username !== userToRemove)
                 );
-                alert("User removed successfully.");
               }
             })
             .catch((error) => {
               console.error("Error removing member: ", error);
-              alert(error.response.data.error);
+              Toast.show({
+                type: 'error',
+                text1: 'Error removing member',
+                text2: error.response?.data?.error || 'An unexpected error occurred',
+              });
             });
           },
         },
@@ -99,12 +103,20 @@ const ManageDisplay = ({ navigation }) => {
               },
             })
               .then(() => {
-                alert("Group has been disbanded.");
+                Toast.show({
+                  type: 'log',
+                  text1: 'Disbanded',
+                  text2: 'Group has been disbanded',
+                });
                 navigation.navigate('GroupsMain');
               })
               .catch((error) => {
                 console.error("Error disbanding group: ", error);
-                alert(error.response.data.error);
+                Toast.show({
+                  type: 'error',
+                  text1: 'Error disbanding group',
+                  text2: error.response?.data?.error || 'An unexpected error occurred',
+                });              
               });
           },
         },
@@ -121,11 +133,20 @@ const ManageDisplay = ({ navigation }) => {
       can_modify_chore: canModify,
     })
     .then((response) => {
-      alert(`${canModify ? 'Edit Access!' : 'View Only!'}`);
+      Toast.show({
+        type: 'success',
+        text1: `${canModify ? 'Edit Access' : 'View Only'}`,
+        text2: `${canModify ? `Edit-only access updated for ${userToUpdate}` : `View-only access updated for ${userToUpdate}`}`,
+      });
+      
     })
     .catch((error) => {
       console.error("Error updating permission: ", error);
-      alert(error.response.data.error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error updating permission',
+        text2: error.response?.data?.error || 'An unexpected error occurred',
+      });
     });
   };
 

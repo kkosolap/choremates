@@ -4,15 +4,13 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from 'react-native-vector-icons';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
+import { API_URL } from '../config.js';
+import createStyles from '../style/styles.js';
 import { ScreenHeader } from '../components/headers.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
-import createStyles from '../style/styles.js';
-
-
-import axios from 'axios';
-import { API_URL } from '../config.js';
-
 
 // used to reference image paths stored locally
 const avatarMap = {
@@ -109,7 +107,11 @@ const MembersDisplay = ({ username, navigation }) => {
             setIsAdmin(true);
           }
         } catch (error) {
-          Alert.alert(error.response.data.error);
+          Toast.show({
+            type: 'error',
+            text1: 'Failed to get groups',
+            text2: error.response?.data?.error || 'An unexpected error occurred',
+          });
         }
       };
 
@@ -148,12 +150,20 @@ const MembersDisplay = ({ username, navigation }) => {
               data: { username, group_id: groupId },
             })
             .then(() => {
-              alert("You have left the group.");
+              Toast.show({
+                type: 'log',
+                text1: 'Group Removed',
+                text2: 'You have left the group',
+              });
               navigation.navigate('GroupsMain');
             })
             .catch((error) => {
               console.error("Error leaving group: ", error);
-              alert("Failed to leave the group.");
+              Toast.show({
+                type: 'error',
+                text1: 'Failed to leave the group',
+                text2: error.response?.data?.error || 'An unexpected error occurred',
+              });
             });
           },
         },

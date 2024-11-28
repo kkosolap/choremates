@@ -33,15 +33,11 @@ import InviteMemberScreen from './screens/InviteMember.js';
 
 import ChangeProfilePicScreen from './screens/NewProfilePicture';
 
-
-
-
 /************************************************************ */
 /* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
 /************************************************************ */
 // Put this in .env, replace youripv4 with your ip address -EL
 // API_URL=http://youripv4:3000/
-
 
 /************************************************************ */
 /*                            TABS                            */
@@ -133,6 +129,8 @@ const App = () => {
             <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
           </NavigationContainer>
 
+
+          {/* Provides the non-disruptive alerts -VA */}
           <Toast
             position="top"
             topOffset={45}
@@ -147,6 +145,20 @@ const App = () => {
               ),
               error: (internalState) => (
                 <View style={[toastStyle.alertDisplay, { backgroundColor: '#eb403d' }]}>
+                  <View  style={{flexDirection: 'row'}}>
+                    <Icon name="alert-circle-outline" size={36} color="white" style={{paddingRight: 7}} />
+                      <View  style={{flexDirection: 'column'}}>
+
+                      <Text style={toastStyle.alertTitle}>{internalState.text1}</Text>
+                      <Text style={toastStyle.alertMessage}>{internalState.text2}</Text>
+                      </View>
+
+                  </View>
+
+                </View>
+              ),
+              log: (internalState) => (
+                <View style={[toastStyle.alertDisplay, { backgroundColor: '#a8a8a8' }]}>
                   <Text style={toastStyle.alertTitle}>{internalState.text1}</Text>
                   <Text style={toastStyle.alertMessage}>{internalState.text2}</Text>
                 </View>

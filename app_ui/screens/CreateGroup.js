@@ -4,15 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
-import { useTheme } from '../contexts/ThemeProvider.js';
+import { API_URL } from '../config.js';
 import createStyles from '../style/styles.js';
+import { useTheme } from '../contexts/ThemeProvider.js';
 import { useGroupThemes } from '../contexts/GroupThemeProvider';
 import { RegisterHeader } from '../components/headers.js';
-
-import axios from 'axios';
-import { API_URL } from '../config.js';
-
 
 // for creating groups -NN
 const CreateGroupScreen = () => {
@@ -43,14 +42,22 @@ const CreateGroupScreen = () => {
                 group_name: groupName,
                 username: username,
             });
-            Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
-            
+            // Alert.alert('Group created successfully', `Group ID: ${response.data.group_id}`);
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'New group created',
+              });
             changeGroupTheme(username, response.data.group_id, theme.name); // set default group color to current theme  -MH
             
             navigation.goBack();
         } catch (error) {
             console.error("Error creating group:", error);
-            Alert.alert(error.response.data.error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error fetching invitations',
+                text2: error.response?.data?.error || 'An unexpected error occurred',
+              });
         }
     };
 

@@ -1,9 +1,10 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
@@ -132,7 +133,11 @@ const NewChoreDisplay = ({ navigation }) => {
             axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
           ));
         } catch (error) {
-            Alert.alert("Error: ", error.response.data.message);
+            Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2: error.response?.data?.error || 'An unexpected error occurred',
+            });
         }
       }else{
         // add the group chore to the database -KK
@@ -149,7 +154,11 @@ const NewChoreDisplay = ({ navigation }) => {
             axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value, username: username })
           ));
         } catch (error) {
-          Alert.alert("Error: ", error.response.data.message);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: error.response?.data?.error || 'An unexpected error occurred',
+          });
         }
       }
 
