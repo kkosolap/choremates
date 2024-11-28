@@ -1,16 +1,16 @@
 // App.js
 
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { Text, View, StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
+import Toast from 'react-native-toast-message';
 
 import { ThemeProvider, useTheme } from './contexts/ThemeProvider';
 import { GroupThemeProvider } from './contexts/GroupThemeProvider';
-// import { UserProvider } from './contexts/UserContext.js';
 import { LogoutProvider } from './contexts/LogOutProvider';
 import createStyles from './style/styles';
 
@@ -133,11 +133,30 @@ const App = () => {
             <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
           </NavigationContainer>
 
+          <Toast
+            position="top"
+            topOffset={45}
+            visibilityTime={4250}
+            textStyle={{ fontSize: 18 }}
+            config={{
+              success: (internalState) => (
+              <View style={[toastStyle.alertDisplay, { backgroundColor: '#5eba50' }]}>
+                  <Text style={toastStyle.alertTitle}>{internalState.text1}</Text>
+                  <Text style={toastStyle.alertMessage}>{internalState.text2}</Text>
+                </View>
+              ),
+              error: (internalState) => (
+                <View style={[toastStyle.alertDisplay, { backgroundColor: '#eb403d' }]}>
+                  <Text style={toastStyle.alertTitle}>{internalState.text1}</Text>
+                  <Text style={toastStyle.alertMessage}>{internalState.text2}</Text>
+                </View>
+              ),
+            }}
+          />
+
       </LogoutProvider>
       </GroupThemeProvider>
       </ThemeProvider>
-    //</UserProvider>
-
   );
 };
 
@@ -206,5 +225,25 @@ const AppContent = ({ isLoggedIn, handleSignin }) => {
     </>
   );
 };
+
+const toastStyle = StyleSheet.create({
+  alertDisplay: {
+    backgroundColor: '#FF4D4D',
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginTop: 10,
+    width: '90%'
+  },
+  alertTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  alertMessage: {
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+});
 
 export default App;

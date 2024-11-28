@@ -12,6 +12,7 @@ import { RegisterHeader } from '../components/headers.js';
 import axios from 'axios';
 import { API_URL } from '../config.js';
 
+import Toast from 'react-native-toast-message';
 
 // for inviting members -NN
 const InviteMemberScreen = () => {
@@ -37,26 +38,35 @@ const InviteMemberScreen = () => {
   }, []);
 
     const handleSendInvitation = async () => {
-        if (!inviteeName) {
-          Alert.alert('Please enter the invitee name');
-          return;
-        }
-        console.log('Username:', username);
-        console.log('Invitee name:', inviteeName);
-        console.log('Group ID:', groupId);
-        try {
-          const response = await axios.post(`${API_URL}send-invite`, {
-            inviter_name: username,
-            invitee_name: inviteeName,
-            group_id: groupId,
+      if (!inviteeName) {
+          Toast.show({
+              type: 'error',
+              text1: 'Missing Info',
+              text2: 'Please enter the invitee name.',
           });
-          Alert.alert('Invitation sent successfully', `Invitation sent to user: ${inviteeName}`);
+          return;
+      }
+      try {
+          const response = await axios.post(`${API_URL}send-invite`, {
+              inviter_name: username,
+              invitee_name: inviteeName,
+              group_id: groupId,
+          });
+          Toast.show({
+              type: 'success',
+              text1: 'Invitation Sent',
+              text2: `Invitation sent to user: ${inviteeName}`,
+          });
           setInviteeName('');
-        } catch (error) {
+      } catch (error) {
           console.error("Error sending invitation:", error);
-          Alert.alert(error.response.data.error);
-        }
-      };
+          Toast.show({
+              type: 'error',
+              text1: 'Error Sending Invitation',
+              text2: error.response?.data?.error || 'An unexpected error occurred.',
+          });
+      }
+  };
 
     return (
         <View style={styles.screen}>

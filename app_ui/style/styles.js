@@ -1073,7 +1073,7 @@ const createStyles = (theme) => {
       fontSize: 13,
       color: theme.gray,
       marginTop: 5,
-    }
+    },
   });
 };
 
