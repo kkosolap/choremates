@@ -1690,8 +1690,5 @@ app.post('/update-group-theme', async (req, res) => {
 });
 
 
-// keep this at the very bottom of the file -KK
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}.`)
-    console.log(`Access server at ${process.env.API_URL}`)
-});
+// export app for testing
+module.exports = app;
