@@ -1206,6 +1206,44 @@ app.delete('/disband-group', (req, res) => {
     });
 });
 
+// let an admin change the group name --EL
+// input: new_group_name
+//        group_id 
+//        username (should be an admin)
+// output: if success, group name will be changed to new_group_name
+app.post('/change-group-name', async (req, res) => {
+    const { new_group_name, group_id, username } = req.body;
+
+    try {
+        // check if the user is an admin of the group
+        const adminCheckQuery = `
+            SELECT role FROM group_members 
+            INNER JOIN users ON group_members.user_id = users.id
+            WHERE users.username = ? AND group_members.group_id = ? AND role = 'admin'
+        `;
+
+        const [adminResults] = await db.promise().query(adminCheckQuery, [username, group_id]);
+
+        if (adminResults.length === 0) {
+            return res.status(403).json({ error: "You must be an admin to change the group name" });
+        }
+
+        // update the group name
+        const updateGroupNameQuery = `
+            UPDATE groups 
+            SET group_name = ? 
+            WHERE id = ?
+        `;
+
+        await db.promise().query(updateGroupNameQuery, [new_group_name, group_id]);
+
+        res.status(200).json({ message: "Group name updated successfully" });
+    } catch (error) {
+        console.error("API change-group-name: Unexpected error: ", error.message);
+        res.status(500).json({ error: "An unexpected error occurred" });
+    }
+});
+
 // let an admin update a group member's permission to modify (add, update, delete) group chores --EL
 // input: username (the admin)
 //        group_id 
