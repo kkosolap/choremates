@@ -13,8 +13,12 @@ const LogoutButton = ({ onLogout }) => {
 
   // call logout function when pressed
   return (
-    <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
-      <Text style={styles.logoutButtonText}>Log out</Text>
+    <TouchableOpacity
+      style={styles.logoutButton}
+      activeOpacity={0.8}
+      onPress={onLogout}
+    >
+      <Text style={styles.logoutButtonText}>Log Out</Text>
     </TouchableOpacity>
   );
 };

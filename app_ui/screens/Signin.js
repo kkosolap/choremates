@@ -61,11 +61,19 @@ const Signin = ({ onSignin }) => {
         onSubmitEditing={handleSignin}
       />
 
-      <TouchableOpacity style={styles.signinButton} onPress={handleSignin}>
+      <TouchableOpacity
+        style={styles.signinButton}
+        activeOpacity={0.8}
+        onPress={handleSignin}
+        >
         <Text style={styles.signinButtonText}>Sign in</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+      <TouchableOpacity
+        style={styles.registerButton}
+        activeOpacity={0.8}
+        onPress={handleRegister}
+      >
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
     </View>

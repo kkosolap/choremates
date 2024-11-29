@@ -239,10 +239,7 @@ export const HomeGroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recu
   return (
     <TouchableOpacity
       style={styles.homeChoreBlock}
-      onPress={() => onOpenChoreDetails(
-        choreName,
-        tasks
-      )}
+      onPress={onOpenChoreDetails}
       activeOpacity={0.8}
     >
 

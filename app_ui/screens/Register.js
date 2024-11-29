@@ -32,7 +32,6 @@ const Register = ({ navigation }) => {
   // UI
   return (
     <View style={styles.signinContainer}>
-        {/*<Text style={styles.signinTitle}>Register</Text>*/}
         <RegisterHeader title="Register" navigation={navigation} />
 
         <TextInput
@@ -50,7 +49,11 @@ const Register = ({ navigation }) => {
             onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.signinButton} onPress={handleRegister}>
+        <TouchableOpacity
+          style={styles.signinButton}
+          activeOpacity={0.8}
+          onPress={handleRegister}
+        >
             <Text style={styles.signinButtonText}>Register</Text>
         </TouchableOpacity>
     </View>
