@@ -15,6 +15,15 @@ const baseTheme = {
   active: '#4caf50', // Green
 };
 
+const pinkTheme = {
+  ...baseTheme,
+  main: '#DE6AAA',
+  lighter: '#ED98C7',
+  lightest: '#F0B8D7',
+  desaturated: '#EDDAE5',
+  name: "pink",
+};
+
 const yellowTheme = {
   ...baseTheme,
   main: '#DFBD60',
@@ -51,22 +60,13 @@ const purpleTheme = {
   name: "purple",
 };
 
-const pinkTheme = {
-  ...baseTheme,
-  main: '#DE6AAA',
-  lighter: '#ED98C7',
-  lightest: '#F0B8D7',
-  desaturated: '#EDDAE5',
-  name: "pink",
-};
-
 // all themes
 const themes = {
+  pink: pinkTheme,
   yellow: yellowTheme,
   green: greenTheme,
   blue: blueTheme,
   purple: purpleTheme,
-  pink: pinkTheme,
 };
 
 export default themes;

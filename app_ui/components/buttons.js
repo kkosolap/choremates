@@ -33,7 +33,7 @@ export const SettingsButton = ({ label, iconName, iconSize = 40, onClick }) => {
 };
 
 // for any button with an icon + text
-export const ThemeButton = ({ iconName = "color-palette", iconSize = 50, color, user }) => {
+export const ThemeButton = ({ iconName = "color-palette", iconSize = 55, color, user }) => {
   const { theme, changeTheme } = useTheme();
   
   return (

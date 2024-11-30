@@ -716,8 +716,8 @@ const createStyles = (theme) => {
       paddingRight: 20,
     },
     profilePictureCircle: {
-      width: 100,
-      height: 100,
+      width: 120,
+      height: 120,
       overflow: 'visible', // Crop any overflow for circular shape
     },
     profileNameLabel: {
@@ -808,10 +808,13 @@ const createStyles = (theme) => {
     themeIconContainer: {
       width: '100%',
       flexDirection: 'row',
-      alignItems: 'left',
-      justifyContent: 'flex-start',
-      paddingLeft: 10,
-    },  
+      //alignItems: 'left',
+      //justifyContent: 'flex-start',
+      //paddingLeft: 10,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+    },
 
     // notification section -KK
     notificationContainer: {
