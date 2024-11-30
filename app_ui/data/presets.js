@@ -202,4 +202,35 @@ const MiscChores = [
   },
 ];
 
+const AllChores = [
+  {
+    name: "Kitchen Chores",
+    list: KitchenChores
+  },
+  {
+    name: "Bathroom Chores",
+    list: BathroomChores
+  },
+  {
+    name: "Living Room Chores",
+    list: LivingRoomChores
+  },
+  {
+    name: "Bedroom Chores",
+    list: BedroomChores
+  },
+  {
+    name: "Laundry Room Chores",
+    list: LaundryRoomChores
+  },
+  {
+    name: "Pet Chores",
+    list: PetChores
+  },
+  {
+    name: "Misc Chores",
+    list: MiscChores
+  }
+];
 
+export default AllChores;

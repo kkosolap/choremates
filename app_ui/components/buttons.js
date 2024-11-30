@@ -64,3 +64,46 @@ export const SectionTabButton = ({ label, selected, onClick }) => {
     </TouchableOpacity>
   );
 };
+
+// "Use Preset" button on NewChore page  -MH
+export const UsePresetButton = ({onClick}) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return (
+    <TouchableOpacity
+      style={styles.presetButton}
+      activeOpacity={0.8}
+      onPress={onClick}
+    >
+      <View style={styles.presetButtonIcon}>
+        <Ionicons
+          name={"duplicate-outline"}
+          size={25}
+          color={theme.main} />
+      </View>
+      
+      <Text style={styles.presetButtonText}>
+        {"Use Preset"}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+// Button for each preset chore item on the Preset Menu
+export const PresetChoreButton = ({choreName, onClick}) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return (
+    <TouchableOpacity
+      style={styles.presetChoreItem}
+      activeOpacity={0.8}
+      onPress={onClick}
+    >
+      <Text style={styles.presetChoreItemText}>
+        {choreName}
+      </Text>
+    </TouchableOpacity>
+  );
+};

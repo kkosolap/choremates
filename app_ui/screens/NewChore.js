@@ -11,6 +11,7 @@ import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Dropdown from '../components/dropdown.js';
 import Switch from '../components/switch.js';
+import { UsePresetButton } from '../components/buttons.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -143,7 +144,7 @@ const NewChoreDisplay = ({ navigation }) => {
         } catch (error) {
             Alert.alert("Error: ", error.response.data.message);
         }
-      }else{
+      } else{
         // add the group chore to the database -KK
         try{
           await axios.post(`${API_URL}add-group-chore`, { 
@@ -190,6 +191,11 @@ const NewChoreDisplay = ({ navigation }) => {
     setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
   };
 
+  // open NewChore page above current page
+  const openPresetMenu = () => {
+    navigation.navigate('PresetMenu');
+  };
+
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
@@ -207,6 +213,10 @@ const NewChoreDisplay = ({ navigation }) => {
           value={chore_name}
           selectionColor={theme.text2}
           onChangeText={setChoreName}
+        />
+
+        <UsePresetButton
+          onClick={openPresetMenu}
         />
 
         {/* Group Dropdown */}

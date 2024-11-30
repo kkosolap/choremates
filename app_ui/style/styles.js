@@ -587,6 +587,41 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
 
+    // preset menu -MH
+    presetButton: {
+      position: 'absolute',
+      //top: 40,
+      right: 10,
+      justifyContent: 'left',
+      //backgroundColor: theme.lightest,
+    },
+    presetButtonIcon: {
+      justifyContent: 'center', 
+      alignItems: 'center',
+      position: 'absolute',
+      left: 0,
+    },
+    presetButtonText:  {
+      fontSize: 18, 
+      color: theme.main,
+      paddingLeft: 30,
+    },
+    choreCategoryList: {
+      width: '100%',
+      marginBottom: 15,
+    },
+    choreCategoryTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    presetChoreItem: {
+      backgroundColor: theme.lightest,
+      marginBottom: 5,
+    },
+    presetChoreItemText: {
+      fontSize: 18,
+    },
+
     // switch to toggle rotation - AT
     switchContainer: {
       flexDirection: 'row',

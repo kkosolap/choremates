@@ -23,6 +23,7 @@ import Signin from './screens/Signin';
 import Register from './screens/Register';
 
 import NewChoreScreen from './screens/NewChore';
+import PresetMenuScreen from './screens/PresetMenu';
 import ChoreDetailsScreen from './screens/ChoreDetails';
 
 import GroupInvitations from './screens/GroupInvitations';
@@ -32,8 +33,6 @@ import MembersScreen from './screens/Members.js';
 import InviteMemberScreen from './screens/InviteMember.js';
 
 import ChangeProfilePicScreen from './screens/NewProfilePicture';
-
-
 
 
 /************************************************************ */
@@ -55,6 +54,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
+      <Stack.Screen name="PresetMenu" component={PresetMenuScreen} />
       <Stack.Screen name="ChoreDetails" component={ChoreDetailsScreen} />
     </Stack.Navigator>
   );
