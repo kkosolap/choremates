@@ -148,14 +148,6 @@ const ChangeProfilePicScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => changePFP(username, 'purpleDino')} style={styles.setProfileIcon}>
           <Image source={purpleDino} style={styles.pfpImage} />
         </TouchableOpacity>
-
-
-        {/* duplicate as placeholder -VA */}
-
-        {/* <TouchableOpacity onPress={() => changePFP(username, 'orangeTurtle')} style={styles.setProfileIcon}>
-          <Image source={orangeTurtle} style={styles.pfpImage} />
-        </TouchableOpacity> */}
-
         
       </View>
     </View>

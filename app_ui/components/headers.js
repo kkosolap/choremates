@@ -50,8 +50,6 @@ export const ScreenHeader = ({ title, navigation }) => {
 
 // add back button to Register header
 export const RegisterHeader = ({ title, navigation }) => {
-  //const { theme } = useTheme();
-  //const styles = createStyles(theme);
   const styles = createStyles(themes.purple);
 
   return (
