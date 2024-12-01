@@ -824,9 +824,6 @@ app.get('/get-group-size', (req, res) => {
     });
 });
 
-
-
-
 // returns the id and name of all the groups that the user is a member/admin of -KK
 // input: username
 // output: group_id, group_name 
