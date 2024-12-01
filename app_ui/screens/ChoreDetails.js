@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import { LoadingVisual } from '../components/placeholders.js';
 import Dropdown from '../components/dropdown.js';
 import Switch from '../components/switch.js';
 
@@ -312,7 +313,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   return (
     <View style={styles.content}>
       {loading ? (
-        <Text>Loading...</Text> // Display a loader or placeholder
+        <LoadingVisual />
       ) : (
       <>
       <View style={styles.formContainer}>

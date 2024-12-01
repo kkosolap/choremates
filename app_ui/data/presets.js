@@ -54,7 +54,7 @@ const KitchenChores = [
 
 const BathroomChores = [
   {
-    chore_name: "Wipe bathroom countertop and sink",
+    chore_name: "Wipe bathroom counter and sink",
     recurrence: { label: 'Weekly', value: 'Weekly' }
   },
   {
@@ -93,14 +93,14 @@ const LivingRoomChores = [
     recurrence: { label: 'Weekly', value: 'Weekly' }
   },
   {
-    chore_name: "Dust living room surfaces and furniture",
+    chore_name: "Dust living room surfaces",
     recurrence: { label: 'Weekly', value: 'Weekly' }
   },
 ];
 
 const BedroomChores = [
   {
-    chore_name: "Make the bed",
+    chore_name: "Make bed",
     recurrence: { label: 'Daily', value: 'Daily' }
   },
   {

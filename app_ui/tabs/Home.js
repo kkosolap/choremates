@@ -11,6 +11,7 @@ import * as SecureStore from 'expo-secure-store';
 import createStyles from '../style/styles';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
+import { LoadingVisual } from '../components/placeholders.js';
 import { HomeChoreBlock, HomeGroupChoreBlock } from '../components/blocks.js';
 import { useGroupThemes } from '../contexts/GroupThemeProvider';
 
@@ -47,6 +48,8 @@ const HomeDisplay = () => {
   // list of a user's groups
   const [groupList, setGroupList] = useState([]);
 
+  const [loading, setLoading] = useState(true); 
+
   // Get user's groups and Collapse State -VA
   useEffect(() => {
     const getGroupsAndInitializeCollapseState = async () => {
@@ -73,6 +76,8 @@ const HomeDisplay = () => {
       } catch (error) {
         console.error(error);
       }
+
+      setLoading(false);
     };
   
     getGroupsAndInitializeCollapseState();
@@ -246,155 +251,164 @@ const HomeDisplay = () => {
   // page content -MH
   return (
     <View style={styles.content}>
-      {/* AddChore button */}
-      <TouchableWithoutFeedback
-        onPress={openAddChore}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      >
-        <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
-          <Icon name="add" size={40} color="#fff" />
-        </Animated.View>
-      </TouchableWithoutFeedback>
-
-      <Text style={styles.buttonDescription}>
-        add chore
-      </Text>
-
-      <View style={styles.spacer}></View>
-      <View style={styles.spacer}></View>
-      
-      {/* Personal Chores */}
-      <View style={styles.groupContentSection}>
-        {/* Heading */}
-        <TouchableOpacity
-          style={styles.groupChoreSectionLabel}
-          onPress={togglePersonalCollapse}
-          activeOpacity={0.8}
+      {loading ? (
+        <LoadingVisual />
+      ) : (
+        <>
+        {/* AddChore button */}
+        <TouchableWithoutFeedback
+          onPress={openAddChore}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
         >
-          {/* chevron icon */}
-          <Icon
-            type='font-awesome'
-            name={isPersonalCollapsed ? 'chevron-down' : 'chevron-up'}
-            style={styles.groupLabelChevron}
-            size={22}
-            color={theme.main}
-          />
+          <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
+            <Icon name="add" size={40} color="#fff" />
+          </Animated.View>
+        </TouchableWithoutFeedback>
 
-          {/* title */}
-          <Text style={styles.sectionHeading}>
-            Personal Chores
-          </Text>
-
-        </TouchableOpacity>
-
-        {/* Horizontal Line */}
-        <View style={styles.horizontalLine} />
-
-        {/* Collapsible Content */}
-        <View style={styles.fullWidth}>
-          <Collapsible collapsed={isPersonalCollapsed}>
-
-            {Object.keys(groupedPersonalTasks).length > 0 ? (
-              // Group WITH Chores
-              <View style={styles.homeChoresSection}>
-                {Object.keys(groupedPersonalTasks).map((chore_name) => (
-                  <HomeChoreBlock
-                    key={chore_name}
-                    choreName={chore_name}
-                    tasks={groupedPersonalTasks[chore_name].tasks}
-                    onOpenChoreDetails={() => openChoreDetails(
-                      chore_name,
-                      groupedPersonalTasks[chore_name].tasks,
-                      groupedPersonalTasks[chore_name].recurrence,
-                      -1,
-                      -1,
-                    )}
-                    recurrence={groupedPersonalTasks[chore_name].recurrence}
-                  />
-                ))}
-              </View>
-              
-            ) : (
-              // Group with NO Chores
-              <View style={styles.emptySectionSection}>
-                <Text style={styles.emptySectionText}>
-                  No Chores Created
-                </Text>
-              </View>
-            )
-          }
-
-          </Collapsible>
-        </View>
-      </View>
-{/* Group Chores */}
-{Object.keys(groupedGroupTasks).map((group_id) => {
-  // Dynamically generate styles for the current group
-  const groupStyles = createStyles(groupThemes[group_id] || theme);
-
-  return (
-    <View key={group_id} style={[styles.groupContentSection]}>
-      {/* Heading */}
-      <TouchableOpacity
-        onPress={() => toggleGroupCollapse(group_id)}
-        style={styles.groupChoreSectionLabel}
-        activeOpacity={0.8}
-      >
-        {/* Chevron Icon */}
-        <Icon
-          type='font-awesome'
-          name={isGroupCollapsed[group_id] ? 'chevron-down' : 'chevron-up'}
-          style={groupStyles.groupLabelChevron}
-          size={22}
-        />
-
-        {/* Title */}
-        <Text style={styles.sectionHeading}>
-          {groupedGroupTasks[group_id].group_name}
+        <Text style={styles.buttonDescription}>
+          add chore
         </Text>
-      </TouchableOpacity>
 
-      {/* Horizontal Line */}
-      <View style={[groupStyles.horizontalLine]} />
+        <View style={styles.spacer}></View>
+        <View style={styles.spacer}></View>
+        
+        {/* Personal Chores */}
+        <View style={styles.groupContentSection}>
+          {/* Heading */}
+          <TouchableOpacity
+            style={styles.groupChoreSectionLabel}
+            onPress={togglePersonalCollapse}
+            activeOpacity={0.8}
+          >
+            {/* chevron icon */}
+            <Icon
+              type='font-awesome'
+              name={isPersonalCollapsed ? 'chevron-down' : 'chevron-up'}
+              style={styles.groupLabelChevron}
+              size={22}
+              color={theme.main}
+            />
 
-      {/* Collapsible Content */}
-      <View style={[styles.fullWidth, groupStyles.collapsible]}>
-        <Collapsible collapsed={isGroupCollapsed[group_id]}>
-          {Object.keys(groupedGroupTasks[group_id].chores).length > 0 ? (
-            // Group WITH Chores
-            <View style={[styles.homeChoresSection, groupStyles.choresSection]}>
-              {Object.keys(groupedGroupTasks[group_id].chores).map((group_chore_name) => (
-                <HomeGroupChoreBlock
-                  key={group_chore_name}
-                  choreName={group_chore_name}
-                  tasks={groupedGroupTasks[group_id].chores[group_chore_name].group_tasks}
-                  onOpenChoreDetails={() => openChoreDetails(
-                    group_chore_name,
-                    groupedGroupTasks[group_id].chores[group_chore_name].group_tasks,
-                    groupedGroupTasks[group_id].chores[group_chore_name].recurrence,
-                    groupedGroupTasks[group_id].chores[group_chore_name].group_id,
-                    groupedGroupTasks[group_id].chores[group_chore_name].assigned_to
-                  )}
-                  recurrence={groupedGroupTasks[group_id].chores[group_chore_name].recurrence}
-                  user={username}
-                  group_id={group_id}
+            {/* title */}
+            <Text style={styles.sectionHeading}>
+              Personal Chores
+            </Text>
+
+          </TouchableOpacity>
+
+          {/* Horizontal Line */}
+          <View style={styles.horizontalLine} />
+
+          {/* Collapsible Content */}
+          <View style={styles.fullWidth}>
+            <Collapsible collapsed={isPersonalCollapsed}>
+
+              {Object.keys(groupedPersonalTasks).length > 0 ? (
+                // Group WITH Chores
+                <View style={styles.homeChoresSection}>
+                  {Object.keys(groupedPersonalTasks).map((chore_name) => (
+                    <HomeChoreBlock
+                      key={chore_name}
+                      choreName={chore_name}
+                      tasks={groupedPersonalTasks[chore_name].tasks}
+                      onOpenChoreDetails={() => openChoreDetails(
+                        chore_name,
+                        groupedPersonalTasks[chore_name].tasks,
+                        groupedPersonalTasks[chore_name].recurrence,
+                        -1,
+                        -1,
+                      )}
+                      recurrence={groupedPersonalTasks[chore_name].recurrence}
+                    />
+                  ))}
+                </View>
+                
+              ) : (
+                // Group with NO Chores
+                <View style={styles.emptySectionSection}>
+                  <Text style={styles.emptySectionText}>
+                    No Chores Created
+                  </Text>
+                </View>
+              )
+            }
+
+            </Collapsible>
+          </View>
+        </View>
+
+        {/* Group Chores */}
+        {Object.keys(groupedGroupTasks).map((group_id) => {
+          // Dynamically generate styles for the current group
+          const groupStyles = createStyles(groupThemes[group_id] || theme);
+
+          return (
+            <View key={group_id} style={[styles.groupContentSection]}>
+              {/* Heading */}
+              <TouchableOpacity
+                onPress={() => toggleGroupCollapse(group_id)}
+                style={styles.groupChoreSectionLabel}
+                activeOpacity={0.8}
+              >
+                {/* Chevron Icon */}
+                <Icon
+                  type='font-awesome'
+                  name={isGroupCollapsed[group_id] ? 'chevron-down' : 'chevron-up'}
+                  style={groupStyles.groupLabelChevron}
+                  size={22}
                 />
-              ))}
+
+                {/* Title */}
+                <Text style={styles.sectionHeading}>
+                  {groupedGroupTasks[group_id].group_name}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Horizontal Line */}
+              <View style={[groupStyles.horizontalLine]} />
+
+              {/* Collapsible Content */}
+              <View style={[styles.fullWidth, groupStyles.collapsible]}>
+                <Collapsible collapsed={isGroupCollapsed[group_id]}>
+                  {Object.keys(groupedGroupTasks[group_id].chores).length > 0 ? (
+                    // Group WITH Chores
+                    <View style={[styles.homeChoresSection, groupStyles.choresSection]}>
+                      {Object.keys(groupedGroupTasks[group_id].chores).map((group_chore_name) => (
+                        <HomeGroupChoreBlock
+                          key={group_chore_name}
+                          choreName={group_chore_name}
+                          tasks={groupedGroupTasks[group_id].chores[group_chore_name].group_tasks}
+                          onOpenChoreDetails={() => openChoreDetails(
+                            group_chore_name,
+                            groupedGroupTasks[group_id].chores[group_chore_name].group_tasks,
+                            groupedGroupTasks[group_id].chores[group_chore_name].recurrence,
+                            groupedGroupTasks[group_id].chores[group_chore_name].group_id,
+                            groupedGroupTasks[group_id].chores[group_chore_name].assigned_to
+                          )}
+                          recurrence={groupedGroupTasks[group_id].chores[group_chore_name].recurrence}
+                          user={username}
+                          group_id={group_id}
+                        />
+                      ))}
+                    </View>
+                  ) : (
+                    // Group with NO Chores
+                    <View style={[styles.emptySectionSection, groupStyles.emptySection]}>
+                      <Text style={[styles.emptySectionText, groupStyles.emptyText]}>
+                        No Chores Created
+                      </Text>
+                    </View>
+                  )}
+                </Collapsible>
+              </View>
             </View>
-          ) : (
-            // Group with NO Chores
-            <View style={[styles.emptySectionSection, groupStyles.emptySection]}>
-              <Text style={[styles.emptySectionText, groupStyles.emptyText]}>
-                No Chores Created
-              </Text>
-            </View>
-          )}
-        </Collapsible>
-      </View>
-    </View>
-  );
-})}
+          );
+        })}
+        </>
+      )}
+
+      
 
     </View>
   );

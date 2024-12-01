@@ -31,19 +31,7 @@ const PresetMenuScreen = ({ navigation }) => {
 const PresetMenuDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-
-  // extract the setter functions from route params
-  //const route = useRoute();
-  //const { setChoreName, setSelectedRec } = route.params;
-
-  // upon button click
-  /*
-  const selectPreset = (name, rec) => {
-    setChoreName(name);
-    setSelectedRec(rec);
-    navigation.goBack();
-  };
-  */
+  
   const selectPreset = (choreName, recurrence) => {
     navigation.navigate('NewChore', {
       choreName: choreName,

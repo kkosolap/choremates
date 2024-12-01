@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import createStyles from '../style/styles';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { TabHeader } from '../components/headers.js';
+import { LoadingVisual } from '../components/placeholders.js';
 import { DisplayDate } from '../components/date.js';
 import { ActiveChoreBlock, ActiveGroupChoreBlock } from '../components/blocks.js';
 import { SectionTabButton } from '../components/buttons.js';
@@ -35,6 +36,8 @@ const ChoresDisplay = () => {
   const styles = createStyles(theme);
 
   const [username, setUsername] = useState(null);
+
+  const [loading, setLoading] = useState(true); 
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -141,6 +144,8 @@ const ChoresDisplay = () => {
           completed: task.task_is_completed,
         });
       }
+
+      setLoading(false);
     });
 
     // update state with grouped tasks
@@ -214,6 +219,10 @@ const ChoresDisplay = () => {
           style={styles.scrollContainer}
           contentContainerStyle={styles.centeredContent}
         >
+          {loading ? (
+            <LoadingVisual />
+          ) : (
+          <>
           {Object.keys(personalChoresToShow).length > 0 || Object.keys(groupChoresToShow).length > 0  ? (
             // If there are Chores To Show
             <>
@@ -257,6 +266,8 @@ const ChoresDisplay = () => {
                 {emptyDisplayText}
               </Text>
             </View>
+          )}
+          </>
           )}
         </ScrollView>
       </View>

@@ -210,6 +210,8 @@ const createStyles = (theme) => {
       width: '100%',
       margin: 0,
     },
+
+    // empty chores section placeholder text  -MH
     emptySectionText: {
       fontSize: 16,
       fontWeight: '400',
@@ -225,6 +227,18 @@ const createStyles = (theme) => {
     emptyTasksSection: {
       width: '100%',
       marginBottom: 12,
+    },
+
+    // loading screen  -MH
+    loadingContainer: {
+      width: '100%',
+      alignItems: 'center',
+      marginTop: 25,
+    },
+    loadingText: {
+      fontSize: 18,
+      fontWeight: '300',
+      color: theme.text2,
     },
 
     // chores tab sections  -MH
@@ -609,6 +623,7 @@ const createStyles = (theme) => {
     choreCategoryList: {
       width: '100%',
       marginBottom: 15,
+      paddingHorizontal: 5,
     },
     choreCategoryTitle: {
       fontSize: 20,
@@ -1079,7 +1094,7 @@ const createStyles = (theme) => {
     createGroupButton: {
       width: '80%',
       marginLeft: '10%',
-      marginTop: 20,
+      marginTop: 10,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
@@ -1123,25 +1138,22 @@ const createStyles = (theme) => {
     },
     
     // groups display -NN
-
-    // added so groups won't cut off like normal content styling  -MH
     groupDisplayContent: {
       flex: 1,
-      width: '95%',
+      width: '100%',
       alignItems: 'stretch',
-      justifyContent: 'flex-start',  // Start content at the top
-      paddingTop: 20,
-      paddingBottom: 50,
+      justifyContent: 'flex-start',
+      marginBottom: -40,
     },
     groupItem: {
       width: '92%',
       marginLeft: '4%', // adjust based on above setting to center
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingVertical: 12,
+      paddingVertical: 14,
       paddingHorizontal: 15,
       marginTop: 10,
-      marginBottom: 13,
+      marginBottom: 17,
       borderWidth: 2,
       borderRadius: 10,
       backgroundColor: theme.lighter,
@@ -1153,7 +1165,7 @@ const createStyles = (theme) => {
       flexShrink: 1,
     },
     groupSize: {
-      fontSize: 13,
+      fontSize: 15,
       color: theme.text2,
       marginTop: 5,
     },
