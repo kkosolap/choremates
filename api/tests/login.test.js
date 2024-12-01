@@ -17,7 +17,7 @@ describe('POST /login', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();  // Clear mocks after each test
+    jest.clearAllMocks(); // Clear mocks after each test
   });
 
   // Username does not exist
