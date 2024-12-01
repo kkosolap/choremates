@@ -768,11 +768,16 @@ app.post('/create-group', async (req, res) => {
     });
 });
 
-// get all members and their roles of a specific group -EL
+// get group member info -EL
 // input: group_id
-// output: member name, role
+// output: member's username, member's display name, user_id, role
 app.get('/get-group-members', (req, res) => {
     const { group_id } = req.query;
+
+    // check if group_id is provided
+    if (!group_id) {
+        return res.status(400).json({ error: "Missing group_id" });
+    }
 
     // Query to retrieve member names for the specified group
     const getGroupMembersQuery = `
