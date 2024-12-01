@@ -937,6 +937,10 @@ app.post('/send-invite', async (req, res) => {
 app.get('/get-received-invite', async (req, res) => {
     const { username } = req.query;
 
+    if (!username) {
+        return res.status(400).json({ error: "Username is required" });
+    }
+
     const user_id = await getUserId(username);
 
     const sql = `SELECT * FROM group_invitations WHERE invitee_id = ? AND status = 'pending'`;
@@ -1000,6 +1004,10 @@ app.post('/respond-to-invite', (req, res) => {
 // output: isadmin : true/false 
 app.get('/get-is-admin', (req, res) => {
     const { username, group_id } = req.query;
+
+    if (!username || !group_id) {
+        return res.status(400).json({ error: "Username and group ID are required" });
+    }
 
     // query to check if the user is an admin in the specified group
     const checkAdminQuery = `
