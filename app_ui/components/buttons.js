@@ -91,7 +91,7 @@ export const UsePresetButton = ({onClick}) => {
 };
 
 // Button for each preset chore item on the Preset Menu
-export const PresetChoreButton = ({choreName, onClick}) => {
+export const PresetChoreButton = ({choreName, recurrence, onClick}) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   
@@ -101,8 +101,12 @@ export const PresetChoreButton = ({choreName, onClick}) => {
       activeOpacity={0.8}
       onPress={onClick}
     >
-      <Text style={styles.presetChoreItemText}>
+      <Text style={styles.presetChoreItemName}>
         {choreName}
+      </Text>
+
+      <Text style={styles.presetChoreItemRecurrence}>
+        {recurrence}
       </Text>
     </TouchableOpacity>
   );

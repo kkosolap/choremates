@@ -5,6 +5,7 @@ import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } 
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
@@ -41,7 +42,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const [username, setUsername] = useState(null);
   const [display, setDisplay] = useState(null);
   const [user_id, setUserID] = useState(null);
-  const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
+  const [choreName, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
 
@@ -125,21 +126,21 @@ const NewChoreDisplay = ({ navigation }) => {
   // Function to handle rotation switch toggle , saves state to send to ChoreDetails - AT
   const handleRotationToggle = async (value) => {
     setRotationEnabled(value);
-    await AsyncStorage.setItem(`rotationEnabled_${chore_name}`, JSON.stringify(value));
+    await AsyncStorage.setItem(`rotationEnabled_${choreName}`, JSON.stringify(value));
   };
 
   // Add the chore to the database
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
-    console.log("UI NewChore: adding chore " + chore_name + " to " + selectedGroup.label);
+    console.log("UI NewChore: adding chore " + choreName + " to " + selectedGroup.label);
     try {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
         try{
-          await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence: selectedRec.value });
+          await axios.post(`${API_URL}add-chore`, { chore_name: choreName, username, recurrence: selectedRec.value });
           // loop through tasks and add each one to the db -KK
           await Promise.all(tasks.map(task_name =>
-            axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
+            axios.post(`${API_URL}add-task`, { chore_name: choreName, task_name, username })
           ));
         } catch (error) {
             Alert.alert("Error: ", error.response.data.message);
@@ -148,7 +149,7 @@ const NewChoreDisplay = ({ navigation }) => {
         // add the group chore to the database -KK
         try{
           await axios.post(`${API_URL}add-group-chore`, { 
-            group_chore_name: chore_name,
+            group_chore_name: choreName,
             assign_to: assign_to.value,
             recurrence: selectedRec.value,
             group_id: selectedGroup.value,
@@ -157,7 +158,7 @@ const NewChoreDisplay = ({ navigation }) => {
           });
 
           await Promise.all(tasks.map(group_task_name =>
-            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value, username: username })
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: choreName, group_task_name, group_id: selectedGroup.value, username: username })
           ));
         } catch (error) {
           Alert.alert("Error: ", error.response.data.message);
@@ -196,6 +197,24 @@ const NewChoreDisplay = ({ navigation }) => {
     navigation.navigate('PresetMenu');
   };
 
+  // used to get preset choreName and recurrence
+  const route = useRoute();
+  
+  useEffect(() => {
+    setLoading(true); // Start loading
+    const timer = setTimeout(() => {
+      if (route.params?.choreName) {
+        setChoreName(route.params.choreName);
+      }
+      if (route.params?.selectedRec) {
+        setSelectedRec(route.params.selectedRec);
+      }
+      setLoading(false); // End loading after 1 second
+    }, 500); // Delay of 1 second
+  
+    return () => clearTimeout(timer); // Cleanup timeout when component unmounts
+  }, [route.params?.choreName, route.params?.selectedRec]);
+
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
@@ -210,7 +229,7 @@ const NewChoreDisplay = ({ navigation }) => {
           style={styles.choreNameInput}
           placeholder="Enter Chore Name . . ."
           placeholderTextColor={theme.text3}
-          value={chore_name}
+          value={choreName}
           selectionColor={theme.text2}
           onChangeText={setChoreName}
         />
@@ -250,7 +269,7 @@ const NewChoreDisplay = ({ navigation }) => {
           label="Select Item"
           data={recDropdownData}
           onSelect={setSelectedRec}
-          initialValue={initialRec}
+          initialValue={selectedRec}
         />
         
         {/* Conditional Rotation Switch if Recurrence Selected - AT */}

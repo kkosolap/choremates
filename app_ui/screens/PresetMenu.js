@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
-import Icon from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
@@ -34,16 +32,24 @@ const PresetMenuDisplay = ({ navigation }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
+  // extract the setter functions from route params
+  //const route = useRoute();
+  //const { setChoreName, setSelectedRec } = route.params;
 
-  //const toggleRotation = () => {
-  //  setRotationEnabled(prevState => !prevState); // Toggle rotationEnabled in NewChore.js
-  //};
-
-  // ..
-  const selectPreset = () => {
+  // upon button click
+  /*
+  const selectPreset = (name, rec) => {
+    setChoreName(name);
+    setSelectedRec(rec);
     navigation.goBack();
   };
-
+  */
+  const selectPreset = (choreName, recurrence) => {
+    navigation.navigate('NewChore', {
+      choreName: choreName,
+      selectedRec: recurrence,
+    });
+  };
 
   // ---------- Page Content ----------
   return (
@@ -63,7 +69,8 @@ const PresetMenuDisplay = ({ navigation }) => {
             <PresetChoreButton
               key={choreIndex}
               choreName={chore.chore_name}
-              onClick={selectPreset}
+              recurrence={chore.recurrence.label}
+              onClick={() => selectPreset(chore.chore_name, chore.recurrence)}
             />
           ))}
         </View>

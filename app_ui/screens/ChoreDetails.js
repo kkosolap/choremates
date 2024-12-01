@@ -62,7 +62,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
   
   // rotation state - AT
   const [rotationEnabled, setRotationEnabled] = useState(routed_rotation);
-  
 
   // assignment dropdown data
   const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);

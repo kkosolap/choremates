@@ -77,7 +77,6 @@ const Dropdown = ({ label, data, onSelect, initialValue }) => {
         onPress={toggleDropdown}
         ref={DropdownButton}
       >
-        
         <Text style={styles.dropdownButtonText}>
           {(selected && selected.label) || label}
         </Text>

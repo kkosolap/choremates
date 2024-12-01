@@ -177,7 +177,8 @@ const createStyles = (theme) => {
     },
     buttonDescription: {
       fontSize: 16,
-      marginTop: 8
+      marginTop: 8,
+      color: theme.main,
     },
 
     // home page chore sections
@@ -593,7 +594,6 @@ const createStyles = (theme) => {
       //top: 40,
       right: 10,
       justifyContent: 'left',
-      //backgroundColor: theme.lightest,
     },
     presetButtonIcon: {
       justifyContent: 'center', 
@@ -613,13 +613,26 @@ const createStyles = (theme) => {
     choreCategoryTitle: {
       fontSize: 20,
       fontWeight: 'bold',
+      marginBottom: 5,
     },
     presetChoreItem: {
       backgroundColor: theme.lightest,
       marginBottom: 5,
+      paddingVertical: 5,
+      paddingHorizontal: 15,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderRadius: 10,
     },
-    presetChoreItemText: {
+    presetChoreItemName: {
       fontSize: 18,
+      fontWeight: '400',
+      color: theme.text1,
+    },
+    presetChoreItemRecurrence: {
+      fontSize: 17,
+      fontWeight: '300',
+      color: theme.text2,
     },
 
     // switch to toggle rotation - AT
