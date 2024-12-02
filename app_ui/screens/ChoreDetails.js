@@ -161,25 +161,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
     setTasks(routed_tasks);
   }, [routed_chore_name, routed_tasks]);
 
-  // setting rotation state for chore - AT
-  useEffect(() => {
-    const loadRotationState = async () => {
-      try {
-        const savedValue = await AsyncStorage.getItem(`rotationEnabled_${routed_chore_name}`);
-        if (savedValue !== null) {
-          setRotationEnabled(savedValue ? JSON.parse(savedValue) : false);
-        }
-        else {
-          setRotationEnabled(false); // if no value exists, set a default value
-        }
-      } catch (error) {
-        console.error('Error loading rotationEnabled state:', error);
-      }
-    };
-
-    loadRotationState();
-  }, [routed_chore_name]);
-
   // Get the existing tasks for the chore from the database -MH
   const getExistingTasks = async () => {
     let response = null;
@@ -265,9 +246,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
             username: username
           });
         }
-
-        // gets and saves the rotation state - AT 
-        await AsyncStorage.setItem(`rotationEnabled_${routed_chore_name}`, JSON.stringify(rotationEnabled));
 
         // add/remove tasks in database to match list in edit details window
         await updateTasksInDatabase();

@@ -96,7 +96,6 @@ const HomeDisplay = () => {
       [group_id]: !prevState[group_id],
     }));
   };
-  const groupCollapsedInitialized = useRef(false);
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -181,6 +180,7 @@ const HomeDisplay = () => {
             group_id: group_task.group_id,
             is_completed: group_task.chore_is_completed,
             recurrence: group_task.chore_recurrence,
+            chore_rotation: group_task.chore_rotation,
             assigned_to: group_task.assigned_to,
             group_tasks: [],
           };
@@ -247,6 +247,8 @@ const HomeDisplay = () => {
     setGroupData(enrichedGroupData);
   };
   const { groupThemes } = useGroupThemes();
+
+  //console.log(JSON.stringify(groupedGroupTasks, null, 2));  // ******
 
   // page content -MH
   return (
@@ -316,8 +318,9 @@ const HomeDisplay = () => {
                         chore_name,
                         groupedPersonalTasks[chore_name].tasks,
                         groupedPersonalTasks[chore_name].recurrence,
-                        -1,
-                        -1,
+                        -1, // group id
+                        -1, // assigned to
+                        -1, // rotation enabled
                       )}
                       recurrence={groupedPersonalTasks[chore_name].recurrence}
                     />
@@ -373,7 +376,7 @@ const HomeDisplay = () => {
                 <Collapsible collapsed={isGroupCollapsed[group_id]}>
                   {Object.keys(groupedGroupTasks[group_id].chores).length > 0 ? (
                     // Group WITH Chores
-                    <View style={[styles.homeChoresSection, groupStyles.choresSection]}>
+                    <View style={[styles.homeChoresSection, groupStyles.homeChoresSection]}>
                       {Object.keys(groupedGroupTasks[group_id].chores).map((group_chore_name) => (
                         <HomeGroupChoreBlock
                           key={group_chore_name}
@@ -384,9 +387,11 @@ const HomeDisplay = () => {
                             groupedGroupTasks[group_id].chores[group_chore_name].group_tasks,
                             groupedGroupTasks[group_id].chores[group_chore_name].recurrence,
                             groupedGroupTasks[group_id].chores[group_chore_name].group_id,
-                            groupedGroupTasks[group_id].chores[group_chore_name].assigned_to
+                            groupedGroupTasks[group_id].chores[group_chore_name].assigned_to,
+                            groupedGroupTasks[group_id].chores[group_chore_name].chore_rotation,
                           )}
                           recurrence={groupedGroupTasks[group_id].chores[group_chore_name].recurrence}
+                          rotation={groupedGroupTasks[group_id].chores[group_chore_name].chore_rotation}
                           user={username}
                           group_id={group_id}
                         />

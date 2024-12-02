@@ -3,6 +3,7 @@
 import React from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { useGroupThemes } from '../contexts/GroupThemeProvider';
@@ -225,14 +226,16 @@ export const HomeChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrenc
       <Text style={styles.homeChoreTitle}>{choreName}</Text>
 
       {/* Reccurence */}
-      <Text style={styles.recurrenceLabel}>{recurrence}</Text>
+      <View style={styles.homeChoreInfo}>
+        <Text style={styles.recurrenceLabel}>{recurrence}</Text>
+      </View>
 
     </TouchableOpacity>
   );
 };
 
 // block for displaying group chores on home page
-export const HomeGroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence, user, group_id }) => {
+export const HomeGroupChoreBlock = ({ choreName, onOpenChoreDetails, recurrence, rotation, group_id }) => {
   const { groupThemes } = useGroupThemes();
   const styles = createStyles(groupThemes[group_id]);
 
@@ -246,9 +249,16 @@ export const HomeGroupChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recu
       {/* Chore Title */}
       <Text style={styles.homeChoreTitle}>{choreName}</Text>
 
-      {/* Reccurence */}
-      <Text style={styles.recurrenceLabel}>{recurrence}</Text>
+      {/* Recurrence and Rotation */}
+      <View style={styles.homeChoreInfo}>
+        <Text style={styles.recurrenceLabel}>{recurrence}</Text>
 
+        {rotation === 1 && (
+          <View style={styles.rotatingLabel}>
+            <Ionicons name={"sync-outline"} size={25} color={groupThemes[group_id].text3} />
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };

@@ -334,16 +334,25 @@ const createStyles = (theme) => {
       marginTop: 5,
       marginBottom: 5,
       fontSize: 20,
-      width: '85%',
+      width: '90%',
       height: 'auto',
     },
-    recurrenceLabel: {
+    homeChoreInfo: {
+      width: '90%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       marginBottom: 5,
+    },
+    recurrenceLabel: {
       fontSize: 17,
       fontWeight: '300',
       color: theme.text2,
-      width: '85%',
-      height: 'auto',
+    },
+    rotatingLabel: {
+      fontSize: 17,
+      fontWeight: '300',
+      color: theme.text2,
     },
     editChoreButton: {
       position: 'absolute',
