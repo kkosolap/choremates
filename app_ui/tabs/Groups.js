@@ -97,30 +97,44 @@ const GroupsDisplay = () => {
 
   const [loading, setLoading] = useState(true); 
 
-
   const fetchGroups = async (username) => {
     try {
+      setLoading(true); // Start loading state
+  
+      // Fetch all groups for the user
       const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
         username: username,
       });
-      setGroups(response.data);
-
-      // get group size for each group -NN
-      response.data.forEach(async (group) => {
-        const groupSizeResponse = await axios.get(`${API_URL}get-group-size`, {
-          params: { group_id: group.group_id },
-        });
-        setGroupSizes((prevSizes) => ({
-          ...prevSizes,
-          [group.group_id]: groupSizeResponse.data.member_count,
-        }));
-      });
+      const groups = response.data;
+      setGroups(groups);
+  
+      // Fetch group sizes for all groups concurrently
+      const groupSizePromises = groups.map((group) =>
+        axios
+          .get(`${API_URL}get-group-size`, { params: { group_id: group.group_id } })
+          .then((groupSizeResponse) => ({
+            groupId: group.group_id,
+            memberCount: groupSizeResponse.data.member_count,
+          }))
+      );
+  
+      // Wait for all group size requests to complete
+      const groupSizes = await Promise.all(groupSizePromises);
+  
+      // Update state with all group sizes at once
+      const updatedGroupSizes = groupSizes.reduce((acc, { groupId, memberCount }) => {
+        acc[groupId] = memberCount;
+        return acc;
+      }, {});
+      setGroupSizes(updatedGroupSizes);
+  
     } catch (error) {
       console.error("Error fetching groups:", error);
-      Alert.alert(error.response.data.error);
+      Alert.alert(error.response?.data?.error || "An error occurred");
+    } finally {
+      // Set loading to false only after everything is done
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   // fetch username and group
