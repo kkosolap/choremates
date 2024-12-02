@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
 
 import { ScreenHeader } from '../components/headers.js';
@@ -48,6 +49,23 @@ const MembersScreen = ({ navigation }) => {
 
   const route = useRoute();
   const { groupName, username } = route.params;
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  React.useEffect(() => {
+    //check if the user is an admin - NN
+    const checkAdminStatus = async () => {
+      try {
+        const isAdminResponse = await axios.get(`${API_URL}get-is-admin`, {
+          params: { username: username, group_id: route.params.groupId },
+        });
+        setIsAdmin(isAdminResponse.data.isAdmin);
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+      }
+    };
+
+    checkAdminStatus();
+  }, [username, route.params.groupId]);
 
   return (
     <View style={styles.screen}>
@@ -55,35 +73,39 @@ const MembersScreen = ({ navigation }) => {
         title={`${groupName}`}
         navigation={navigation}
       />
+      {isAdmin && (
+        <TouchableOpacity style={styles.editGroupNameButton}>
+          <Icon name="pencil" size={25} color="grey" />
+        </TouchableOpacity>
+      )}
 
       <MembersDisplay
         navigation={navigation}
         username={username}
+        isAdmin={isAdmin}
       />
     </View>
   );
 };
 
-const MembersDisplay = ({ username, navigation }) => {
+const MembersDisplay = ({ username, navigation, isAdmin }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const route = useRoute();
   const { groupId } = route.params;
   const [members, setMembers] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
-
   
   useFocusEffect(
     React.useCallback(() => {
-      // fetch members of the group
+      // Fetch members of the group
       const fetchGroupMembers = async () => {
         try {
           const response = await axios.get(`${API_URL}get-group-members`, {
-            params: { group_id: groupId }
+            params: { group_id: groupId },
           });
 
-          //for displaying profile photo
+          // For displaying profile photos
           const membersWithPics = await Promise.all(
             response.data.map(async (member) => {
               try {
@@ -99,15 +121,6 @@ const MembersDisplay = ({ username, navigation }) => {
             })
           );
           setMembers(membersWithPics);
-
-          // check if user is admin
-          const isAdminResponse = await axios.get(`${API_URL}get-is-admin`, {
-            params: { username: username, group_id: groupId },
-          });
-
-          if (isAdminResponse.data.isAdmin) {
-            setIsAdmin(true);
-          }
         } catch (error) {
           Alert.alert(error.response.data.error);
         }
@@ -115,7 +128,7 @@ const MembersDisplay = ({ username, navigation }) => {
 
       fetchGroupMembers();
     }, [groupId])
-)
+  );
 
 // manage group button pressed -> managegroup page
   const handleManageGroup = () => {

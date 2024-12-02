@@ -53,6 +53,11 @@ const CreateGroupScreen = () => {
             Alert.alert(error.response.data.error);
         }
     };
+    const handleGroupNameChange = (text) => {
+        if (text.length <= 15) {
+            setGroupName(text);
+        }
+    };
 
     return (
         <View style={styles.screen}>
@@ -61,7 +66,8 @@ const CreateGroupScreen = () => {
                 style={styles.groupInviteeInput}
                 placeholder="Group Name"
                 value={groupName}
-                onChangeText={setGroupName}
+                onChangeText={handleGroupNameChange}
+                maxLength={15}
             />
             <TouchableOpacity style={styles.submitButton} onPress={handleCreateGroup}>
                 <Text style={styles.submitButtonText}>Create Group</Text>

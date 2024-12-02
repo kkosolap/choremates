@@ -1149,7 +1149,14 @@ const createStyles = (theme) => {
       fontWeight: '400',
       color: theme.text2,
       textAlign: 'center',
-      paddingVertical: 293,
+      paddingVertical: 278,
+    },
+
+    editGroupNameButton: {
+      position: 'absolute',
+      padding: 8,
+      top: 72,
+      right: 20
     },
   });
 };
