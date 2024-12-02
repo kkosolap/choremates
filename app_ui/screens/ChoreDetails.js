@@ -1,7 +1,7 @@
 // ChoreDetails.js
 
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
@@ -276,7 +276,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
         navigation.goBack();
 
     } catch (error) {
-        console.error("Error updating chore:", error);
         Alert.alert("Error: ", error.response.data.message);
     }
   };
@@ -284,9 +283,13 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Adds the task entered into the input box to the task list
   // These will only get added to the db after the "save changes" button is pressed -MH
   const addTask = () => {
-    if (newTask.trim()) {
+    if (!newTask.trim()) { return; }
+
+    if (!tasks.includes(newTask)) {
       setTasks([...tasks, newTask]);
       setNewTask('');
+    } else {
+      Alert.alert("Error: ", 'This task already exists for this chore!'); 
     }
   };
 

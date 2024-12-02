@@ -71,16 +71,6 @@ async function getUserId(username) {
     return results[0].id;
 }
 
-// gets the group id given a group_name -KK
-async function getGroupId(group_name) {
-    const [results] = await db.promise().query("SELECT id FROM group_names WHERE group_name = ?", [group_name]);
-    if (results.length === 0) {
-        console.log(`API getGroupId: Group ${group_name} not found`);
-        throw new Error(`Group ${group_name} not found`);
-    }
-    return results[0].id;
-}
-
 // gets the chore id and completion status given a chore_name -KK
 async function getChoreIdAndCompletionStatus(chore_name, user_id) {
     const [results] = await db.promise().query("SELECT id, is_completed FROM chores WHERE chore_name = ? AND user_id = ?", [chore_name, user_id]);    
@@ -517,7 +507,7 @@ app.post('/add-chore', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-chore: Duplicate chore name.");
-            return res.status(400).json({ message: `Cannot create chore ${chore_name}. This chore already exists!` });
+            return res.status(400).json({ message: `Cannot create chore ${chore_name}. This chore already exists.` });
         }
 
         const query = "INSERT INTO chores (user_id, chore_name, recurrence) VALUES (?, ?, ?)";
@@ -544,7 +534,7 @@ app.post('/update-chore', async (req, res) => {
             const [duplicate] = await db.promise().query("SELECT id FROM chores WHERE user_id = ? AND chore_name = ?", [user_id, new_chore_name]);
             if (duplicate.length > 0) {
                 console.log("API add-chore: Duplicate chore name.");
-                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists!` });
+                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists.` });
             }
         }
         
@@ -645,7 +635,7 @@ app.post('/add-task', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM tasks WHERE task_name = ? AND chore_id = ?", [task_name, chore_id]);
         if (duplicate.length > 0) {
             console.log("API add-task: Duplicate task name.");
-            return res.status(400).json({ message: `Cannot create task ${task_name}. This task already exists for this chore!` });
+            return res.status(400).json({ message: `Cannot create task ${task_name}. This task already exists for this chore.` });
         }
 
         // add the task to the database -KK
@@ -1404,7 +1394,7 @@ app.post('/add-group-chore', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
         if (duplicate.length > 0) {
             console.log("API add-group-chore: Duplicate chore name.");
-            return res.status(400).json({ message: `Cannot create chore ${group_chore_name}. This chore already exists for this group!` });
+            return res.status(400).json({ message: `Cannot create chore ${group_chore_name}. This chore already exists for this group.` });
         }
 
         const query = "INSERT INTO group_chores (group_id, group_chore_name, recurrence, assigned_to, rotation_enabled) VALUES (?, ?, ?, ?, ?)";
@@ -1439,7 +1429,7 @@ app.post('/update-group-chore', async (req, res) => {
             const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, new_chore_name]);
             if (duplicate.length > 0) {
                 console.log("API update-group-chore: Duplicate chore name.");
-                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists for this group!` });
+                return res.status(400).json({ message: `Cannot rename chore to ${new_chore_name}. This chore already exists for this group.` });
             }
         }
 
@@ -1548,7 +1538,7 @@ app.post('/add-group-task', async (req, res) => {
         const [duplicate] = await db.promise().query("SELECT id FROM group_tasks WHERE group_task_name = ? AND group_chore_id = ?", [group_task_name, group_chore_id]);
         if (duplicate.length > 0) {
             console.log("API add-group-task: Duplicate task name.");
-            return res.status(400).send("This task already exists!");
+            return res.status(400).send("This task already exists.");
         }
 
         // add the task to the database -KK
