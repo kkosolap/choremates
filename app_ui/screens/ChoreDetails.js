@@ -251,7 +251,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
         await updateTasksInDatabase();
 
         // exit and go back to home
-        navigation.goBack();
+        //navigation.goBack();
+        navigation.navigate('HomeMain', {
+          needToLoad: true,
+        });
 
     } catch (error) {
         console.error("Error updating chore:", error);

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, useContext } from 'react';
 import { View, ScrollView, Text, TouchableWithoutFeedback, Animated, TouchableOpacity, } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Collapsible from 'react-native-collapsible';
 
@@ -37,6 +37,7 @@ const HomeScreen = () => {
 const HomeDisplay = () => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { groupThemes } = useGroupThemes();
 
   const scale = React.useRef(new Animated.Value(1)).current;
   const navigation = useNavigation();
@@ -48,7 +49,7 @@ const HomeDisplay = () => {
   // list of a user's groups
   const [groupList, setGroupList] = useState([]);
 
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   // Get user's groups and Collapse State -VA
   useEffect(() => {
@@ -90,12 +91,13 @@ const HomeDisplay = () => {
     setPersonalCollapsed(!isPersonalCollapsed);
   };
   const [isGroupCollapsed, setGroupCollapsed] = useState({});
-  const toggleGroupCollapse = (group_id) => {
+  const toggleGroupCollapsed = (group_id) => {
     setGroupCollapsed((prevState) => ({
       ...prevState,
       [group_id]: !prevState[group_id],
     }));
   };
+  const [lastGroupOpened, setLastGroupOpened] = useState(null);
 
   // calls refresh whenever the screen is in focus -KK
   useFocusEffect(
@@ -246,9 +248,87 @@ const HomeDisplay = () => {
 
     setGroupData(enrichedGroupData);
   };
-  const { groupThemes } = useGroupThemes();
 
-  //console.log(JSON.stringify(groupedGroupTasks, null, 2));  // ******
+  // used to get needToLoad
+  const route = useRoute();
+  
+  /*
+  useEffect(() => {
+    console.log("in useEffect");
+    if (route.params?.needToLoad && !loading) { // Avoid redundant loading state changes
+      //setLoading(true);
+      //console.log("reloadinggg");
+
+      console.log("- collapsing -");
+      if (lastGroupOpened == -1) {
+        togglePersonalCollapse();
+      } else {
+        toggleGroupCollapsed(lastGroupOpened);
+      }
+
+      if (route.params?.needToLoad) {
+        navigation.setParams({ needToLoad: false });
+      }
+  
+      const timer = setTimeout(() => {
+        console.log("in timer ...........")
+        //setLoading(false);
+      }, 400);
+
+      console.log("- opening -");
+      if (lastGroupOpened == -1) {
+        togglePersonalCollapse();
+      } else {
+        toggleGroupCollapsed(lastGroupOpened);
+      }
+  
+      return () => clearTimeout(timer);
+    }
+  }, [route.params?.needToLoad]);
+  */
+
+  useEffect(() => {
+    console.log("in useEffect");
+  
+    // Only run if needToLoad is true
+    if (route.params?.needToLoad && !loading) {
+      console.log("- collapsing -");
+  
+      // Collapse the group
+      if (lastGroupOpened === -1) {
+        togglePersonalCollapse();
+      } else {
+        toggleGroupCollapsed(lastGroupOpened);
+      }
+  
+      // Wait for 1 second, then reopen the group
+      const timer = setTimeout(() => {
+        console.log("in timer ...........");
+  
+        console.log("- opening -");
+        if (lastGroupOpened === -1) {
+          togglePersonalCollapse();
+        } else {
+          toggleGroupCollapsed(lastGroupOpened);
+        }
+
+        navigation.setParams({ needToLoad: false });
+      }, 2800); // 1000ms = 1 second
+  
+      // Cleanup the timer
+      return () => {
+        console.log("Cleaning up timer");
+        console.log("--------");
+        clearTimeout(timer);
+      };
+    } else {
+      console.log("do nothing");
+      console.log("--------");
+    }
+  }, [route.params?.needToLoad]);
+  
+  
+
 
   // page content -MH
   return (
@@ -314,14 +394,17 @@ const HomeDisplay = () => {
                       key={chore_name}
                       choreName={chore_name}
                       tasks={groupedPersonalTasks[chore_name].tasks}
-                      onOpenChoreDetails={() => openChoreDetails(
-                        chore_name,
-                        groupedPersonalTasks[chore_name].tasks,
-                        groupedPersonalTasks[chore_name].recurrence,
-                        -1, // group id
-                        -1, // assigned to
-                        -1, // rotation enabled
-                      )}
+                      onOpenChoreDetails={() => {
+                        openChoreDetails(
+                          chore_name,
+                          groupedPersonalTasks[chore_name].tasks,
+                          groupedPersonalTasks[chore_name].recurrence,
+                          -1, // group id
+                          -1, // assigned to
+                          -1, // rotation enabled
+                        );
+                        setLastGroupOpened(-1);
+                      }}
                       recurrence={groupedPersonalTasks[chore_name].recurrence}
                     />
                   ))}
@@ -350,7 +433,7 @@ const HomeDisplay = () => {
             <View key={group_id} style={[styles.groupContentSection]}>
               {/* Heading */}
               <TouchableOpacity
-                onPress={() => toggleGroupCollapse(group_id)}
+                onPress={() => toggleGroupCollapsed(group_id)}
                 style={styles.groupChoreSectionLabel}
                 activeOpacity={0.8}
               >
@@ -382,14 +465,17 @@ const HomeDisplay = () => {
                           key={group_chore_name}
                           choreName={group_chore_name}
                           tasks={groupedGroupTasks[group_id].chores[group_chore_name].group_tasks}
-                          onOpenChoreDetails={() => openChoreDetails(
-                            group_chore_name,
-                            groupedGroupTasks[group_id].chores[group_chore_name].group_tasks,
-                            groupedGroupTasks[group_id].chores[group_chore_name].recurrence,
-                            groupedGroupTasks[group_id].chores[group_chore_name].group_id,
-                            groupedGroupTasks[group_id].chores[group_chore_name].assigned_to,
-                            groupedGroupTasks[group_id].chores[group_chore_name].chore_rotation,
-                          )}
+                          onOpenChoreDetails={() => {
+                            openChoreDetails(
+                              group_chore_name,
+                              groupedGroupTasks[group_id].chores[group_chore_name].group_tasks,
+                              groupedGroupTasks[group_id].chores[group_chore_name].recurrence,
+                              groupedGroupTasks[group_id].chores[group_chore_name].group_id,
+                              groupedGroupTasks[group_id].chores[group_chore_name].assigned_to,
+                              groupedGroupTasks[group_id].chores[group_chore_name].chore_rotation,
+                            );
+                            setLastGroupOpened(group_id);
+                          }}
                           recurrence={groupedGroupTasks[group_id].chores[group_chore_name].recurrence}
                           rotation={groupedGroupTasks[group_id].chores[group_chore_name].chore_rotation}
                           user={username}
