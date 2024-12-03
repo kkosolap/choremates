@@ -95,8 +95,13 @@ const MembersScreen = ({ navigation }) => {
               <TextInput
                 ref={textInputRef}
                 value={newGroupName}
-                onChangeText={setNewGroupName}
+                onChangeText={(text) => {
+                  if (text.length > 0) {
+                    setNewGroupName(text);
+                  }
+                }}
                 style={styles.editInput}
+                maxLength={15}
               />
             ) : (
               <Text style={styles.groupName}>{groupName}</Text>
