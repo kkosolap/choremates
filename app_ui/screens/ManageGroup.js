@@ -3,18 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import Delete from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-import axios from 'axios';
 
-import { API_URL } from '../config.js';
 import createStyles from '../style/styles.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { ScreenHeader } from '../components/headers.js';
 
-
+import { API_URL } from '../config.js';
+import axios from 'axios';
 
 const ManageScreen = ({ navigation, route }) => {
   const { theme } = useTheme();

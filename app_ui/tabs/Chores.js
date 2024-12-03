@@ -110,7 +110,14 @@ const ChoresDisplay = () => {
 
   // Load group chores  -MH
   useEffect(() => {
-    if (!groupData) return; // safety check for null/undefined groupData
+    if (!groupData || groupData.length === 0) { // safety check for null/undefined groupData
+      setLoading(false);
+
+      setGroupedGroupTasksCompleted({});
+      setGroupedGroupTasksToDo({});
+
+      return;
+    }
 
     // temp to store grouped tasks
     const completed = {};
@@ -144,6 +151,8 @@ const ChoresDisplay = () => {
           completed: task.task_is_completed,
         });
       }
+
+      setLoading(false);
     });
 
     setLoading(false);
