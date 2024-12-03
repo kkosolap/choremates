@@ -124,10 +124,9 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
-  // Function to handle rotation switch toggle , saves state to send to ChoreDetails - AT
+  // Function to handle rotation switch toggle - AT
   const handleRotationToggle = async (value) => {
     setRotationEnabled(value);
-    await AsyncStorage.setItem(`rotationEnabled_${choreName}`, JSON.stringify(value));
   };
 
   // Add the chore to the database
@@ -138,7 +137,11 @@ const NewChoreDisplay = ({ navigation }) => {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
         try{
-          await axios.post(`${API_URL}add-chore`, { chore_name: choreName, username, recurrence: selectedRec.value });
+          await axios.post(`${API_URL}add-chore`, {
+            chore_name: choreName,
+            username,
+            recurrence: selectedRec.value
+          });
           // loop through tasks and add each one to the db -KK
           await Promise.all(tasks.map(task_name =>
             axios.post(`${API_URL}add-task`, { chore_name: choreName, task_name, username })

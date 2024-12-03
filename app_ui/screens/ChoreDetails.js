@@ -402,30 +402,34 @@ const ChoreDetailsDisplay = ({navigation}) => {
         )}
 
         {/* Rotation Switch - AT */}
-        {selectedRec.value !== 'Just Once' && permission === 1 ? (
+        {routed_group_id !== -1 && (
           <>
-            {/* Editable */}
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>Rotate Assignment: </Text>
-              <Switch
-                isOn={rotationEnabled}
-                onToggle={handleRotationToggle}
-              />
-            </View>
+            {selectedRec.value !== 'Just Once' && permission === 1 ? (
+              <>
+                {/* Editable */}
+                <View style={styles.switchContainer}>
+                  <Text style={styles.label}>Rotate Assignment: </Text>
+                  <Switch
+                    isOn={rotationEnabled}
+                    onToggle={handleRotationToggle}
+                  />
+                </View>
+              </>
+            ) : (selectedRec.value !== 'Just Once') ? (
+              <>
+                {/* Not editable */}
+                <View style={styles.switchContainer}>
+                  <Text style={styles.label}>Rotate Assignment: </Text>
+                  <Switch
+                    isOn={rotationEnabled}
+                    onToggle={() => {}} // You can also disable the toggle if needed
+                    disabled
+                  />
+                </View>
+              </>
+            ) : null}
           </>
-        ) : (selectedRec.value !== 'Just Once') ? (
-          <>
-            {/* Not editable */}
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>Rotate Assignment: </Text>
-              <Switch
-                isOn={rotationEnabled}
-                onToggle={() => {}} // You can also disable the toggle if needed
-                disabled
-              />
-            </View>
-          </>
-        ) : null}
+        )}
 
         {/* Tasks */}
         {permission === 1 ? (

@@ -371,7 +371,7 @@ const HomeDisplay = () => {
                           groupedPersonalTasks[chore_name].recurrence,
                           -1, // group id
                           -1, // assigned to
-                          -1, // rotation enabled
+                          0,  // rotation enabled
                         );
                       }}
                       recurrence={groupedPersonalTasks[chore_name].recurrence}
