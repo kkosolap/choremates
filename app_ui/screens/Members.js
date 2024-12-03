@@ -147,6 +147,7 @@ const MembersDisplay = ({ username, navigation, isAdmin }) => {
   const route = useRoute();
   const { groupId } = route.params;
   const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useFocusEffect(
     React.useCallback(() => {
@@ -173,8 +174,10 @@ const MembersDisplay = ({ username, navigation, isAdmin }) => {
             })
           );
           setMembers(membersWithPics);
+          setLoading(false);
         } catch (error) {
           Alert.alert(error.response.data.error);
+          setLoading(false);
         }
       };
 
