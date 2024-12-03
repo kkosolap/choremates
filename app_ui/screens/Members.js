@@ -1,8 +1,9 @@
 // Members.js -NN
 
-import React, { useState } from 'react';
-import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, FlatList, Alert, Image, TouchableOpacity, TextInput } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
 
 import { ScreenHeader } from '../components/headers.js';
@@ -48,44 +49,115 @@ const MembersScreen = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const route = useRoute();
-  const { groupName, username } = route.params;
+  const { groupName: initialGroupName, username } = route.params;
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newGroupName, setNewGroupName] = useState(initialGroupName);
+  const [groupName, setGroupName] = useState(initialGroupName);
+  const textInputRef = useRef(null);
+
+  React.useEffect(() => {
+    //check if the user is an admin - NN
+    const checkAdminStatus = async () => {
+      try {
+        const isAdminResponse = await axios.get(`${API_URL}get-is-admin`, {
+          params: { username: username, group_id: route.params.groupId },
+        });
+        setIsAdmin(isAdminResponse.data.isAdmin);
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+      }
+    };
+
+    checkAdminStatus();
+  }, [username, route.params.groupId]);
+
+  // for editing group name - NN
+  const handleEditGroupName = async () => {
+    try {
+      await axios.post(`${API_URL}change-group-name`, {
+        new_group_name: newGroupName,
+        group_id: route.params.groupId,
+        username: username,
+      });
+      setGroupName(newGroupName);
+    } catch (error) {
+      Alert.alert(error.response.data.error);
+    }
+    setIsEditing(false);
+  };
 
   return (
     <View style={styles.screen}>
       <ScreenHeader
-        title={`${groupName}`}
+        title={
+          <View style={styles.headerTitleContainer}>
+            {isEditing ? (
+              <TextInput
+                ref={textInputRef}
+                value={newGroupName}
+                onChangeText={(text) => {
+                  if (text.length > 0) {
+                    setNewGroupName(text);
+                  }
+                }}
+                style={styles.editInput}
+                maxLength={15}
+              />
+            ) : (
+              <Text style={styles.groupName}>{groupName}</Text>
+            )}
+          </View>
+        }
         navigation={navigation}
       />
+      {isAdmin && (
+        <View style={styles.editGroupNameButton}>
+          {!isEditing && (
+            <TouchableOpacity
+              onPress={() => {
+                setIsEditing(true);
+                setTimeout(() => textInputRef.current?.focus(), 100);
+              }}
+            >
+              <Icon name="pencil" size={25} color="grey" />
+            </TouchableOpacity>
+          )}
+          {isEditing && (
+            <TouchableOpacity onPress={handleEditGroupName}>
+              <Icon name="checkmark" size={25} color="grey" />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       <MembersDisplay
         navigation={navigation}
         username={username}
+        isAdmin={isAdmin}
       />
     </View>
   );
 };
 
-const MembersDisplay = ({ username, navigation }) => {
+const MembersDisplay = ({ username, navigation, isAdmin }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const route = useRoute();
   const { groupId } = route.params;
   const [members, setMembers] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  const [loading, setLoading] = useState(true);
   
   useFocusEffect(
     React.useCallback(() => {
-      // fetch members of the group
+      // Fetch members of the group
       const fetchGroupMembers = async () => {
         try {
           const response = await axios.get(`${API_URL}get-group-members`, {
-            params: { group_id: groupId }
+            params: { group_id: groupId },
           });
 
-          //for displaying profile photo
+          // For displaying profile photos
           const membersWithPics = await Promise.all(
             response.data.map(async (member) => {
               try {
@@ -101,17 +173,6 @@ const MembersDisplay = ({ username, navigation }) => {
             })
           );
           setMembers(membersWithPics);
-
-          // check if user is admin
-          const isAdminResponse = await axios.get(`${API_URL}get-is-admin`, {
-            params: { username: username, group_id: groupId },
-          });
-
-          if (isAdminResponse.data.isAdmin) {
-            setIsAdmin(true);
-          };
-
-          setLoading(false);
         } catch (error) {
           Alert.alert(error.response.data.error);
         }
@@ -119,7 +180,7 @@ const MembersDisplay = ({ username, navigation }) => {
 
       fetchGroupMembers();
     }, [groupId])
-)
+  );
 
 // manage group button pressed -> managegroup page
   const handleManageGroup = () => {

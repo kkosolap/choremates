@@ -1230,7 +1230,7 @@ app.post('/change-group-name', async (req, res) => {
 
         // update the group name
         const updateGroupNameQuery = `
-            UPDATE groups 
+            UPDATE group_names
             SET group_name = ? 
             WHERE id = ?
         `;
