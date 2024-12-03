@@ -99,8 +99,6 @@ const GroupsDisplay = () => {
 
   const fetchGroups = async (username) => {
     try {
-      setLoading(true); // Start loading state
-  
       // Fetch all groups for the user
       const response = await axios.post(`${API_URL}get-all-groups-for-user`, {
         username: username,

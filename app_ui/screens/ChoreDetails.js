@@ -5,7 +5,6 @@ import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } 
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SecureStore from 'expo-secure-store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
@@ -122,9 +121,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
             group_id: routed_group_id
           });
           setPermission(perm.data);
-
+        } else {
+          setPermission(1);
         }
-        else {  setPermission(1); }
+        
         setLoading(false);
       } catch (error) {
         console.error("UI ChoreDetails.js: Error initializing chore details:", error);
@@ -132,7 +132,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
     };
     init();
   }, []);
-  
 
   useEffect(() => {
     const getGroupName = async () => {

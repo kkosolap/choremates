@@ -8,6 +8,7 @@ import { Ionicons } from 'react-native-vector-icons';
 import { ScreenHeader } from '../components/headers.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles.js';
+import { LoadingVisual } from '../components/placeholders.js';
 
 
 import axios from 'axios';
@@ -73,6 +74,7 @@ const MembersDisplay = ({ username, navigation }) => {
   const [members, setMembers] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const [loading, setLoading] = useState(true);
   
   useFocusEffect(
     React.useCallback(() => {
@@ -107,7 +109,9 @@ const MembersDisplay = ({ username, navigation }) => {
 
           if (isAdminResponse.data.isAdmin) {
             setIsAdmin(true);
-          }
+          };
+
+          setLoading(false);
         } catch (error) {
           Alert.alert(error.response.data.error);
         }
@@ -164,67 +168,74 @@ const MembersDisplay = ({ username, navigation }) => {
 
   return (
     <View style={styles.content}>
-      <FlatList
+      {loading ? (
+        <LoadingVisual />
+      ) : (
+        <>
+        <FlatList
           data={members}
           style={styles.membersList}
           contentContainerStyle={[styles.centeredContent, styles.memberListPadding]}
           keyExtractor={(item) => item.username}
           renderItem={({ item }) => (
             <View style={styles.memberItem}>
-                {item.profilePic ? (
-                  <Image
-                    source={
-                      avatarMap[item.profilePic]
-                        ? avatarMap[item.profilePic]
-                        : { uri: item.profilePic }
-                    }
-                    style={styles.profileImage}
-                  />
-                ) : (
-                  <Text >No Image</Text>
-                )}
-                <Text style={styles.memberName}>{item.display_name}</Text>
-                {item.role === 'admin' ? (
-                  <Ionicons name="star" size={28} color={theme.white} />
-                // ) : item.role === 'member' ? (
-                //   <Ionicons name="eye" size={25} color="white" />
-                ) : null}
+              {item.profilePic ? (
+                <Image
+                  source={
+                    avatarMap[item.profilePic]
+                      ? avatarMap[item.profilePic]
+                      : { uri: item.profilePic }
+                  }
+                  style={styles.profileImage}
+                />
+              ) : (
+                <Text >No Image</Text>
+              )}
+              <Text style={styles.memberName}>{item.display_name}</Text>
+              {item.role === 'admin' ? (
+                <Ionicons name="star" size={28} color={theme.white} />
+              // ) : item.role === 'member' ? (
+              //   <Ionicons name="eye" size={25} color="white" />
+              ) : null}
             </View>
           )}
-      />
+        />
 
-      {isAdmin && (
-        // if admin show invite button
-        <TouchableOpacity
-          style={styles.inviteButton}
-          activeOpacity={0.8}
-          onPress={handleInviteMember}
-        >
-          <Text style={styles.inviteButtonText}>Invite Member</Text>
-        </TouchableOpacity>
-      )}
+        {isAdmin && (
+          // if admin show invite button
+          <TouchableOpacity
+            style={styles.inviteButton}
+            activeOpacity={0.8}
+            onPress={handleInviteMember}
+          >
+            <Text style={styles.inviteButtonText}>Invite Member</Text>
+          </TouchableOpacity>
+        )}
 
-      {isAdmin ? (
-        // if admin show group button
-        <TouchableOpacity
-          style={styles.manageGroupButton}
-          activeOpacity={0.8}
-          onPress={handleManageGroup}
-        >
-          <Text style={styles.manageGroupButtonText}>Manage Group</Text>
-        </TouchableOpacity>
-      ) : (
-        // if not show leave group
-        <TouchableOpacity
-          style={styles.leaveGroupButton}
-          activeOpacity={0.8}
-          onPress={() => {
-            handleLeaveGroup();
-          }}
-        >
-          <Text style={styles.manageGroupButtonText}>Leave Group</Text>
-        </TouchableOpacity>
+        {isAdmin ? (
+          // if admin show group button
+          <TouchableOpacity
+            style={styles.manageGroupButton}
+            activeOpacity={0.8}
+            onPress={handleManageGroup}
+          >
+            <Text style={styles.manageGroupButtonText}>Manage Group</Text>
+          </TouchableOpacity>
+        ) : (
+          // if not show leave group
+          <TouchableOpacity
+            style={styles.leaveGroupButton}
+            activeOpacity={0.8}
+            onPress={() => {
+              handleLeaveGroup();
+            }}
+          >
+            <Text style={styles.manageGroupButtonText}>Leave Group</Text>
+          </TouchableOpacity>
+        )}
+        </>
       )}
+      
     </View>
   );
 };
