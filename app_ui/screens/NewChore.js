@@ -132,7 +132,6 @@ const NewChoreDisplay = ({ navigation }) => {
   // Add the chore to the database
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
-    console.log("UI NewChore: adding chore " + choreName + " to " + selectedGroup.label);
     try {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
@@ -193,9 +192,13 @@ const NewChoreDisplay = ({ navigation }) => {
   // Adds the task entered into the input box to the task list
   // These will only get added to the db after the "add chore" button is pressed -KK
   const addTask = () => {
-    if (newTask.trim()) {
+    if (!newTask.trim()) { return; }
+
+    if (!tasks.includes(newTask)) {
       setTasks([...tasks, newTask]);
       setNewTask('');
+    } else {
+      Alert.alert("Error: ", 'This task already exists for this chore.'); 
     }
   };
 

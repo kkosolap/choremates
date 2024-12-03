@@ -36,13 +36,6 @@ import ChangeProfilePicScreen from './screens/NewProfilePicture';
 
 
 /************************************************************ */
-/* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
-/************************************************************ */
-// Put this in .env, replace youripv4 with your ip address -EL
-// API_URL=http://youripv4:3000/
-
-
-/************************************************************ */
 /*                            TABS                            */
 /************************************************************ */
 const Tab = createBottomTabNavigator();
@@ -105,7 +98,7 @@ const App = () => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('token');
       const user = await SecureStore.getItemAsync('username');
-      setIsLoggedIn(!!token); // Check if token exists
+      setIsLoggedIn(!!token);
       setUsername(user);
     };
     checkToken();
@@ -116,11 +109,11 @@ const App = () => {
     setIsLoggedIn(true);
     setUsername(username);
   };
-
+  
   const handleLogout = async () => {
-    await SecureStore.deleteItemAsync('token'); // Remove token securely
-    await SecureStore.deleteItemAsync('username'); 
-    setIsLoggedIn(false); // Update logged-in state
+    await SecureStore.deleteItemAsync('token');
+    await SecureStore.deleteItemAsync('username');
+    setIsLoggedIn(false);
   };
 
   return (
