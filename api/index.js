@@ -364,8 +364,8 @@ app.post('/get-perms', async (req, res) => {
 /********************************************************** */
 /*             RECURRENCE IMPLEMENTATION BELOW:             */
 /********************************************************** */
-// cron job for daily and weekly resets - AT
-// every minute for test purposes - AT
+// cron job for daily and weekly resets -AT
+// every minute for test purposes -AT
 cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
 cron.schedule('0 0 * * *', async () => { 
     try {
@@ -466,14 +466,14 @@ async function rotateChoreToNextUser(group_id, chore_id) {
         const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
         await db.promise().query(updateQuery, [nextUser.user_id, chore_id]);
 
-        const selectQuery = `SELECT id, group_id, assigned_to FROM group_chores WHERE id = ?`;
-        const [[updatedChore]] = await db.promise().query(selectQuery, [chore_id]);
-
-        // Log the updated chore assignment
-        console.log(
-            `Chore ID ${updatedChore.id} (Group ID ${updatedChore.group_id}) is now assigned to User ID ${updatedChore.assigned_to}.`
+        const [[updatedChore]] = await db.promise().query(
+            'SELECT assigned_to FROM group_chores WHERE id = ?',
+            [chore_id]
         );
-
+        console.log(
+            `Verified update: Chore ID ${chore_id} is now assigned to User ID ${updatedChore.assigned_to}.`
+        );
+        
     } catch (error) {
         console.error("Error rotating group chore to the next user:", error);
     }
@@ -1427,7 +1427,7 @@ app.post('/add-group-chore', async (req, res) => {
         }  
         
 
-        // check if rotationEnabled is valid - AT
+        // check if rotationEnabled is valid -AT
         const isRotationEnabled = rotation_enabled ? 1 : 0; // default is 0
         
         const [duplicate] = await db.promise().query("SELECT id FROM group_chores WHERE group_id = ? AND group_chore_name = ?", [group_id, group_chore_name]);
