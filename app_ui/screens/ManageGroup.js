@@ -60,10 +60,6 @@ const ManageDisplay = ({ navigation }) => {
   }, []);
 
   const handleRemoveMember = (userToRemove) => {
-    console.log("Username:", username);
-    console.log("Group ID:", groupId);
-    console.log("User to remove:", userToRemove);
-
     //alert popup to confirm removal
     Alert.alert(
       "Confirm Removal",
@@ -76,9 +72,6 @@ const ManageDisplay = ({ navigation }) => {
         {
           text: "OK",
           onPress: () => {
-            console.log("Username:", username);
-            console.log("Group ID:", groupId);
-            console.log("User to remove:", userToRemove);
             axios.delete(`${API_URL}remove-user-from-group`, {
               data: {
                 username,
@@ -160,6 +153,7 @@ const ManageDisplay = ({ navigation }) => {
   return (
     <View style={styles.content}>
       <FlatList
+        style={styles.membersList}
         data={members}
         keyExtractor={(item) => item.username}
         renderItem={({ item }) => {
@@ -187,7 +181,7 @@ const ManageDisplay = ({ navigation }) => {
                     style={styles.deleteButton}
                     onPress={() => handleRemoveMember(item.username)}
                   >
-                    <Delete name="close" size={25} color="black" />
+                    <Ionicons name="close-outline" size={35} color="white" />
                   </TouchableOpacity>
                 </>
               )}
@@ -195,12 +189,15 @@ const ManageDisplay = ({ navigation }) => {
           );
         }}
       />
+
       <TouchableOpacity
-        style={styles.logoutButton}
+        style={styles.leaveGroupButton}
         activeOpacity={0.8}
         onPress={() => handleDisbandGroup()}
       >
-        <Text style={styles.manageGroupButtonText}>Disband Group</Text>
+        <Ionicons name={"trash"} size={28} color={theme.white} />
+
+        <Text style={styles.manageGroupButtonText}> Disband Group</Text>
       </TouchableOpacity>
     </View>
   );

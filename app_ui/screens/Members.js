@@ -272,7 +272,9 @@ const MembersDisplay = ({ username, navigation, isAdmin }) => {
             activeOpacity={0.8}
             onPress={handleInviteMember}
           >
-            <Text style={styles.inviteButtonText}>Invite Member</Text>
+            <Ionicons name={"person-add"} size={20} color={theme.white} />
+
+            <Text style={styles.inviteButtonText}> Invite Member</Text>
           </TouchableOpacity>
         )}
 
@@ -283,7 +285,9 @@ const MembersDisplay = ({ username, navigation, isAdmin }) => {
             activeOpacity={0.8}
             onPress={handleManageGroup}
           >
-            <Text style={styles.manageGroupButtonText}>Manage Group</Text>
+            <Ionicons name={"build"} size={25} color={theme.white} />
+
+            <Text style={styles.manageGroupButtonText}> Manage Group</Text>
           </TouchableOpacity>
         ) : (
           // if not show leave group
@@ -294,7 +298,9 @@ const MembersDisplay = ({ username, navigation, isAdmin }) => {
               handleLeaveGroup();
             }}
           >
-            <Text style={styles.manageGroupButtonText}>Leave Group</Text>
+            <Ionicons name={"walk"} size={25} color={theme.white} />
+
+            <Text style={styles.manageGroupButtonText}> Leave Group</Text>
           </TouchableOpacity>
         )}
         </>

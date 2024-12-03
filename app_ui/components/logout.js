@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
@@ -18,7 +19,9 @@ const LogoutButton = ({ onLogout }) => {
       activeOpacity={0.8}
       onPress={onLogout}
     >
-      <Text style={styles.logoutButtonText}>Log Out</Text>
+      <Ionicons name={"exit-outline"} size={28} color={theme.white} />
+
+      <Text style={styles.logoutButtonText}> Log Out</Text>
     </TouchableOpacity>
   );
 };

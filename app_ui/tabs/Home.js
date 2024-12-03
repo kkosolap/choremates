@@ -310,7 +310,7 @@ const HomeDisplay = () => {
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
         >
-          <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
+          <Animated.View style={[styles.circleButton, { transform: [{ scale }] }]}>
             <Icon name="add" size={40} color="#fff" />
           </Animated.View>
         </TouchableWithoutFeedback>

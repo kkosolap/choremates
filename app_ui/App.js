@@ -10,7 +10,6 @@ import * as SecureStore from 'expo-secure-store';
 
 import { ThemeProvider, useTheme } from './contexts/ThemeProvider';
 import { GroupThemeProvider } from './contexts/GroupThemeProvider';
-// import { UserProvider } from './contexts/UserContext.js';
 import { LogoutProvider } from './contexts/LogOutProvider';
 import createStyles from './style/styles';
 
@@ -117,19 +116,17 @@ const App = () => {
   };
 
   return (
-    //<UserProvider>
-      <ThemeProvider username={username}>
-      <GroupThemeProvider username={username}>
-      <LogoutProvider handleLogout={handleLogout}>
+    <ThemeProvider username={username}>
+    <GroupThemeProvider username={username}>
+    <LogoutProvider handleLogout={handleLogout}>
 
-          <NavigationContainer>
-            <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
-          </NavigationContainer>
+      <NavigationContainer>
+        <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
+      </NavigationContainer>
 
-      </LogoutProvider>
-      </GroupThemeProvider>
-      </ThemeProvider>
-    //</UserProvider>
+    </LogoutProvider>
+    </GroupThemeProvider>
+    </ThemeProvider>
 
   );
 };

@@ -1,6 +1,6 @@
 // styles.js
 
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 // function to create styles based on the theme  -MH
 const createStyles = (theme) => {
@@ -26,7 +26,6 @@ const createStyles = (theme) => {
     height: 'auto',
     flexShrink: 1,
     flexGrow: 1,
-    //textAlignVertical: 'center',
     lineHeight: 28,
     paddingVertical: 0,
     marginVertical: 0,
@@ -167,7 +166,7 @@ const createStyles = (theme) => {
     },
 
     // circle button  -MH
-    button: {
+    circleButton: {
       justifyContent: 'center',
       alignItems: 'center',
       width: 60,
@@ -211,7 +210,7 @@ const createStyles = (theme) => {
       margin: 0,
     },
 
-    // empty chores section placeholder text  -MH
+    // empty section placeholder text  -MH
     emptySectionText: {
       fontSize: 16,
       fontWeight: '400',
@@ -227,6 +226,12 @@ const createStyles = (theme) => {
     emptyTasksSection: {
       width: '100%',
       marginBottom: 12,
+    },
+    emptyGroupsSection: {
+      width: '100%',
+      paddingHorizontal: 10,
+      alignItems: 'center',
+      backgroundColor: theme.red,
     },
 
     // loading screen  -MH
@@ -460,6 +465,7 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: 5,
+      flexDirection: 'row',
     },
     logoutButtonText: {
       color: theme.white,
@@ -938,6 +944,7 @@ const createStyles = (theme) => {
       alignItems: 'center',
       position: 'absolute',
       bottom: 50,
+      flexDirection: 'row',
     },
     manageGroupButtonText: {
       color: theme.white,
@@ -952,10 +959,11 @@ const createStyles = (theme) => {
       justifyContent: 'center',
       alignItems: 'center',
       position: 'absolute',
-      bottom: 70,
+      bottom: 80,
+      flexDirection: 'row',
     },
     inviteButton: {
-      width: '50%',
+      width: '60%',
       paddingVertical: 10,
       marginBottom: 10,
       borderRadius: 10,
@@ -964,6 +972,7 @@ const createStyles = (theme) => {
       alignItems: 'center',
       position: 'absolute',
       bottom: 100,
+      flexDirection: 'row',
     },
     inviteButtonText: {
       color: theme.white,
@@ -1021,13 +1030,12 @@ const createStyles = (theme) => {
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 20,
-      marginVertical: 15,
-      borderColor: theme.gray,
-      borderWidth: 1,
-      borderRadius: 20,
-      width: 350, 
-      height: 110,
+      paddingHorizontal: 15,
+      paddingVertical: 5,
+      minHeight: 90,
+      marginVertical: 8,
+      borderRadius: 40,
+      width: 370,
       alignSelf: 'center',
       backgroundColor: theme.lighter,
     },
@@ -1036,7 +1044,7 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     permissionButton: {
-      borderColor: 'black',
+      borderColor: theme.main,
       borderWidth: 1,
       padding: 5,
       borderRadius: 5,
@@ -1045,9 +1053,9 @@ const createStyles = (theme) => {
     },
     deleteButton: {
       backgroundColor: theme.red,
-      padding: 20,
-      borderWidth: 1,
-      borderRadius: 20,
+      borderRadius: 40,
+      width: 40,
+      height: 40,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -1101,14 +1109,17 @@ const createStyles = (theme) => {
 
     // create/invite button & pop-up - NN
     createGroupButton: {
-      width: '80%',
-      marginLeft: '10%',
+      width: '95%',
+      marginLeft: '2.5%',
       marginTop: 10,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      position: 'absolute',
+      bottom: -50,
+      flexDirection: 'row',
     },
     createGroupButtonText: {
       color: theme.white,
@@ -1147,6 +1158,10 @@ const createStyles = (theme) => {
     },
     
     // groups display -NN
+    groupDisplayContentContainer: {
+      paddingTop: 15,
+      paddingBottom: 140,
+    },
     groupDisplayContent: {
       flex: 1,
       width: '100%',
@@ -1159,7 +1174,7 @@ const createStyles = (theme) => {
       marginLeft: '4%', // adjust based on above setting to center
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingVertical: 14,
+      paddingVertical: 15,
       paddingHorizontal: 15,
       marginTop: 10,
       marginBottom: 17,
@@ -1215,15 +1230,8 @@ const createStyles = (theme) => {
     mainColorFinder: {
       color: theme.main,
     },
-    noGroupsText: {
-      width: '95%',
-      fontSize: 18,
-      fontWeight: '400',
-      color: theme.text2,
-      textAlign: 'center',
-      paddingVertical: 278,
-    },
 
+    // edit group name -NN
     editGroupNameButton: {
       position: 'absolute',
       padding: 8,

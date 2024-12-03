@@ -6,6 +6,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Popover from 'react-native-popover-view';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
 import colors from '../style/colors';
@@ -71,7 +72,12 @@ const GroupsScreen = () => {
           hasInvitations && { backgroundColor: theme.red }
         ]}
       >
-        <Icon name="mail" size={25} color="#fff" />
+        { hasInvitations ? (
+          <Icon name="mail-unread" size={25} color={theme.white} />
+        ) : (
+          <Icon name="mail" size={25} color={theme.white} />
+        )
+        }
       </TouchableOpacity>
 
       <GroupsDisplay />
@@ -182,7 +188,7 @@ const GroupsDisplay = () => {
   );
 
   return (
-    <View style={styles.content}>
+    <View style={[styles.content, styles.groupDisplayContentContainer]}>
       {loading ? (
         <LoadingVisual />
       ) : (
@@ -190,7 +196,11 @@ const GroupsDisplay = () => {
         <View style={styles.groupDisplayContent}>
           {/* If there are no groups - NN */}
           {groups.length === 0 ? (
-            <Text style={styles.noGroupsText}>Create or Join a Group to View Groups</Text>
+            <View style={styles.emptyGroupsSection}>
+              <Text style={styles.emptySectionText}>
+                Create or Join a Group to View Groups
+              </Text>
+            </View>
           ) : (
             <FlatList
               data={groups}
@@ -270,12 +280,14 @@ const GroupsDisplay = () => {
             />
           )}
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.createGroupButton}
             activeOpacity={0.8}
             onPress={() => navigation.navigate('CreateGroup')}
           >
-            <Text style={styles.createGroupButtonText}>+ Create Group</Text>
+            <Ionicons name={"add-outline"} size={25} color={theme.white} />
+
+            <Text style={styles.createGroupButtonText}> Create Group</Text>
           </TouchableOpacity>
         </View>
         </>
