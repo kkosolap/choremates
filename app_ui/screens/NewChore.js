@@ -224,6 +224,9 @@ const NewChoreDisplay = ({ navigation }) => {
       if (route.params?.selectedRec) {
         setSelectedRec(route.params.selectedRec);
       }
+      setSelectedGroup(initialGroup);
+      setRotationEnabled(false);
+
       setLoading(false); // stop loading
     }, 500); // Delay of 0.5 second
   

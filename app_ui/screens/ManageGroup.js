@@ -157,7 +157,7 @@ const ManageDisplay = ({ navigation }) => {
         data={members}
         keyExtractor={(item) => item.username}
         renderItem={({ item }) => {
-          const currentPermission = selectedButtons[item.username] || `${item.username}-view`; //default view if never changed -NN
+          const currentPermission = selectedButtons[item.username] || `${item.username}-edit`; // default edit if never changed -NN
           return (
             <View style={styles.manageMemberItem}>
               <Text style={styles.memberName}>{item.display_name}</Text>
