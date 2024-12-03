@@ -38,24 +38,15 @@ const Register = ({ navigation }) => {
 
   // UI
   return (
-  <View style={[styles.signinContainer, { justifyContent: 'flex-start', paddingTop: 125 }]}>
-        <View style={{flex: 0}}>
-            <RegisterHeader title="Register" navigation={navigation} />
-        </View>
+    <View style={styles.signinContainer}>
+        <RegisterHeader title="Register" navigation={navigation} />
 
-        <View style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingBottom: 175,
-          width: '95%'
-        }}>
-            <TextInput
-                style={styles.signinInput}
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-            />
+        <TextInput
+            style={styles.signinInput}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+        />
 
             <TextInput
                 style={styles.signinInput}
@@ -65,11 +56,13 @@ const Register = ({ navigation }) => {
                 onChangeText={setPassword}
             />
 
-            <TouchableOpacity style={styles.signinButton} onPress={handleRegister}>
-                <Text style={styles.signinButtonText}>Register</Text>
-            </TouchableOpacity>
-          </View>
-
+        <TouchableOpacity
+          style={styles.signinButton}
+          activeOpacity={0.8}
+          onPress={handleRegister}
+        >
+            <Text style={styles.signinButtonText}>Register</Text>
+        </TouchableOpacity>
     </View>
   );
 };

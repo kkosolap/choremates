@@ -23,6 +23,7 @@ import Signin from './screens/Signin';
 import Register from './screens/Register';
 
 import NewChoreScreen from './screens/NewChore';
+import PresetMenuScreen from './screens/PresetMenu';
 import ChoreDetailsScreen from './screens/ChoreDetails';
 
 import GroupInvitations from './screens/GroupInvitations';
@@ -33,11 +34,6 @@ import InviteMemberScreen from './screens/InviteMember.js';
 
 import ChangeProfilePicScreen from './screens/NewProfilePicture';
 
-/************************************************************ */
-/* CHANGE THE API URL BELOW TO YOUR COMPUTER'S IP ADDRESS!!!  */
-/************************************************************ */
-// Put this in .env, replace youripv4 with your ip address -EL
-// API_URL=http://youripv4:3000/
 
 /************************************************************ */
 /*                            TABS                            */
@@ -51,6 +47,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="NewChore" component={NewChoreScreen} />
+      <Stack.Screen name="PresetMenu" component={PresetMenuScreen} />
       <Stack.Screen name="ChoreDetails" component={ChoreDetailsScreen} />
     </Stack.Navigator>
   );
@@ -101,7 +98,7 @@ const App = () => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('token');
       const user = await SecureStore.getItemAsync('username');
-      setIsLoggedIn(!!token); // Check if token exists
+      setIsLoggedIn(!!token);
       setUsername(user);
     };
     checkToken();
@@ -112,22 +109,21 @@ const App = () => {
     setIsLoggedIn(true);
     setUsername(username);
   };
-
+  
   const handleLogout = async () => {
-    await SecureStore.deleteItemAsync('token'); // Remove token securely
-    await SecureStore.deleteItemAsync('username'); 
-    setIsLoggedIn(false); // Update logged-in state
+    await SecureStore.deleteItemAsync('token');
+    await SecureStore.deleteItemAsync('username');
+    setIsLoggedIn(false);
   };
 
   return (
-    //<UserProvider>
-      <ThemeProvider username={username}>
-      <GroupThemeProvider username={username}>
-      <LogoutProvider handleLogout={handleLogout}>
+    <ThemeProvider username={username}>
+    <GroupThemeProvider username={username}>
+    <LogoutProvider handleLogout={handleLogout}>
 
-          <NavigationContainer>
-            <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
-          </NavigationContainer>
+      <NavigationContainer>
+        <AppContent isLoggedIn={isLoggedIn} handleSignin={handleSignin} />
+      </NavigationContainer>
 
 
           {/* Provides the non-disruptive alerts -VA */}

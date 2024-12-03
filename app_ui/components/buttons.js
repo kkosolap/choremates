@@ -33,7 +33,7 @@ export const SettingsButton = ({ label, iconName, iconSize = 40, onClick }) => {
 };
 
 // for any button with an icon + text
-export const ThemeButton = ({ iconName = "color-palette", iconSize = 50, color, user }) => {
+export const ThemeButton = ({ iconName = "color-palette", iconSize = 55, color, user }) => {
   const { theme, changeTheme } = useTheme();
   
   return (
@@ -60,6 +60,53 @@ export const SectionTabButton = ({ label, selected, onClick }) => {
     >
       <Text style={styles.choreSectionTabText}>
         {label}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+// "Use Preset" button on NewChore page  -MH
+export const UsePresetButton = ({onClick}) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return (
+    <TouchableOpacity
+      style={styles.presetButton}
+      activeOpacity={0.8}
+      onPress={onClick}
+    >
+      <View style={styles.presetButtonIcon}>
+        <Ionicons
+          name={"duplicate-outline"}
+          size={25}
+          color={theme.main} />
+      </View>
+      
+      <Text style={styles.presetButtonText}>
+        {"Use Preset"}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+// Button for each preset chore item on the Preset Menu
+export const PresetChoreButton = ({choreName, recurrence, onClick}) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return (
+    <TouchableOpacity
+      style={styles.presetChoreItem}
+      activeOpacity={0.8}
+      onPress={onClick}
+    >
+      <Text style={styles.presetChoreItemName}>
+        {choreName}
+      </Text>
+
+      <Text style={styles.presetChoreItemRecurrence}>
+        {recurrence}
       </Text>
     </TouchableOpacity>
   );

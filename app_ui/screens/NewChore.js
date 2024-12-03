@@ -4,12 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
+import { useRoute } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
+import { LoadingVisual } from '../components/placeholders.js';
 import Dropdown from '../components/dropdown.js';
+import Switch from '../components/switch.js';
+import { UsePresetButton } from '../components/buttons.js';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -39,7 +44,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const [username, setUsername] = useState(null);
   const [display, setDisplay] = useState(null);
   const [user_id, setUserID] = useState(null);
-  const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
+  const [choreName, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
   const [tasks, setTasks] = useState([]);  // the new task list to be added to the array -KK
   const [newTask, setNewTask] = useState('');  // block for the new task to add to the list -KK
 
@@ -52,6 +57,7 @@ const NewChoreDisplay = ({ navigation }) => {
   ];
   const initialRec = { label: 'Just Once', value: 'Just Once' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
+  const [rotationEnabled, setRotationEnabled] = useState(false); // set default to rotation off - AT
 
   // group dropdown
   const [groupDropdownData, setGroupDropdownData] = useState([{ label: 'Personal', value: -1 }]);
@@ -119,18 +125,26 @@ const NewChoreDisplay = ({ navigation }) => {
     getUsername();
   }, []);
 
+  // Function to handle rotation switch toggle - AT
+  const handleRotationToggle = async (value) => {
+    setRotationEnabled(value);
+  };
+
   // Add the chore to the database
   // (gets called when the "add chore" button is pressed) -KK
   const addChore = async () => {
-    console.log("UI NewChore: adding chore " + chore_name + " to " + selectedGroup.label);
     try {
       // add the chore to the database -KK
       if(selectedGroup.label == 'Personal'){
         try{
-          await axios.post(`${API_URL}add-chore`, { chore_name, username, recurrence: selectedRec.value });
+          await axios.post(`${API_URL}add-chore`, {
+            chore_name: choreName,
+            username,
+            recurrence: selectedRec.value
+          });
           // loop through tasks and add each one to the db -KK
           await Promise.all(tasks.map(task_name =>
-            axios.post(`${API_URL}add-task`, { chore_name, task_name, username })
+            axios.post(`${API_URL}add-task`, { chore_name: choreName, task_name, username })
           ));
         } catch (error) {
             Toast.show({
@@ -139,19 +153,20 @@ const NewChoreDisplay = ({ navigation }) => {
               text2: error.response?.data?.error || 'An unexpected error occurred',
             });
         }
-      }else{
+      } else{
         // add the group chore to the database -KK
         try{
           await axios.post(`${API_URL}add-group-chore`, { 
-            group_chore_name: chore_name,
+            group_chore_name: choreName,
             assign_to: assign_to.value,
             recurrence: selectedRec.value,
             group_id: selectedGroup.value,
+            rotation_enabled: rotationEnabled,
             username: username
           });
 
           await Promise.all(tasks.map(group_task_name =>
-            axios.post(`${API_URL}add-group-task`, { group_chore_name: chore_name, group_task_name, group_id: selectedGroup.value, username: username })
+            axios.post(`${API_URL}add-group-task`, { group_chore_name: choreName, group_task_name, group_id: selectedGroup.value, username: username })
           ));
         } catch (error) {
           Toast.show({
@@ -165,10 +180,19 @@ const NewChoreDisplay = ({ navigation }) => {
       // reset everything -KK
       setChoreName('');
       setNewTask('');
+      const tempSelectedGroupId = selectedGroup.value;
       setSelectedRec(initialRec);
+      setRotationEnabled(false);  // - AT
       setSelectedGroup(initialGroup);
       setTasks([]);
-      navigation.goBack();  // exit and go back to home -KK
+
+      // exit and go back to home -KK
+      //navigation.goBack();  
+      navigation.navigate('HomeMain', {
+        needToLoad: true, // tells home page to reload collapsible  -MH
+        groupEdited: tempSelectedGroupId, // group id or -1 if personal  -MH
+      });
+
     } catch (error) {
       console.error("Error adding chore:", error);
     }
@@ -177,9 +201,13 @@ const NewChoreDisplay = ({ navigation }) => {
   // Adds the task entered into the input box to the task list
   // These will only get added to the db after the "add chore" button is pressed -KK
   const addTask = () => {
-    if (newTask.trim()) {
+    if (!newTask.trim()) { return; }
+
+    if (!tasks.includes(newTask)) {
       setTasks([...tasks, newTask]);
       setNewTask('');
+    } else {
+      Alert.alert("Error: ", 'This task already exists for this chore.'); 
     }
   };
 
@@ -188,11 +216,37 @@ const NewChoreDisplay = ({ navigation }) => {
     setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
   };
 
+  // open Preset Menu page above current page
+  const openPresetMenu = () => {
+    navigation.navigate('PresetMenu');
+  };
+
+  // used to get preset choreName and recurrence
+  const route = useRoute();
+  
+  useEffect(() => {
+    setLoading(true); // start loading
+    const timer = setTimeout(() => {
+      if (route.params?.choreName) {
+        setChoreName(route.params.choreName);
+      }
+      if (route.params?.selectedRec) {
+        setSelectedRec(route.params.selectedRec);
+      }
+      setSelectedGroup(initialGroup);
+      setRotationEnabled(false);
+
+      setLoading(false); // stop loading
+    }, 500); // Delay of 0.5 second
+  
+    return () => clearTimeout(timer); // Cleanup timeout when component unmounts
+  }, [route.params?.choreName, route.params?.selectedRec]);
+
   // ---------- Page Content ----------
   return (
     <View style={styles.content}>
       {loading ? (
-        <Text>Loading...</Text> // Display a loader or placeholder
+        <LoadingVisual />
       ) : (
       <>
         <View style={styles.formContainer}>
@@ -202,9 +256,13 @@ const NewChoreDisplay = ({ navigation }) => {
           style={styles.choreNameInput}
           placeholder="Enter Chore Name . . ."
           placeholderTextColor={theme.text3}
-          value={chore_name}
+          value={choreName}
           selectionColor={theme.text2}
           onChangeText={setChoreName}
+        />
+
+        <UsePresetButton
+          onClick={openPresetMenu}
         />
 
         {/* Group Dropdown */}
@@ -238,8 +296,19 @@ const NewChoreDisplay = ({ navigation }) => {
           label="Select Item"
           data={recDropdownData}
           onSelect={setSelectedRec}
-          initialValue={initialRec}
+          initialValue={selectedRec}
         />
+        
+        {/* Conditional Rotation Switch if Recurrence Selected - AT */}
+        {selectedGroup.value !== -1 && selectedRec.value !== 'Just Once' && (
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>Rotate Assignment: </Text>
+            <Switch
+              isOn={rotationEnabled}
+              onToggle={handleRotationToggle}
+            />
+          </View>
+        )}
 
         {/* Tasks */}
         <Text style={styles.label}>Tasks:</Text>
@@ -293,7 +362,9 @@ const NewChoreDisplay = ({ navigation }) => {
             onPress={addChore}
             activeOpacity={0.8}
           >
-            <Text style={styles.addChoreButtonText}>Add Chore</Text>
+            <Ionicons name={"add-outline"} size={25} color={theme.white} />
+
+            <Text style={styles.addChoreButtonText}> Add Chore</Text>
           </TouchableOpacity>
         </View>
         </>

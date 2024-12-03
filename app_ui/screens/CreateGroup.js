@@ -60,21 +60,26 @@ const CreateGroupScreen = () => {
               });
         }
     };
+    
+    const handleGroupNameChange = (text) => {
+        if (text.length <= 15) {
+            setGroupName(text);
+        }
+    };
 
     return (
-        <View style={[styles.screen, {justifyContent: 'top'}]}>
-            <ScreenHeader title="Enter Group Name" navigation={navigation} />
-                <View style = {[{flex: 1, justifyContent: 'center', alignItems: 'center', width: '85%', marginBottom: 75,}]}>
-                    <TextInput
-                        style={[styles.groupInviteeInput, {marginBottom:25}]}
-                        placeholder="Group Name"
-                        value={groupName}
-                        onChangeText={setGroupName}
-                    />
-                    <TouchableOpacity style={styles.submitButton} onPress={handleCreateGroup}>
-                        <Text style={styles.submitButtonText}>Create Group</Text>
-                    </TouchableOpacity>
-                </View>
+        <View style={styles.screen}>
+            <RegisterHeader title="Enter Group Name" navigation={navigation} />
+            <TextInput
+                style={styles.groupInviteeInput}
+                placeholder="Group Name"
+                value={groupName}
+                onChangeText={handleGroupNameChange}
+                maxLength={15}
+            />
+            <TouchableOpacity style={styles.submitButton} onPress={handleCreateGroup}>
+                <Text style={styles.submitButtonText}>Create Group</Text>
+            </TouchableOpacity>
         </View>
     );
 };

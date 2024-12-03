@@ -16,16 +16,20 @@ const Signin = ({ onSignin }) => {
   const styles = createStyles(themes.purple);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const navigation = useNavigation();
 
   const handleSignin = async () => {
+    if (isSigningIn) return; 
+    setIsSigningIn(true);
+
     try {
       const response = await axios.post(`${API_URL}login`, { username, password });
       const token = response.data.token;
-      await SecureStore.setItemAsync('token', token); // Store the token securely
-      await SecureStore.setItemAsync('username', username); // Store username securely
-      onSignin(username); // Update the logged-in state
+      await SecureStore.setItemAsync('token', token); 
+      await SecureStore.setItemAsync('username', username); 
+      onSignin(username); 
     } catch (error) {
       if (error.response && error.response.status === 401) {
         Alert.alert("Invalid Username or Password");
@@ -33,6 +37,8 @@ const Signin = ({ onSignin }) => {
         Alert.alert("An error occurred. Please try again.");
         console.error('Login Error:', error);
       }
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -61,11 +67,19 @@ const Signin = ({ onSignin }) => {
         onSubmitEditing={handleSignin}
       />
 
-      <TouchableOpacity style={styles.signinButton} onPress={handleSignin}>
+      <TouchableOpacity
+        style={styles.signinButton}
+        activeOpacity={0.8}
+        onPress={handleSignin}
+        >
         <Text style={styles.signinButtonText}>Sign in</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+      <TouchableOpacity
+        style={styles.registerButton}
+        activeOpacity={0.8}
+        onPress={handleRegister}
+      >
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
     </View>

@@ -1,18 +1,22 @@
 // ChoreDetails.js
 
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import * as SecureStore from 'expo-secure-store';
-import axios from 'axios';
 
-import { API_URL } from '../config';
 import createStyles from '../style/styles';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { ScreenHeader } from '../components/headers.js';
+import { LoadingVisual } from '../components/placeholders.js';
 import Dropdown from '../components/dropdown.js';
+import Switch from '../components/switch.js';
+
+import axios from 'axios';
+import { API_URL } from '../config';
 
 
 // header and page content
@@ -39,7 +43,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
 
   // get current chore details from parameters -MH
   const route = useRoute();
-  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id, routed_assignment } = route.params;
+  const { routed_chore_name, routed_tasks, routed_recurrence, routed_group_id, routed_assignment, routed_rotation } = route.params;
 
   const [username, setUsername] = useState(null);
   const [chore_name, setChoreName] = useState('');  // the name of the chore to be added to the db -KK
@@ -57,6 +61,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
   ];
   const initialRec = recDropdownData.find(item => item.value === routed_recurrence) || { label: '', value: '' };
   const [selectedRec, setSelectedRec] = useState(initialRec);  // how often the chore recurrs, selectedRec.value added to the db -MH
+  
+  // rotation state - AT
+  const [rotationEnabled, setRotationEnabled] = useState(routed_rotation);
 
   // assignment dropdown data
   const [assignmentDropdownData, setAssignmentDropdownData] = useState([]);
@@ -94,7 +101,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
           } else {
             console.error("UI ChoreDetails.js: Failed to fetch initial assignment display name.");
           }
-  
+
           // Fetch group members for the assignment dropdown
           const memberResponse = await axios.get(`${API_URL}get-group-members`, {
             params: { group_id: routed_group_id },
@@ -116,8 +123,10 @@ const ChoreDetailsDisplay = ({navigation}) => {
             group_id: routed_group_id
           });
           setPermission(perm.data);
+        } else {
+          setPermission(1);
         }
-        else {  setPermission(1); }
+        
         setLoading(false);
       } catch (error) {
         console.error("UI ChoreDetails.js: Error initializing chore details:", error);
@@ -125,7 +134,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
     };
     init();
   }, []);
-  
 
   useEffect(() => {
     const getGroupName = async () => {
@@ -215,6 +223,12 @@ const ChoreDetailsDisplay = ({navigation}) => {
     }
   };
 
+  // Function to handle rotation switch toggle - AT
+  const handleRotationToggle = async (value) => {
+      setRotationEnabled(value); // Update only local state... only saves when update is hit
+  };
+  
+
   // Update the chore in the database
   // (gets called when the "update chore" button is pressed) -MH
   const updateChore = async () => {
@@ -232,6 +246,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
             new_chore_name: chore_name,  // updated chore name from input
             group_id: choreGroup.value,
             recurrence: selectedRec.value,
+            rotation_enabled: rotationEnabled,
             assign_to: assign_to.value,
             username: username
           });
@@ -241,7 +256,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
         await updateTasksInDatabase();
 
         // exit and go back to home
-        navigation.goBack();
+        //navigation.goBack();
+        navigation.navigate('HomeMain', {
+          needToLoad: true, // tells home page to reload collapsible  -MH
+          groupEdited: choreGroup.value, // group id or -1 if personal  -MH
+        });
 
     } catch (error) {
         console.error("Error updating chore:", error);
@@ -256,9 +275,13 @@ const ChoreDetailsDisplay = ({navigation}) => {
   // Adds the task entered into the input box to the task list
   // These will only get added to the db after the "save changes" button is pressed -MH
   const addTask = () => {
-    if (newTask.trim()) {
+    if (!newTask.trim()) { return; }
+
+    if (!tasks.includes(newTask)) {
       setTasks([...tasks, newTask]);
       setNewTask('');
+    } else {
+      Alert.alert("Error: ", 'This task already exists for this chore!'); 
     }
   };
 
@@ -275,7 +298,14 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else {
         await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value, username: username });
       }
-      navigation.goBack();   
+      
+      // exit and go back to home
+      //navigation.goBack();
+      navigation.navigate('HomeMain', {
+        needToLoad: true, // tells home page to reload collapsible  -MH
+        groupEdited: choreGroup.value, // group id or -1 if personal  -MH
+      });
+      
     } catch (error) {
       console.error(error);
     }
@@ -285,7 +315,7 @@ const ChoreDetailsDisplay = ({navigation}) => {
   return (
     <View style={styles.content}>
       {loading ? (
-        <Text>Loading...</Text> // Display a loader or placeholder
+        <LoadingVisual />
       ) : (
       <>
       <View style={styles.formContainer}>
@@ -384,6 +414,36 @@ const ChoreDetailsDisplay = ({navigation}) => {
           </>
         )}
 
+        {/* Rotation Switch - AT */}
+        {routed_group_id !== -1 && (
+          <>
+            {selectedRec.value !== 'Just Once' && permission === 1 ? (
+              <>
+                {/* Editable */}
+                <View style={styles.switchContainer}>
+                  <Text style={styles.label}>Rotate Assignment: </Text>
+                  <Switch
+                    isOn={rotationEnabled}
+                    onToggle={handleRotationToggle}
+                  />
+                </View>
+              </>
+            ) : (selectedRec.value !== 'Just Once') ? (
+              <>
+                {/* Not editable */}
+                <View style={styles.switchContainer}>
+                  <Text style={styles.label}>Rotate Assignment: </Text>
+                  <Switch
+                    isOn={rotationEnabled}
+                    onToggle={() => {}} // You can also disable the toggle if needed
+                    disabled
+                  />
+                </View>
+              </>
+            ) : null}
+          </>
+        )}
+
         {/* Tasks */}
         {permission === 1 ? (
           <>
@@ -471,7 +531,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
             onPress={updateChore}
             activeOpacity={0.8}
           >
-            <Text style={styles.addChoreButtonText}>Save Changes</Text>
+            <Ionicons name={"checkmark-outline"} size={25} color={theme.white} />
+
+            <Text style={styles.addChoreButtonText}> Save Changes</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -484,7 +546,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
             onPress={() => deleteChore(routed_chore_name)}
             activeOpacity={0.8}
           >
-            <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
+            <Ionicons name={"trash"} size={21} color={theme.white} />
+
+            <Text style={styles.deleteChoreButtonText}> Delete Chore</Text>
           </TouchableOpacity>
         </View>
       )}

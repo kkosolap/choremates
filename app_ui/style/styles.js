@@ -1,6 +1,6 @@
 // styles.js
 
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 // function to create styles based on the theme  -MH
 const createStyles = (theme) => {
@@ -26,7 +26,6 @@ const createStyles = (theme) => {
     height: 'auto',
     flexShrink: 1,
     flexGrow: 1,
-    //textAlignVertical: 'center',
     lineHeight: 28,
     paddingVertical: 0,
     marginVertical: 0,
@@ -167,7 +166,7 @@ const createStyles = (theme) => {
     },
 
     // circle button  -MH
-    button: {
+    circleButton: {
       justifyContent: 'center',
       alignItems: 'center',
       width: 60,
@@ -177,7 +176,8 @@ const createStyles = (theme) => {
     },
     buttonDescription: {
       fontSize: 16,
-      marginTop: 8
+      marginTop: 8,
+      color: theme.main,
     },
 
     // home page chore sections
@@ -209,8 +209,15 @@ const createStyles = (theme) => {
       width: '100%',
       margin: 0,
     },
+
+    // empty section placeholder text  -MH
     emptySectionText: {
       fontSize: 16,
+      fontWeight: '400',
+      color: theme.text2,
+    },
+    biggerEmptySectionText: {
+      fontSize: 20,
       fontWeight: '400',
       color: theme.text2,
     },
@@ -224,6 +231,30 @@ const createStyles = (theme) => {
     emptyTasksSection: {
       width: '100%',
       marginBottom: 12,
+    },
+    emptyGroupsSection: {
+      width: '100%',
+      paddingHorizontal: 10,
+      marginTop: 160,
+      alignItems: 'center',
+    },
+    emptyInvitesSection: {
+      width: '100%',
+      paddingHorizontal: 10,
+      marginTop: 160,
+      alignItems: 'center',
+    },
+
+    // loading screen  -MH
+    loadingContainer: {
+      width: '100%',
+      alignItems: 'center',
+      marginTop: 25,
+    },
+    loadingText: {
+      fontSize: 18,
+      fontWeight: '300',
+      color: theme.text2,
     },
 
     // chores tab sections  -MH
@@ -319,16 +350,25 @@ const createStyles = (theme) => {
       marginTop: 5,
       marginBottom: 5,
       fontSize: 20,
-      width: '85%',
+      width: '90%',
       height: 'auto',
     },
-    recurrenceLabel: {
+    homeChoreInfo: {
+      width: '90%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       marginBottom: 5,
+    },
+    recurrenceLabel: {
       fontSize: 17,
       fontWeight: '300',
       color: theme.text2,
-      width: '85%',
-      height: 'auto',
+    },
+    rotatingLabel: {
+      fontSize: 17,
+      fontWeight: '300',
+      color: theme.text2,
     },
     editChoreButton: {
       position: 'absolute',
@@ -435,6 +475,8 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
+      marginTop: 5,
+      flexDirection: 'row',
     },
     logoutButtonText: {
       color: theme.white,
@@ -558,13 +600,14 @@ const createStyles = (theme) => {
       width: '80%',
     },
     addChoreButton: {
-      marginTop: 25,
+      marginTop: 15,
       width: '80%',
       height: 60,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      flexDirection: 'row',
     },
     addChoreButtonText: {
       color: theme.white,
@@ -577,13 +620,105 @@ const createStyles = (theme) => {
       fontSize: 18,
     },
     deleteChoreButton: {
-      marginTop: 25,
+      marginTop: 15,
       width: '80%',
       height: 40,
       borderRadius: 10,
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
+      flexDirection: 'row',
+    },
+
+    // preset menu -MH
+    presetButton: {
+      position: 'absolute',
+      //top: 40,
+      right: 10,
+      justifyContent: 'left',
+    },
+    presetButtonIcon: {
+      justifyContent: 'center', 
+      alignItems: 'center',
+      position: 'absolute',
+      left: 0,
+    },
+    presetButtonText:  {
+      fontSize: 18, 
+      color: theme.main,
+      paddingLeft: 30,
+    },
+    choreCategoryList: {
+      width: '100%',
+      marginBottom: 15,
+      paddingHorizontal: 5,
+    },
+    choreCategoryTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    presetChoreItem: {
+      backgroundColor: theme.lightest,
+      marginBottom: 5,
+      paddingVertical: 5,
+      paddingHorizontal: 15,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderRadius: 10,
+    },
+    presetChoreItemName: {
+      fontSize: 18,
+      fontWeight: '400',
+      color: theme.text1,
+    },
+    presetChoreItemRecurrence: {
+      fontSize: 17,
+      fontWeight: '300',
+      color: theme.text2,
+    },
+
+    // switch to toggle rotation - AT
+    switchContainer: {
+      flexDirection: 'row',
+      marginBottom: 12,
+    },
+    switchLabel: {
+      fontSize: 16,
+      fontWeight: '500',
+      lineHeight: 25,
+      textAlignVertical: 'center',
+      color: theme.text, // Dynamic text color based on theme
+    },
+    switchWrapper: {
+      width: 50, // Width of the switch
+      height: 25, // Height of the switch
+      borderRadius: 25, // Circular ends
+      justifyContent: 'center',
+      paddingHorizontal: 3, // Space for thumb movement
+    },
+    switchTrack: {
+      flex: 1,
+      borderRadius: 25, // Match the switch wrapper for consistency
+      backgroundColor: theme.desaturated,
+      justifyContent: 'center', // Center the thumb vertically
+    },
+    switchTrackDisabled: {
+      backgroundColor: theme.lightGray, // active state but not editable
+    },
+    switchActiveTrack: {
+      backgroundColor: theme.main,
+    },
+    switchActiveTrackDisabled: {
+      backgroundColor: theme.gray, // active state but not editable
+    },
+    switchThumb: {
+      width: 20, // Size of the thumb
+      height: 20,
+      borderRadius: 10, // Fully circular thumb
+      backgroundColor: theme.white, // White thumb for contrast
+      elevation: 2, // Subtle shadow for a 3D effect
+      position: 'absolute', // Allow smooth sliding
     },
 
     // chore details form dropdown -MH
@@ -672,8 +807,8 @@ const createStyles = (theme) => {
       paddingRight: 20,
     },
     profilePictureCircle: {
-      width: 100,
-      height: 100,
+      width: 120,
+      height: 120,
       overflow: 'visible', // Crop any overflow for circular shape
     },
     profileNameLabel: {
@@ -693,6 +828,11 @@ const createStyles = (theme) => {
       fontSize: 30,
       fontWeight: '500',
       color: theme.text2,
+    },
+    displayNameCheckmark: {
+      position: 'absolute',
+      right: 30,
+      top: 45,
     },
     profileUsernameText: {
       fontSize: 20,
@@ -764,10 +904,13 @@ const createStyles = (theme) => {
     themeIconContainer: {
       width: '100%',
       flexDirection: 'row',
-      alignItems: 'left',
-      justifyContent: 'flex-start',
-      paddingLeft: 10,
-    },  
+      //alignItems: 'left',
+      //justifyContent: 'flex-start',
+      //paddingLeft: 10,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+    },
 
     // notification section -KK
     notificationContainer: {
@@ -799,16 +942,71 @@ const createStyles = (theme) => {
     },
 
     // members page -NN
-    manageButton: {
-      position: 'absolute',
+    membersList: {
+      width: '100%',
+      backgroundColor: theme.white,
+      marginBottom: 90,
+      borderWidth: 2,
+      borderColor: theme.lightest,
+      borderRadius: 15,
+    },
+    manageGroupMembersList: {
+      marginBottom: 60,
+    },
+    memberListPadding: {
+      paddingTop: 10,
+    },
+    manageGroupButton: {
       width: '80%',
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      position: 'absolute',
+      bottom: 50,
+      flexDirection: 'row',
     },
-    manageCreateButtonText: {
+    manageGroupButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 20,
+    },
+    leaveGroupButton: {
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.red,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 80,
+      flexDirection: 'row',
+    },
+    disbandGroupButton: {
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.red,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 60,
+      flexDirection: 'row',
+    },
+    inviteButton: {
+      width: '60%',
+      paddingVertical: 10,
+      marginBottom: 10,
+      borderRadius: 10,
+      backgroundColor: theme.main,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 100,
+      flexDirection: 'row',
+    },
+    inviteButtonText: {
       color: theme.white,
       fontWeight: 'bold',
       fontSize: 18,
@@ -833,15 +1031,12 @@ const createStyles = (theme) => {
     // members card - NN
     memberItem: {
       flexDirection: 'row',
-      justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 20,
-      marginVertical: 15,
-      borderColor: theme.gray,
-      borderWidth: 1,
-      borderRadius: 20,
-      width: 350, 
-      alignSelf: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 13,
+      marginBottom: 15,
+      borderRadius: 30,
+      width: 370, 
       backgroundColor: theme.lighter,
     },
     memberName: {
@@ -856,10 +1051,10 @@ const createStyles = (theme) => {
       fontSize: 20,
     },
     profileImage: {
-      width: 40,
-      height: 40,
-      borderRadius: 25,
-      marginRight: 10,
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      marginRight: 5,
     },
 
     // manage members screen - NN
@@ -867,13 +1062,12 @@ const createStyles = (theme) => {
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      padding: 20,
-      marginVertical: 15,
-      borderColor: theme.gray,
-      borderWidth: 1,
-      borderRadius: 20,
-      width: 350, 
-      height: 110,
+      paddingHorizontal: 15,
+      paddingVertical: 5,
+      minHeight: 90,
+      marginVertical: 8,
+      borderRadius: 40,
+      width: 370,
       alignSelf: 'center',
       backgroundColor: theme.lighter,
     },
@@ -882,7 +1076,7 @@ const createStyles = (theme) => {
       alignItems: 'center',
     },
     permissionButton: {
-      borderColor: 'black',
+      borderColor: theme.main,
       borderWidth: 1,
       padding: 5,
       borderRadius: 5,
@@ -891,9 +1085,9 @@ const createStyles = (theme) => {
     },
     deleteButton: {
       backgroundColor: theme.red,
-      padding: 20,
-      borderWidth: 1,
-      borderRadius: 20,
+      borderRadius: 40,
+      width: 40,
+      height: 40,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -932,46 +1126,51 @@ const createStyles = (theme) => {
       justifyContent: 'space-between',
     },
     acceptButton: {
-      backgroundColor: '#73a662',
+      backgroundColor: theme.green,
       padding: 10,
       borderRadius: 5,
+      flexDirection: 'row',
     },
     declineButton: {
       backgroundColor: theme.red,
       padding: 10,
       borderRadius: 5,
+      flexDirection: 'row',
     },
     buttonText: {
       color: theme.white,
+      fontSize: 18,
     },
 
     // create/invite button & pop-up - NN
-    manageCreateButton: {
-      marginTop:20,
-      width: '80%',
+    createGroupButton: {
+      width: '95%',
+      marginLeft: '2.5%',
+      marginTop: 10,
       height: 50,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      position: 'absolute',
+      bottom: -50,
+      flexDirection: 'row',
     },
-    inviteButton: {
-      width: '35%',
-      height: 50,
-      borderRadius: 10,
-      backgroundColor: theme.main,
-      justifyContent: 'center',
-      alignItems: 'center',
+    createGroupButtonText: {
+      color: theme.white,
+      fontWeight: 'bold',
+      fontSize: 20,
     },
     groupInviteeInput: {
       width: '85%',
       height: 40,
       paddingHorizontal: 10,
       borderRadius: 5,
-      borderColor: theme.gray,
+      borderColor: theme.main,
       borderWidth: 1,
       marginBottom: 20,
-      backgroundColor: theme.lightGray,
+      backgroundColor: theme.white,
+      color: theme.text1,
     },
     submitButton: {
       width: '85%',
@@ -984,7 +1183,7 @@ const createStyles = (theme) => {
     submitButtonText: {
       color: theme.white,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 18,
     },
     closeButton: {
       position: 'absolute',
@@ -994,26 +1193,26 @@ const createStyles = (theme) => {
     },
     
     // groups display -NN
-
-    // added so groups won't cut off like normal content styling  -MH
+    groupDisplayContentContainer: {
+      paddingTop: 15,
+      paddingBottom: 140,
+    },
     groupDisplayContent: {
       flex: 1,
-      width: 400,
-      paddingLeft: 10,
-      alignItems: 'center',
-      justifyContent: 'flex-start',  // Start content at the top
-      // paddingTop: 10,
-      paddingBottom: 40,
+      width: '100%',
+      alignItems: 'stretch',
+      justifyContent: 'flex-start',
+      marginBottom: -40,
     },
     groupItem: {
-      width: '95%',
+      width: '92%',
+      marginLeft: '4%', // adjust based on above setting to center
       flexDirection: 'row',
-      alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 20,
-      paddingHorizontal: 20,
+      paddingVertical: 15,
+      paddingHorizontal: 15,
       marginTop: 10,
-      marginBottom: 13,
+      marginBottom: 17,
       borderWidth: 2,
       borderRadius: 10,
       backgroundColor: theme.lighter,
@@ -1023,6 +1222,11 @@ const createStyles = (theme) => {
       fontSize: 25,
       fontWeight: 'bold',
       flexShrink: 1,
+    },
+    groupSize: {
+      fontSize: 15,
+      color: theme.text2,
+      marginTop: 5,
     },
     groupColorPicker: {
       justifyContent: 'center',
@@ -1061,13 +1265,32 @@ const createStyles = (theme) => {
     mainColorFinder: {
       color: theme.main,
     },
-    noGroupsText: {
-      width: '95%',
-      fontSize: 18,
-      fontWeight: '400',
-      color: theme.text2,
+
+    // edit group name -NN
+    editGroupNameButton: {
+      position: 'absolute',
+      padding: 8,
+      top: 72,
+      right: 20
+    },
+    editGroupNameInput: {
+      borderWidth: 5,
+      borderRadius: 10,
+      borderColor: 'black',
+    },
+
+    headerTitleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    editInput: {
+      fontWeight: 'bold',
+      padding: 5,
+      fontSize: 25,
+      minWidth: 280,
+      maxWidth: 280,
       textAlign: 'center',
-      paddingVertical: 293,
     },
     groupSize: {
       fontSize: 13,

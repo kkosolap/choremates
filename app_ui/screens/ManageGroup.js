@@ -1,10 +1,11 @@
 // ManageGroup.js - NN
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Delete from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
 
@@ -34,12 +35,32 @@ const ManageDisplay = ({ navigation }) => {
   const route = useRoute();
   const { members: initialMembers, groupId, username  } = route.params;
   const [members, setMembers] = useState(initialMembers);
+  const [selectedButtons, setSelectedButtons] = useState({});
+
+  // permission states -NN
+  useEffect(() => {
+    const loadSelectedButtons = async () => {
+      try {
+        const storedButtons = await AsyncStorage.getItem('selectedButtons');
+        if (storedButtons) {
+          try {
+            setSelectedButtons(JSON.parse(storedButtons));
+          } catch (error) {
+            console.error("Error parsing stored buttons:", error);
+            setSelectedButtons({});
+          }
+        } else {
+          setSelectedButtons({});
+        }
+      } catch (error) {
+        console.error("Error loading stored buttons:", error);
+        setSelectedButtons({});
+      }
+    };
+    loadSelectedButtons();
+  }, []);
 
   const handleRemoveMember = (userToRemove) => {
-    console.log("Username:", username);
-    console.log("Group ID:", groupId);
-    console.log("User to remove:", userToRemove);
-
     //alert popup to confirm removal
     Alert.alert(
       "Confirm Removal",
@@ -52,9 +73,6 @@ const ManageDisplay = ({ navigation }) => {
         {
           text: "OK",
           onPress: () => {
-            console.log("Username:", username);
-            console.log("Group ID:", groupId);
-            console.log("User to remove:", userToRemove);
             axios.delete(`${API_URL}remove-user-from-group`, {
               data: {
                 username,
@@ -125,20 +143,18 @@ const ManageDisplay = ({ navigation }) => {
     );
   };
 
+  // update permissions
   const handlePermissionUpdate = (userToUpdate, canModify) => {
+    // for permission display -NN
+    const buttonKey = `${userToUpdate}-${canModify ? 'edit' : 'view'}`;
+    const updatedButtons = { ...selectedButtons, [userToUpdate]: buttonKey };
+    setSelectedButtons(updatedButtons);
+    AsyncStorage.setItem('selectedButtons', JSON.stringify(updatedButtons));
     axios.put(`${API_URL}update-chore-permission`, {
       username,
       group_id: groupId,
       user_to_update: userToUpdate,
       can_modify_chore: canModify,
-    })
-    .then((response) => {
-      Toast.show({
-        type: 'success',
-        text1: `${canModify ? 'Edit Access' : 'View Only'}`,
-        text2: `${canModify ? `Edit-only access updated for ${userToUpdate}` : `View-only access updated for ${userToUpdate}`}`,
-      });
-      
     })
     .catch((error) => {
       console.error("Error updating permission: ", error);
@@ -153,46 +169,51 @@ const ManageDisplay = ({ navigation }) => {
   return (
     <View style={styles.content}>
       <FlatList
+        style={[styles.membersList, styles.manageGroupMembersList]}
         data={members}
         keyExtractor={(item) => item.username}
-        renderItem={({ item }) => (
-          <View style={styles.manageMemberItem}>
-            <Text style={styles.memberName}>{item.display_name}</Text>
-            {item.username !== username && (
-            <>
-              <View style={styles.permissionButtonContainer}>
-                <TouchableOpacity
-                  style={styles.permissionButton}
-                  onPress={() => handlePermissionUpdate(item.username, true)}
-                >
-                  <Ionicons name="pencil" size={20} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.permissionButton}
-                  onPress={() => handlePermissionUpdate(item.username, false)}
-                >
-                  <Ionicons name="eye" size={20} color="white" />
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleRemoveMember(item.username)}
-              >
-                <Delete name="close" size={25} color="black" />
-              </TouchableOpacity>
-            </>
-          )}
-          </View>
-        )}
+        renderItem={({ item }) => {
+          const currentPermission = selectedButtons[item.username] || `${item.username}-edit`; // default edit if never changed -NN
+          return (
+            <View style={styles.manageMemberItem}>
+              <Text style={styles.memberName}>{item.display_name}</Text>
+              {item.username !== username && (
+                <>
+                  <View style={styles.permissionButtonContainer}>
+                    <TouchableOpacity
+                      style={[styles.permissionButton, currentPermission === `${item.username}-edit` && { backgroundColor: theme.main }]}
+                      onPress={() => handlePermissionUpdate(item.username, true)}
+                    >
+                      <Ionicons name="pencil" size={20} color="white" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.permissionButton, currentPermission === `${item.username}-view` && { backgroundColor: theme.main }]}
+                      onPress={() => handlePermissionUpdate(item.username, false)}
+                    >
+                      <Ionicons name="eye" size={20} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => handleRemoveMember(item.username)}
+                  >
+                    <Ionicons name="close-outline" size={35} color="white" />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          );
+        }}
       />
+
       <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={() => {
-            console.log('Disband Group button pressed');
-            handleDisbandGroup();
-          }}
-        >
-          <Text style={styles.manageCreateButtonText}>Disband Group</Text>
+        style={styles.disbandGroupButton}
+        activeOpacity={0.8}
+        onPress={() => handleDisbandGroup()}
+      >
+        <Ionicons name={"trash"} size={28} color={theme.white} />
+
+        <Text style={styles.manageGroupButtonText}> Disband Group</Text>
       </TouchableOpacity>
     </View>
   );

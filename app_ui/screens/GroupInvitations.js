@@ -3,17 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
-import axios from 'axios';
 
-import { API_URL } from '../config';
 import createStyles from '../style/styles';
+import { useGroupThemes } from '../contexts/GroupThemeProvider';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { ScreenHeader } from '../components/headers.js';
+
+import { API_URL } from '../config';
+import axios from 'axios';
 
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { changeGroupTheme } = useGroupThemes();
+
   const [invitations, setInvitations] = useState([]);
 
   useEffect(() => {
@@ -24,7 +29,6 @@ const GroupInvitations = ({ navigation, route }) => {
           params: { username },
         });
         if (res.status === 200) {
-
           // append group name to invitation -NN
           const invitationsWithNames = await Promise.all(
             res.data.map(async (invitation) => {
@@ -56,12 +60,17 @@ const GroupInvitations = ({ navigation, route }) => {
     fetchInvitations();
   }, []);
 
-  const handleResponse = async (invitationId, response) => {
+  const handleResponse = async (invitationId, response, groupId) => {
     try {
       const res = await axios.post(`${API_URL}respond-to-invite`, {
         invitation_id: invitationId,
         response,
       });
+
+      const username = route.params?.username;
+      if (response === 'accepted') {
+        changeGroupTheme(username, groupId, theme.name); // set default group color to current theme  -MH
+      }
       
       if (res.status === 200) {
         if(response == 'accepted'){
@@ -102,24 +111,39 @@ const GroupInvitations = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.invitationItem}>
-              <Text style={styles.invitationText}>Incoming Invite: </Text>
-              <Text style={styles.invitationGroupText}>{item.group_name}</Text>
+            <Text style={styles.invitationText}>Incoming Invite: </Text>
+            <Text style={styles.invitationGroupText}>{item.group_name}</Text>
+
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 
-                onPress={() => handleResponse(item.id, 'accepted')}
+                onPress={() => handleResponse(item.id, 'accepted', item.group_id)}
               >
-                <Icon name="checkmark-outline" style={styles.buttonText} size={24} />
+                <Icon name="checkmark-outline" color={theme.white} size={24} />
+                <Text style={styles.buttonText}> Accept</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.declineButton} 
-                onPress={() => handleResponse(item.id, 'rejected')}
+                onPress={() => handleResponse(item.id, 'rejected', item.group_id)}
               >
-                <Icon name="close-outline" style={styles.buttonText} size={24} />
+                <Icon name="close-outline" color={theme.white} size={24} />
+                <Text style={styles.buttonText}> Decline</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
+        ListEmptyComponent={  // render if data is empty (no invitations)  -MH
+          <View style={styles.emptyInvitesSection}>
+            <Ionicons name={"mail-open"} size={80} color={theme.main} />
+
+            <Text style={styles.biggerEmptySectionText}>
+              No pending invitations
+            </Text>
+            <Text style={styles.emptySectionText}>
+              Check back later!
+            </Text>
+          </View>
+        }
       />
     </View>
   );

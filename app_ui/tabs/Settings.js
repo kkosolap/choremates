@@ -11,6 +11,7 @@ import createStyles from '../style/styles';
 import LogoutButton from '../components/logout'; 
 import { API_URL } from '../config';
 import { TabHeader } from '../components/headers.js';
+import { LoadingVisual } from '../components/placeholders.js';
 import { ThemeButton } from '../components/buttons.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { useLogout } from '../contexts/LogOutProvider';
@@ -42,6 +43,8 @@ const SettingsDisplay = () => {
   const handleLogout = useLogout();
   const navigation = useNavigation();
 
+  const [loading, setLoading] = useState(true); 
+
   const avatarMap = {
     pinkAvatar: require('../icons/pinkAvatar.jpg'),
     pinkCat: require('../icons/cat_pink.jpg'),
@@ -71,7 +74,7 @@ const SettingsDisplay = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const getUsername = async () => {   
+      const getUsername = async () => {
         const username = await SecureStore.getItemAsync('username');
         if (username) {
           setUsername(username);
@@ -91,6 +94,8 @@ const SettingsDisplay = () => {
         } else {
           console.error("Username not found in SecureStore.");
         }
+
+        setLoading(false);
       };
       getUsername();
     }, [])
@@ -131,63 +136,75 @@ const SettingsDisplay = () => {
 
   return (
     <View style={styles.content}>
+      {loading ? (
+        <LoadingVisual />
+      ) : (
+        <>
+        {/* Profile */}
+        <View style={styles.contentSection}>
+          <Text style={styles.sectionHeading}>Profile</Text>
+          <View style={styles.horizontalLine}></View>
 
-      {/* Profile */}
-      <View style={styles.contentSection}>
-        <Text style={styles.sectionHeading}>Profile</Text>
-        <View style={styles.horizontalLine}></View>
+          {/* Profile Picture */}
+          <View style={styles.profilePictureCircle}>
+            <Image 
+              source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.duck} 
+              style={styles.profilePicturePhoto} 
+            />
+            <TouchableOpacity style={styles.profilePhotoEditButton} 
+              onPress={openChangeProfilePic}>  
+              <Ionicons name="images" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
 
-        {/* Profile Picture */}
-        <View style={styles.profilePictureCircle}>
-          <Image 
-            source={profile_pic && avatarMap[profile_pic] ? avatarMap[profile_pic] : avatarMap.duck} 
-            style={styles.profilePicturePhoto} 
-          />
-          <TouchableOpacity style={styles.profilePhotoEditButton} 
-            onPress={openChangeProfilePic}>  
-            <Ionicons name="images" size={24} color="white" />
-          </TouchableOpacity>
+          {/* Display Name and User Name */}
+          <View style={styles.profileNameSection}>
+            <Text style={styles.profileNameLabel}>Display Name</Text>
+            <TextInput 
+              style={styles.profileDisplayNameText} 
+              value={display_name} 
+              onChangeText={setDisplayName} 
+              onSubmitEditing={handleChangeDisplayName} 
+              maxLength={16} 
+              scrollEnabled={false}
+            />
+            <TouchableOpacity
+              onPress={handleChangeDisplayName}
+              style={styles.displayNameCheckmark}
+              activeOpacity={0.8}
+            >
+              <Ionicons name={"checkmark-outline"} size={25} color={theme.text2} />
+            </TouchableOpacity>
+
+            <Text style={styles.profileNameLabel}>User Name</Text>
+            <Text style={styles.profileUsernameText}> @{username}</Text>
+          </View>
         </View>
 
-        {/* Display Name and User Name */}
-        <View style={styles.profileNameSection}>
-          <Text style={styles.profileNameLabel}>Display Name</Text>
-          <TextInput 
-            style={styles.profileDisplayNameText} 
-            value={display_name} 
-            onChangeText={setDisplayName} 
-            onSubmitEditing={handleChangeDisplayName} 
-            maxLength={16} 
-            scrollEnabled={false}
-          />
+        {/* Theme */}
+        <View style={styles.contentSection}>
+          <Text style={styles.sectionHeading}>Theme</Text>
+          <View style={styles.horizontalLine}></View>
 
-          <Text style={styles.profileNameLabel}>User Name</Text>
-          <Text style={styles.profileUsernameText}> @{username}</Text>
+          {/* Color Options */}
+          <View style={styles.themeIconContainer}>
+            <ThemeButton color='pink' user={username}/>
+            <ThemeButton color='yellow' user={username}/>
+            <ThemeButton color='green' user={username}/>
+            <ThemeButton color='blue' user={username}/>
+            <ThemeButton color='purple' user={username}/>
+          </View>
         </View>
-      </View>
 
-      {/* Theme */}
-      <View style={styles.contentSection}>
-        <Text style={styles.sectionHeading}>Theme</Text>
-        <View style={styles.horizontalLine}></View>
+        {/* Logout */}
+        <View style={styles.contentSection}>
+          <Text style={styles.sectionHeading}>Account</Text>
+          <View style={styles.horizontalLine}></View>
 
-        {/* Color Options */}
-        <View style={styles.themeIconContainer}>
-          <ThemeButton color='pink' user={username}/>
-          <ThemeButton color='yellow' user={username}/>
-          <ThemeButton color='green' user={username}/>
-          <ThemeButton color='blue' user={username}/>
-          <ThemeButton color='purple' user={username}/>
+          <LogoutButton onLogout={confirmLogout} />
         </View>
-      </View>
-
-      {/* Logout */}
-      <View style={styles.contentSection}>
-        <Text style={styles.sectionHeading}>Account</Text>
-        <View style={styles.horizontalLine}></View>
-
-        <LogoutButton onLogout={confirmLogout} />
-      </View>
+        </>
+      )}
     </View>
   );
 };
