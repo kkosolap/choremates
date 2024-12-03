@@ -7,6 +7,7 @@ import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 import { ScreenHeader } from '../components/headers.js';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 import axios from 'axios';
 import { API_URL } from '../config';
@@ -102,6 +103,18 @@ const GroupInvitations = ({ navigation, route }) => {
             </View>
           </View>
         )}
+        ListEmptyComponent={  // render if data is empty (no invitations)  -MH
+          <View style={styles.emptyInvitesSection}>
+            <Ionicons name={"mail-open"} size={80} color={theme.main} />
+
+            <Text style={styles.biggerEmptySectionText}>
+              No pending invitations
+            </Text>
+            <Text style={styles.emptySectionText}>
+              Check back later!
+            </Text>
+          </View>
+        }
       />
     </View>
   );

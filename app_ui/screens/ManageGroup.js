@@ -153,7 +153,7 @@ const ManageDisplay = ({ navigation }) => {
   return (
     <View style={styles.content}>
       <FlatList
-        style={styles.membersList}
+        style={[styles.membersList, styles.manageGroupMembersList]}
         data={members}
         keyExtractor={(item) => item.username}
         renderItem={({ item }) => {
@@ -191,7 +191,7 @@ const ManageDisplay = ({ navigation }) => {
       />
 
       <TouchableOpacity
-        style={styles.leaveGroupButton}
+        style={styles.disbandGroupButton}
         activeOpacity={0.8}
         onPress={() => handleDisbandGroup()}
       >

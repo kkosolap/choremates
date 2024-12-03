@@ -216,6 +216,11 @@ const createStyles = (theme) => {
       fontWeight: '400',
       color: theme.text2,
     },
+    biggerEmptySectionText: {
+      fontSize: 20,
+      fontWeight: '400',
+      color: theme.text2,
+    },
     emptySectionSection: {
       marginHorizontal: 30,
       marginTop: -5,
@@ -230,8 +235,14 @@ const createStyles = (theme) => {
     emptyGroupsSection: {
       width: '100%',
       paddingHorizontal: 10,
+      marginTop: 160,
       alignItems: 'center',
-      backgroundColor: theme.red,
+    },
+    emptyInvitesSection: {
+      width: '100%',
+      paddingHorizontal: 10,
+      marginTop: 160,
+      alignItems: 'center',
     },
 
     // loading screen  -MH
@@ -596,6 +607,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.main,
       justifyContent: 'center',
       alignItems: 'center',
+      flexDirection: 'row',
     },
     addChoreButtonText: {
       color: theme.white,
@@ -615,6 +627,7 @@ const createStyles = (theme) => {
       backgroundColor: theme.red,
       justifyContent: 'center',
       alignItems: 'center',
+      flexDirection: 'row',
     },
 
     // preset menu -MH
@@ -816,6 +829,11 @@ const createStyles = (theme) => {
       fontWeight: '500',
       color: theme.text2,
     },
+    displayNameCheckmark: {
+      position: 'absolute',
+      right: 30,
+      top: 45,
+    },
     profileUsernameText: {
       fontSize: 20,
       color: theme.text3,
@@ -932,6 +950,9 @@ const createStyles = (theme) => {
       borderColor: theme.lightest,
       borderRadius: 15,
     },
+    manageGroupMembersList: {
+      marginBottom: 60,
+    },
     memberListPadding: {
       paddingTop: 10,
     },
@@ -960,6 +981,17 @@ const createStyles = (theme) => {
       alignItems: 'center',
       position: 'absolute',
       bottom: 80,
+      flexDirection: 'row',
+    },
+    disbandGroupButton: {
+      width: '80%',
+      height: 50,
+      borderRadius: 10,
+      backgroundColor: theme.red,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 60,
       flexDirection: 'row',
     },
     inviteButton: {

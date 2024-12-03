@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
@@ -520,7 +521,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
             onPress={updateChore}
             activeOpacity={0.8}
           >
-            <Text style={styles.addChoreButtonText}>Save Changes</Text>
+            <Ionicons name={"checkmark-outline"} size={25} color={theme.white} />
+
+            <Text style={styles.addChoreButtonText}> Save Changes</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -533,7 +536,9 @@ const ChoreDetailsDisplay = ({navigation}) => {
             onPress={() => deleteChore(routed_chore_name)}
             activeOpacity={0.8}
           >
-            <Text style={styles.deleteChoreButtonText}>Delete Chore</Text>
+            <Ionicons name={"trash"} size={21} color={theme.white} />
+
+            <Text style={styles.deleteChoreButtonText}> Delete Chore</Text>
           </TouchableOpacity>
         </View>
       )}

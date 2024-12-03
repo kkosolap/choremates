@@ -148,6 +148,13 @@ const SettingsDisplay = () => {
               maxLength={16} 
               scrollEnabled={false}
             />
+            <TouchableOpacity
+              onPress={handleChangeDisplayName}
+              style={styles.displayNameCheckmark}
+              activeOpacity={0.8}
+            >
+              <Ionicons name={"checkmark-outline"} size={25} color={theme.text2} />
+            </TouchableOpacity>
 
             <Text style={styles.profileNameLabel}>User Name</Text>
             <Text style={styles.profileUsernameText}> @{username}</Text>

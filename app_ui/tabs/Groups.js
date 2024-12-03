@@ -197,8 +197,14 @@ const GroupsDisplay = () => {
           {/* If there are no groups - NN */}
           {groups.length === 0 ? (
             <View style={styles.emptyGroupsSection}>
+              <Ionicons name={"man"} size={80} color={theme.main} />
+              <View style={styles.spacer}></View>
+              
+              <Text style={styles.biggerEmptySectionText}>
+                Not in any groups
+              </Text>
               <Text style={styles.emptySectionText}>
-                Create or Join a Group to View Groups
+                Create or join a group to get started!
               </Text>
             </View>
           ) : (

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
 
 import { useTheme } from '../contexts/ThemeProvider.js';
@@ -350,7 +350,9 @@ const NewChoreDisplay = ({ navigation }) => {
             onPress={addChore}
             activeOpacity={0.8}
           >
-            <Text style={styles.addChoreButtonText}>Add Chore</Text>
+            <Ionicons name={"add-outline"} size={25} color={theme.white} />
+
+            <Text style={styles.addChoreButtonText}> Add Chore</Text>
           </TouchableOpacity>
         </View>
         </>
