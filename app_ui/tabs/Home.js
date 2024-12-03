@@ -253,18 +253,18 @@ const HomeDisplay = () => {
     setGroupData(enrichedGroupData);
   };
 
-  // used to get needToLoad
+  // used to get needToLoad  -MH
   const route = useRoute();
 
   useEffect(() => {
-    // Only run if needToLoad is true
+    // Only run if needToLoad is true  -MH
     if (route.params?.needToLoad && !loading) {
       setLastGroupOpened(route.params.groupEdited);
     };
   }, [route.params?.needToLoad]);
 
   useEffect(() => {
-    // runs when lastGroupOpened is updated
+    // runs when lastGroupOpened is updated  -MH
     if (lastGroupOpened != null) {
       // Collapse the group
       if (lastGroupOpened === -1) {
@@ -288,7 +288,7 @@ const HomeDisplay = () => {
         setLastGroupOpened(null);
 
         navigation.setParams({ needToLoad: false });
-      }, 2700); // 1000ms = 1 second
+      }, 3300); // hard-coded loading time (ideally would actually be based on when loading done) -MH
   
       // Cleanup the timer
       return () => {
