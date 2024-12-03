@@ -1158,6 +1158,25 @@ const createStyles = (theme) => {
       top: 72,
       right: 20
     },
+    editGroupNameInput: {
+      borderWidth: 5,
+      borderRadius: 10,
+      borderColor: 'black',
+    },
+
+    headerTitleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    editInput: {
+      fontWeight: 'bold',
+      padding: 5,
+      fontSize: 25,
+      minWidth: 280,
+      maxWidth: 280,
+      textAlign: 'center',
+    },
   });
 };
 

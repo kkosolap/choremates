@@ -1,7 +1,7 @@
 // Members.js -NN
 
-import React, { useState } from 'react';
-import { View, Text, FlatList, Alert, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, FlatList, Alert, Image, TouchableOpacity, TextInput } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from 'react-native-vector-icons';
@@ -48,8 +48,12 @@ const MembersScreen = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const route = useRoute();
-  const { groupName, username } = route.params;
+  const { groupName: initialGroupName, username } = route.params;
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newGroupName, setNewGroupName] = useState(initialGroupName);
+  const [groupName, setGroupName] = useState(initialGroupName);
+  const textInputRef = useRef(null);
 
   React.useEffect(() => {
     //check if the user is an admin - NN
@@ -67,16 +71,58 @@ const MembersScreen = ({ navigation }) => {
     checkAdminStatus();
   }, [username, route.params.groupId]);
 
+  // for editing group name - NN
+  const handleEditGroupName = async () => {
+    try {
+      await axios.post(`${API_URL}change-group-name`, {
+        new_group_name: newGroupName,
+        group_id: route.params.groupId,
+        username: username,
+      });
+      setGroupName(newGroupName);
+    } catch (error) {
+      Alert.alert(error.response.data.error);
+    }
+    setIsEditing(false);
+  };
+
   return (
     <View style={styles.screen}>
       <ScreenHeader
-        title={`${groupName}`}
+        title={
+          <View style={styles.headerTitleContainer}>
+            {isEditing ? (
+              <TextInput
+                ref={textInputRef}
+                value={newGroupName}
+                onChangeText={setNewGroupName}
+                style={styles.editInput}
+              />
+            ) : (
+              <Text style={styles.groupName}>{groupName}</Text>
+            )}
+          </View>
+        }
         navigation={navigation}
       />
       {isAdmin && (
-        <TouchableOpacity style={styles.editGroupNameButton}>
-          <Icon name="pencil" size={25} color="grey" />
-        </TouchableOpacity>
+        <View style={styles.editGroupNameButton}>
+          {!isEditing && (
+            <TouchableOpacity
+              onPress={() => {
+                setIsEditing(true);
+                setTimeout(() => textInputRef.current?.focus(), 100);
+              }}
+            >
+              <Icon name="pencil" size={25} color="grey" />
+            </TouchableOpacity>
+          )}
+          {isEditing && (
+            <TouchableOpacity onPress={handleEditGroupName}>
+              <Icon name="checkmark" size={25} color="grey" />
+            </TouchableOpacity>
+          )}
+        </View>
       )}
 
       <MembersDisplay
