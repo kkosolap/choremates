@@ -1,6 +1,7 @@
 // blocks.js
 
 import React from 'react';
+import { useState } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,8 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
+  const [completedState, setCompletedState] = useState(completed);
+
   const currentDay = new Date().getDay(); // 0 = Sunday, ..., 6 = Saturday
   const targetDay = 0; // Sunday (0)
   const daysUntilSunday = (targetDay - currentDay + 7) % 7;
@@ -30,6 +33,8 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence
   };
   
   const handleToggleChoreCompletion = (user, chore_name) => {
+    setCompletedState(!completedState);
+
     completeChore(user, chore_name, tasks)
       .then(() => refresh(user))  
       .catch((error) => console.error("Error toggling task:", error));
@@ -43,7 +48,7 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence
 
   return (
     <TouchableOpacity
-      style={completed ? styles.choreBlockCompleted : styles.choreBlock}
+      style={completedState ? styles.choreBlockCompleted : styles.choreBlock}
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
@@ -52,11 +57,11 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence
         style={styles.choreCheck}
         onPress={() => handleToggleChoreCompletion(user, choreName)}
       >
-        <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.text3 : theme.text1} />
+        <Icon name={completedState ? "checkbox-outline" : "square-outline"} size={26} color={completedState ? theme.text3 : theme.text1} />
       </TouchableOpacity>
 
       {/* Chore Title */}
-      <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
+      <Text style={completedState ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
 
       {/* Render tasks if visible  -MH */}
       {visible && (
@@ -115,6 +120,8 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
   const { groupThemes } = useGroupThemes();
   const styles = createStyles(groupThemes[group_id]);
 
+  const [completedState, setCompletedState] = useState(completed);
+
   const currentDay = new Date().getDay(); // 0 = Sunday, ..., 6 = Saturday
   const targetDay = 0; // Sunday (0)
   const daysUntilSunday = (targetDay - currentDay + 7) % 7;
@@ -129,6 +136,8 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
   };
 
   const handleToggleChoreCompletion = (group_id, chore_name) => {
+    setCompletedState(!completedState);
+
     completeGroupChore(group_id, chore_name, tasks)
       .then(() => refresh(user))  
       .catch((error) => console.error("Error toggling task:", error));
@@ -142,7 +151,7 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
 
   return (
     <TouchableOpacity
-      style={completed ? styles.choreBlockCompleted : styles.choreBlock}
+      style={completedState ? styles.choreBlockCompleted : styles.choreBlock}
       onPress={() => onToggleVisibility(choreName)} // Toggle the task visibility
       activeOpacity={0.8}
     >
@@ -151,11 +160,11 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
         style={styles.choreCheck}
         onPress={() => handleToggleChoreCompletion(group_id, choreName)}
       >
-        <Icon name={completed ? "checkbox-outline" : "square-outline"} size={26} color={completed ? theme.text3 : theme.text1} />
+        <Icon name={completedState ? "checkbox-outline" : "square-outline"} size={26} color={completedState ? theme.text3 : theme.text1} />
       </TouchableOpacity>
 
       {/* Chore Title */}
-      <Text style={completed ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
+      <Text style={completedState ? styles.choreTitleCompleted : styles.choreTitle}>{choreName}</Text>
 
       {/* Render tasks if visible */}
       {visible && (
