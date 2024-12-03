@@ -104,13 +104,16 @@ const ChoresDisplay = () => {
   }, [personalData]); // runs when personalData changes
 
   // State for grouped group tasks  -MH
-  const [groupData, setGroupData] = useState([]);
+  const [groupData, setGroupData] = useState(null);
   const [groupedGroupTasksCompleted, setGroupedGroupTasksCompleted] = useState({});
   const [groupedGroupTasksToDo, setGroupedGroupTasksToDo] = useState({});
 
   // Load group chores  -MH
   useEffect(() => {
-    if (!groupData || groupData.length === 0) { // safety check for null/undefined groupData
+    if (!groupData) { // safety check for null/undefined groupData
+      return;
+    }
+    if (groupData.length === 0) {
       setLoading(false);
 
       setGroupedGroupTasksCompleted({});
