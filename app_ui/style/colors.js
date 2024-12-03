@@ -11,6 +11,7 @@ const baseTheme = {
   gray: '#656975',
   black: '#000000',
   red: '#D56765',
+  green: '#73a662',
   inactive: '#d3d3d3', // Light gray
   active: '#4caf50', // Green
 };

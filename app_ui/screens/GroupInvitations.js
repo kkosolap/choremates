@@ -9,6 +9,8 @@ import { ScreenHeader } from '../components/headers.js';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
 
+import { useGroupThemes } from '../contexts/GroupThemeProvider';
+
 import axios from 'axios';
 import { API_URL } from '../config';
 
@@ -16,6 +18,8 @@ import { API_URL } from '../config';
 const GroupInvitations = ({ navigation, route }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+  const { changeGroupTheme } = useGroupThemes();
+
   const [invitations, setInvitations] = useState([]);
 
   useEffect(() => {
@@ -26,7 +30,6 @@ const GroupInvitations = ({ navigation, route }) => {
           params: { username },
         });
         if (res.status === 200) {
-
           // append group name to invitation -NN
           const invitationsWithNames = await Promise.all(
             res.data.map(async (invitation) => {
@@ -58,12 +61,17 @@ const GroupInvitations = ({ navigation, route }) => {
     fetchInvitations();
   }, []);
 
-  const handleResponse = async (invitationId, response) => {
+  const handleResponse = async (invitationId, response, groupId) => {
     try {
       const res = await axios.post(`${API_URL}respond-to-invite`, {
         invitation_id: invitationId,
         response,
       });
+
+      const username = route.params?.username;
+      if (response === 'accepted') {
+        changeGroupTheme(username, groupId, theme.name); // set default group color to current theme  -MH
+      }
       
       if (res.status === 200) {
         Alert.alert(`Invitation ${response}ed successfully.`);
@@ -85,20 +93,23 @@ const GroupInvitations = ({ navigation, route }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.invitationItem}>
-              <Text style={styles.invitationText}>Incoming Invite: </Text>
-              <Text style={styles.invitationGroupText}>{item.group_name}</Text>
+            <Text style={styles.invitationText}>Incoming Invite: </Text>
+            <Text style={styles.invitationGroupText}>{item.group_name}</Text>
+
             <View style={styles.invitationButtonContainer}>
               <TouchableOpacity 
                 style={styles.acceptButton} 
-                onPress={() => handleResponse(item.id, 'accepted')}
+                onPress={() => handleResponse(item.id, 'accepted', item.group_id)}
               >
-                <Icon name="checkmark-outline" style={styles.buttonText} size={24} />
+                <Icon name="checkmark-outline" color={theme.white} size={24} />
+                <Text style={styles.buttonText}> Accept</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.declineButton} 
-                onPress={() => handleResponse(item.id, 'rejected')}
+                onPress={() => handleResponse(item.id, 'rejected', item.group_id)}
               >
-                <Icon name="close-outline" style={styles.buttonText} size={24} />
+                <Icon name="close-outline" color={theme.white} size={24} />
+                <Text style={styles.buttonText}> Decline</Text>
               </TouchableOpacity>
             </View>
           </View>

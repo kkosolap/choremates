@@ -1126,17 +1126,20 @@ const createStyles = (theme) => {
       justifyContent: 'space-between',
     },
     acceptButton: {
-      backgroundColor: '#73a662',
+      backgroundColor: theme.green,
       padding: 10,
       borderRadius: 5,
+      flexDirection: 'row',
     },
     declineButton: {
       backgroundColor: theme.red,
       padding: 10,
       borderRadius: 5,
+      flexDirection: 'row',
     },
     buttonText: {
       color: theme.white,
+      fontSize: 18,
     },
 
     // create/invite button & pop-up - NN

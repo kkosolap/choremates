@@ -144,9 +144,9 @@ const ChoresDisplay = () => {
           completed: task.task_is_completed,
         });
       }
-
-      setLoading(false);
     });
+
+    setLoading(false);
 
     // update state with grouped tasks
     setGroupedGroupTasksCompleted(completed);
