@@ -1147,7 +1147,7 @@ const createStyles = (theme) => {
       width: '95%',
       marginLeft: '2.5%',
       marginTop: 10,
-      height: 50,
+      height: 60,
       borderRadius: 10,
       backgroundColor: theme.main,
       justifyContent: 'center',
@@ -1159,7 +1159,7 @@ const createStyles = (theme) => {
     createGroupButtonText: {
       color: theme.white,
       fontWeight: 'bold',
-      fontSize: 20,
+      fontSize: 22,
     },
     groupInviteeInput: {
       width: '85%',

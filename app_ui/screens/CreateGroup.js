@@ -11,7 +11,7 @@ import { API_URL } from '../config.js';
 import createStyles from '../style/styles.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { useGroupThemes } from '../contexts/GroupThemeProvider';
-import { ScreenHeader } from '../components/headers.js';
+import { RegisterHeader } from '../components/headers.js';
 
 // for creating groups -NN
 const CreateGroupScreen = () => {
@@ -48,6 +48,7 @@ const CreateGroupScreen = () => {
                 text1: 'Success',
                 text2: 'New group created',
               });
+              
             changeGroupTheme(username, response.data.group_id, theme.name); // set default group color to current theme  -MH
             
             navigation.goBack();
