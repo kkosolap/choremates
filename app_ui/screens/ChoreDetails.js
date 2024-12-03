@@ -253,7 +253,8 @@ const ChoreDetailsDisplay = ({navigation}) => {
         // exit and go back to home
         //navigation.goBack();
         navigation.navigate('HomeMain', {
-          needToLoad: true,
+          needToLoad: true, // tells home page to reload collapsible  -MH
+          groupEdited: choreGroup.value, // group id or -1 if personal  -MH
         });
 
     } catch (error) {
@@ -284,7 +285,14 @@ const ChoreDetailsDisplay = ({navigation}) => {
       } else {
         await axios.post(`${API_URL}delete-group-chore`, { group_chore_name: chore_name, group_id: choreGroup.value, username: username });
       }
-      navigation.goBack();   
+      
+      // exit and go back to home
+      //navigation.goBack();
+      navigation.navigate('HomeMain', {
+        needToLoad: true, // tells home page to reload collapsible  -MH
+        groupEdited: choreGroup.value, // group id or -1 if personal  -MH
+      });
+      
     } catch (error) {
       console.error(error);
     }

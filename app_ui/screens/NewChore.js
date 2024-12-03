@@ -169,11 +169,19 @@ const NewChoreDisplay = ({ navigation }) => {
       // reset everything -KK
       setChoreName('');
       setNewTask('');
+      const tempSelectedGroupId = selectedGroup.value;
       setSelectedRec(initialRec);
       setRotationEnabled(false);  // - AT
       setSelectedGroup(initialGroup);
       setTasks([]);
-      navigation.goBack();  // exit and go back to home -KK
+
+      // exit and go back to home -KK
+      //navigation.goBack();  
+      navigation.navigate('HomeMain', {
+        needToLoad: true, // tells home page to reload collapsible  -MH
+        groupEdited: tempSelectedGroupId, // group id or -1 if personal  -MH
+      });
+
     } catch (error) {
       console.error("Error adding chore:", error);
     }
@@ -193,7 +201,7 @@ const NewChoreDisplay = ({ navigation }) => {
     setTasks(tasks.filter((_, i) => i !== index)); // keep all tasks except the one at 'index'
   };
 
-  // open NewChore page above current page
+  // open Preset Menu page above current page
   const openPresetMenu = () => {
     navigation.navigate('PresetMenu');
   };
@@ -202,7 +210,7 @@ const NewChoreDisplay = ({ navigation }) => {
   const route = useRoute();
   
   useEffect(() => {
-    setLoading(true); // Start loading
+    setLoading(true); // start loading
     const timer = setTimeout(() => {
       if (route.params?.choreName) {
         setChoreName(route.params.choreName);
@@ -210,8 +218,8 @@ const NewChoreDisplay = ({ navigation }) => {
       if (route.params?.selectedRec) {
         setSelectedRec(route.params.selectedRec);
       }
-      setLoading(false); // End loading after 1 second
-    }, 500); // Delay of 1 second
+      setLoading(false); // stop loading
+    }, 500); // Delay of 0.5 second
   
     return () => clearTimeout(timer); // Cleanup timeout when component unmounts
   }, [route.params?.choreName, route.params?.selectedRec]);
