@@ -362,7 +362,7 @@ app.post('/get-perms', async (req, res) => {
 
 
 /********************************************************** */
-/*             RECURRENCE IMPLEMENTATION BELOW:             */
+/*       RECURRENCE & ROTATION IMPLEMENTATION BELOW:        */
 /********************************************************** */
 // cron job for daily and weekly resets -AT
 // every minute for test purposes -AT
@@ -370,16 +370,14 @@ cron.schedule('* * * * *', () => { resetAndRotateChores('Every Minute'); });
 cron.schedule('0 0 * * *', async () => { 
     try {
         const query = "DELETE FROM chores WHERE recurrence = 'Just Once' AND is_completed = true";
-        const [result] = await db.promise().query(query);
-        // console.log(`Deleted ${result.affectedRows} 'just once' chores that were completed.`);
+        await db.promise().query(query);
     } catch (error) {
         console.error("Error deleting 'just once' chores:", error.message);
     }
 
     try {
         const query = "DELETE FROM group_chores WHERE recurrence = 'Just Once' AND is_completed = true";
-        const [result] = await db.promise().query(query);
-        // console.log(`Deleted ${result.affectedRows} 'just once' group chores that were completed.`);
+        await db.promise().query(query);
     } catch (error) {
         console.error("Error deleting 'just once' group chores:", error.message);
     }
@@ -449,20 +447,17 @@ async function rotateChoreToNextUser(group_id, chore_id) {
             return;
         }
 
-        /*
         // Rotate to the next user (loop back to the first user if at the end) -AT
         const nextUserIndex = (currentIndex + 1) % users.length;
         const nextUser = users[nextUserIndex];
-        console.log("Next user:", nextUser.user_id);
-        */
 
         // Update the chore with the new user assignment -AT
         const updateQuery = `UPDATE group_chores SET assigned_to = ? WHERE id = ?`;
-        const [result] = await db.promise().query(updateQuery, [current_assigned_to, chore_id]);
+        await db.promise().query(updateQuery, [nextUser.user_id, chore_id]);
 
         // Verify the update directly from the database
         const selectQuery = `SELECT id, assigned_to FROM group_chores WHERE id = ?`;
-        const [[updatedChore]] = await db.promise().query(selectQuery, [chore_id]);
+        await db.promise().query(selectQuery, [chore_id]);
         
     } catch (error) {
         console.error("Error rotating group chore to the next user:", error);
