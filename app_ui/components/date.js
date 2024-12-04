@@ -6,7 +6,6 @@ import { Text, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import createStyles from '../style/styles';
 
-
 const getOrdinalSuffix = (day) => {
   const j = day % 10,
         k = day % 100;

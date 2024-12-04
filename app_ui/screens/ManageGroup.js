@@ -164,6 +164,7 @@ const ManageDisplay = ({ navigation }) => {
     });
   };
 
+  // ---------- Page Content ----------
   return (
     <View style={styles.content}>
       <FlatList

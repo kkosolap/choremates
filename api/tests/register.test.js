@@ -1,7 +1,17 @@
 const request = require('supertest');
-const app = require('../index');
+const authRoutes = require('../routes/auth');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
+
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/', authRoutes);
+
 
 // Mocking the database connection
 jest.mock('mysql2', () => ({

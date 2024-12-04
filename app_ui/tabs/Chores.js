@@ -16,7 +16,6 @@ import { SectionTabButton } from '../components/buttons.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
-
 // header and page content  -MH
 const ChoresScreen = () => {
   const { theme } = useTheme();
@@ -72,7 +71,7 @@ const ChoresDisplay = () => {
     personalData.forEach((task) => {
       // safety check for null/undefined tasks
       if (!task || !task.chore_name) {
-        console.log("Chores.js: found null task in personalData");
+        console.error("Chores.js: found null task in personalData");
         return;
       }
 
@@ -206,8 +205,7 @@ const ChoresDisplay = () => {
   const groupChoresToShow = showToDo ? groupedGroupTasksToDo : groupedGroupTasksCompleted;
   const emptyDisplayText = showToDo ? "No Chores To-Do!" : "No Completed Chores";
 
-
-  // page content -MH
+  // ---------- Page Content ----------
   return (
     <View style={styles.content}>
 

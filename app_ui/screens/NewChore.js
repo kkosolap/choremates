@@ -19,7 +19,6 @@ import { UsePresetButton } from '../components/buttons.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
-
 // header and page content
 const NewChoreScreen = ({ navigation }) => {
   const { theme } = useTheme();
@@ -29,6 +28,7 @@ const NewChoreScreen = ({ navigation }) => {
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Add a New Chore" navigation={navigation} />
+      
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <NewChoreDisplay navigation={navigation} />
       </ScrollView>

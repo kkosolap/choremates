@@ -17,7 +17,6 @@ import { LoadingVisual } from '../components/placeholders.js';
 import { useTheme } from '../contexts/ThemeProvider.js';
 import { useGroupThemes } from '../contexts/GroupThemeProvider';
 
-
 // groups screen & invite button - NN
 const GroupsScreen = () => {
   const { theme } = useTheme();
@@ -62,6 +61,7 @@ const GroupsScreen = () => {
     navigation.navigate('GroupInvitations', { username });
   };
   
+  // ---------- Page Content ----------
   return (
     <View style={styles.screen}>
       <TabHeader title="Groups" />
@@ -187,6 +187,7 @@ const GroupsDisplay = () => {
     }, [username])
   );
 
+  // ---------- Page Content ----------
   return (
     <View style={[styles.content, styles.groupDisplayContentContainer]}>
       {loading ? (

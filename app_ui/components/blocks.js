@@ -11,8 +11,7 @@ import { useGroupThemes } from '../contexts/GroupThemeProvider';
 import createStyles from '../style/styles';
 import { completeChore, completeTask, completeGroupChore, completeGroupTask } from '../functions/markCompleted.js';
 
-
-// block for displaying a chore in weekly list
+// block for displaying an assigned personal chore in the Chores tab -MH
 export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence, onToggleVisibility, visible, refresh }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -109,12 +108,12 @@ export const ActiveChoreBlock = ({ user, choreName, tasks, completed, recurrence
           )}
         </>
       )}
-
       
     </TouchableOpacity>
   );
 };
 
+// block for displaying an assigned group chore in the Chores tab -MH
 export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, completed, recurrence, onToggleVisibility, visible, refresh }) => {
   const { theme } = useTheme();
   const { groupThemes } = useGroupThemes();
@@ -216,7 +215,7 @@ export const ActiveGroupChoreBlock = ({ user, group_id, choreName, tasks, comple
   );
 };
 
-// block for displaying a chore on home page
+// block for displaying a personal chore on the Home tab
 export const HomeChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrence }) => {
   const { theme } = useTheme();
   const styles = createStyles(theme);
@@ -243,7 +242,7 @@ export const HomeChoreBlock = ({ choreName, tasks, onOpenChoreDetails, recurrenc
   );
 };
 
-// block for displaying group chores on home page
+// block for displaying a group chore on the Home tab
 export const HomeGroupChoreBlock = ({ choreName, onOpenChoreDetails, recurrence, rotation, group_id }) => {
   const { groupThemes } = useGroupThemes();
   const styles = createStyles(groupThemes[group_id]);

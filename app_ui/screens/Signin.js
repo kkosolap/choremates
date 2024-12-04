@@ -11,7 +11,6 @@ import themes from '../style/colors';
 import { API_URL } from '../config';
 import axios from 'axios'; 
 
-
 const Signin = ({ onSignin }) => {
   const styles = createStyles(themes.purple);
   const [username, setUsername] = useState('');
@@ -46,7 +45,7 @@ const Signin = ({ onSignin }) => {
     navigation.navigate('Register');
   };
 
-  // UI
+  // ---------- Page Content ----------
   return (
     <View style={styles.signinContainer}>
       <Text style={styles.signinTitle}>Sign in</Text>

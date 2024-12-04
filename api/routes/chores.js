@@ -180,6 +180,7 @@ router.post('/get-group-chores-data', async (req, res) => {
                 group_chores.group_chore_name, 
                 group_chores.is_completed AS chore_is_completed, 
                 group_chores.recurrence AS chore_recurrence,
+                group_chores.rotation_enabled AS chore_rotation,
                 group_chores.assigned_to,
                 group_tasks.group_task_name, 
                 group_tasks.is_completed AS task_is_completed
@@ -213,6 +214,7 @@ router.post('/get-group-chores-data-for-user', async (req, res) => {
                 group_chores.group_chore_name, 
                 group_chores.is_completed AS chore_is_completed, 
                 group_chores.recurrence AS chore_recurrence,
+                group_chores.rotation_enabled AS chore_rotation,
                 group_chores.assigned_to,
                 group_tasks.id,
                 group_tasks.group_task_name, 

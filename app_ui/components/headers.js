@@ -7,7 +7,6 @@ import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
 import themes from '../style/colors';
 
-
 // Custom header for main TABS (Home, Chores, etc)
 export const TabHeader = ({ title }) => {
   const { theme } = useTheme();

@@ -15,7 +15,6 @@ import { LoadingVisual } from '../components/placeholders.js';
 import axios from 'axios';
 import { API_URL } from '../config.js';
 
-
 // used to reference image paths stored locally
 const avatarMap = {
   pinkAvatar: require('../icons/pinkAvatar.jpg'),
@@ -87,6 +86,7 @@ const MembersScreen = ({ navigation }) => {
     setIsEditing(false);
   };
 
+  // ---------- Page Content ----------
   return (
     <View style={styles.screen}>
       <ScreenHeader
@@ -242,6 +242,7 @@ const MembersDisplay = ({ username, navigation, isAdmin }) => {
     );
   };
 
+  // ---------- Page Content ----------
   return (
     <View style={styles.content}>
       {loading ? (
