@@ -20,8 +20,6 @@ app.use('/', choresRoutes);
 app.use('/', tasksRoutes);
 app.use('/', groupRoutes);
 
-app.get('/', (req, res) => res.send("Hello World!"));
-
 const PORT = 3000;
 const API_URL = process.env.API_URL;
 
