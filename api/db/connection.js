@@ -15,6 +15,16 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD, 
 });
 
+// uncomment this if running on localhost! -KK
+/*const db = mysql.createConnection({
+    host: "localhost",
+    database: "choremates",   
+    user: "root",
+    // put "DB_PASSWORD=yourpassword" in your local .env file, 
+    // replace yourpassword with your mysql root password 
+    password: process.env.DB_PASSWORD, 
+});*/
+
 // connect to the database
 db.connect((err) =>{
     if (err){
