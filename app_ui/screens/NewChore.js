@@ -1,7 +1,7 @@
 // NewChore.js
 
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { View, ScrollView, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons } from '@expo/vector-icons';
@@ -150,7 +150,7 @@ const NewChoreDisplay = ({ navigation }) => {
             Toast.show({
               type: 'error',
               text1: 'Error',
-              text2: error.response?.data?.error || 'An unexpected error occurred',
+              text2: error.response.data.message || 'An unexpected error occurred',
             });
         }
       } else{
@@ -172,7 +172,7 @@ const NewChoreDisplay = ({ navigation }) => {
           Toast.show({
             type: 'error',
             text1: 'Error',
-            text2: error.response?.data?.error || 'An unexpected error occurred',
+            text2: error.response.data.message || 'An unexpected error occurred',
           });
         }
       }
@@ -207,7 +207,11 @@ const NewChoreDisplay = ({ navigation }) => {
       setTasks([...tasks, newTask]);
       setNewTask('');
     } else {
-      Alert.alert("Error: ", 'This task already exists for this chore.'); 
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'This task already exists for this chore.',
+      });
     }
   };
 

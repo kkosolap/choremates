@@ -263,7 +263,6 @@ const ChoreDetailsDisplay = ({navigation}) => {
         });
 
     } catch (error) {
-        console.error("Error updating chore:", error);
         Toast.show({
           type: 'error',
           text1: `Error updating chore`,
@@ -281,7 +280,11 @@ const ChoreDetailsDisplay = ({navigation}) => {
       setTasks([...tasks, newTask]);
       setNewTask('');
     } else {
-      Alert.alert("Error: ", 'This task already exists for this chore!'); 
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'This task already exists for this chore.',
+      });
     }
   };
 
