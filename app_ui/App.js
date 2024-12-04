@@ -105,7 +105,6 @@ const App = () => {
   }, []);
 
   const handleSignin = (username) => {
-    console.log('Logging in as:', username);
     setIsLoggedIn(true);
     setUsername(username);
   };
