@@ -14,6 +14,8 @@ const choresRoutes = require('./routes/chores');
 const tasksRoutes = require('./routes/tasks');
 const groupRoutes = require('./routes/groups');
 
+require('./utils/recurrence');
+
 app.use('/', authRoutes);
 app.use('/', usersRoutes);
 app.use('/', choresRoutes);
