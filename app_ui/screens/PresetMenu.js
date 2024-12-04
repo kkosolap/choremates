@@ -10,7 +10,6 @@ import { ScreenHeader } from '../components/headers.js';
 import { PresetChoreButton } from '../components/buttons.js';
 import AllChores from '../data/presets.js';
 
-
 // header and page content
 const PresetMenuScreen = ({ navigation }) => {
   const { theme } = useTheme();

@@ -36,7 +36,7 @@ const Register = ({ navigation }) => {
     }
   };
 
-  // UI
+  // ---------- Page Content ----------
   return (
     <View style={styles.signinContainer}>
         <RegisterHeader title="Register" navigation={navigation} />

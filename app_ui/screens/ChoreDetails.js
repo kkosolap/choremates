@@ -18,7 +18,6 @@ import Switch from '../components/switch.js';
 import axios from 'axios';
 import { API_URL } from '../config';
 
-
 // header and page content
 const ChoreDetailsScreen = ({ navigation }) => {
   const { theme } = useTheme();
@@ -28,13 +27,13 @@ const ChoreDetailsScreen = ({ navigation }) => {
     <View style={styles.screen}>
       {/*the ScreenHeader component creates the title and back button -MH*/}
       <ScreenHeader title="Chore Details" navigation={navigation} />
+      
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ChoreDetailsDisplay navigation={navigation} />
       </ScrollView>
     </View>
   );
 };
-
 
 // page content
 const ChoreDetailsDisplay = ({navigation}) => {

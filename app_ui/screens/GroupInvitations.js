@@ -101,6 +101,7 @@ const GroupInvitations = ({ navigation, route }) => {
     }
   };
 
+  // ---------- Page Content ----------
   return (
     <View style={styles.screen}>
 

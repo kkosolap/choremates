@@ -8,7 +8,6 @@ import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
 import colors from '../style/colors';
 
-
 // for any button with an icon + text
 // Currently unused (removed from Settings.js) -VA
 export const SettingsButton = ({ label, iconName, iconSize = 40, onClick }) => {

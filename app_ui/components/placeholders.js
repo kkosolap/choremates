@@ -1,12 +1,9 @@
 // placeholders.js
 
-import { Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Text, View, ActivityIndicator } from 'react-native';
 
 import { useTheme } from '../contexts/ThemeProvider';
 import createStyles from '../style/styles';
-import themes from '../style/colors';
-
 
 // Show while pages are loading
 export const LoadingVisual = () => {
