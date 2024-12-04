@@ -14,4 +14,4 @@ References:
 - Master's Student & TA Eric Xie
 
 Link to Drive With Documentation:
-> [Choremates Drive] (https://drive.google.com/drive/folders/1dKSa2u5Ch_Lj2ltvnmb39q3QjhGyDF6G?usp=sharing)
+[Choremates Drive] (https://drive.google.com/drive/folders/1dKSa2u5Ch_Lj2ltvnmb39q3QjhGyDF6G?usp=sharing)
