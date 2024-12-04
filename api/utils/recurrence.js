@@ -9,7 +9,7 @@ const cron = require('node-cron');
 // cron job for daily and weekly resets -AT
 // every minute for test purposes -AT
 cron.schedule('* * * * *', () => { 
-    console.log("Cron job running: Every Minute");
+    resetAndRotateChores('Every Minute');
 });
 cron.schedule('0 0 * * *', async () => { 
     try {
