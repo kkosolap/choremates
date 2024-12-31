@@ -25,6 +25,7 @@
 
 ### Tech Stack:
 > React-Native (Expo), Express.js, MySQL
+> Ran as an Expo Go app in Android Studio
 
 ### References:
 - Professor Richard Jullig
