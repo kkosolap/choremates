@@ -8,9 +8,9 @@
 > ChoreMates is designed to simplify household chore coordination, offering a solution that's more effective than traditional methods such as whiteboards, which often lack accountability and clear communication. Users can create groups with their housemates or family, set up custom chore schedules, and add descriptions for each task. The app features a "completed/incomplete" status to track progress, along with customizable rotation schedules.
 
 <p align="center">
-  <img src="https://github.com/kkosolap/choremates/blob/release/demos/newuserdemo.gif" alt="new user demo" width="30%">
-  <img src="https://github.com/kkosolap/choremates/blob/release/demos/groupadmindemo.gif" alt="group admin demo" width="30%">
-  <img src="https://github.com/kkosolap/choremates/blob/release/demos/groupmemberdemo.gif" alt="group member demo" width="30%">
+  <img src="https://github.com/kkosolap/choremates/blob/release/demos/newuserdemo.gif" alt="new user demo" width="33%">
+  <img src="https://github.com/kkosolap/choremates/blob/release/demos/groupadmindemo.gif" alt="group admin demo" width="33%">
+  <img src="https://github.com/kkosolap/choremates/blob/release/demos/groupmemberdemo.gif" alt="group member demo" width="33%">
 </p>
 
 ### Installation:
